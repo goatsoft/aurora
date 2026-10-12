@@ -38,7 +38,7 @@ export default defineConfig({
         test: {
           name: 'apps',
           environment: 'node',
-          include: ['apps/*/test/**/*.test.ts'],
+          include: ['apps/sample/test/**/*.test.ts'],
         },
       },
       {
@@ -48,7 +48,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['packages/*/test/**/*.test.ts'],
+          include: ['packages/*/test/**/*.test.ts', 'apps/studio/test/**/*.test.ts'],
           exclude: ['**/*.browser.test.ts'],
         },
       },
