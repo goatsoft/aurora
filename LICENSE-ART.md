@@ -31,4 +31,4 @@ Backgrounds you design with Aurora or Aurora Studio, and the `.aurora` files you
 
 ## Contact
 
-For any use not covered here, open an issue at [github.com/goatsoft/aurora](https://github.com/goatsoft/aurora/issues) to request permission. Permission, when given, will be in writing.
+For any use not covered here, email [bleet@goatsoft.io](mailto:bleet@goatsoft.io) to request permission. Permission, when given, will be in writing.
