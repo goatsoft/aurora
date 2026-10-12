@@ -1,10 +1,13 @@
 import { assertAurora } from '@goatsoft/aurora-format'
-import { afterAll, beforeAll, describe, it } from 'vitest'
-import { compose } from '@/compose'
-import { GENERATORS } from '@/generators/index'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { compose } from '@/shader'
+import { compileCss } from '@/css'
+import { GENERATORS, loadGenerators } from '@/generators/index'
 import { packUniforms } from '@/uniforms'
 import { expectGolden } from './golden'
 import { device, render } from './gpu'
+
+await loadGenerators()
 
 /** Every built-in generator, with its own defaults and palette: what a designer sees first. */
 const W = 384
@@ -31,5 +34,27 @@ describe('generator golden images', () => {
       pixels[i + 3] = 255
     }
     await expectGolden(id, pixels, W, H)
+  })
+})
+
+describe('all generators together', () => {
+  it('compose into one shader without name clashes, sharing the noise library', async () => {
+    const generators = Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-'))
+    const palette = generators.flatMap((g) => g.palette).slice(0, 16)
+    const doc = assertAurora({ format: 'aurora', version: 1, name: 'all', palette, layers: generators.map((g) => ({ type: g.id, blend: 'screen', opacity: 0.4 })) })
+    const shader = compose(doc)
+    expect(shader.code.match(/fn noise_simplex\(/g)).toHaveLength(1)
+    const pixels = await render(gpu, shader.code, packUniforms(doc, shader, { width: 64, height: 64, time: 1, scroll: 0 }), 64, 64)
+    expect(pixels.some((v) => v > 0)).toBe(true)
+  })
+
+  it.each(Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-')).map((g) => [g.id] as const))('%s has a CSS fallback the browser accepts', (id) => {
+    const generator = GENERATORS[id]!
+    const doc = assertAurora({ format: 'aurora', version: 1, name: id, palette: [...generator.palette], layers: [{ type: id }] })
+    const css = compileCss(doc)
+    const el = document.createElement('div')
+    el.style.cssText = css.style
+    if (css.backgroundImage === 'none') expect(id).toBe('grain')
+    else expect(el.style.backgroundImage).not.toBe('')
   })
 })

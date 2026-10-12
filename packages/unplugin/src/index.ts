@@ -22,7 +22,7 @@ export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> =
         const file = id.replace(/\?.*$/, '')
         this.addWatchFile(file)
         try {
-          return { code: transformAurora(await readFile(file, 'utf8'), file, root), map: null }
+          return { code: await transformAurora(await readFile(file, 'utf8'), file, root), map: null }
         } catch (error) {
           if (!(error instanceof AuroraBuildError)) throw error
           this.error({ message: error.message, id: file, loc: error.loc, plugin: 'aurora' })

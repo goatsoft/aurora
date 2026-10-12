@@ -1,8 +1,11 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SurfaceState } from '@/protocol'
+import { generatorSpec } from '@/generators/define'
+import { GENERATORS } from '@/generators/index'
 import { Renderer } from '@/renderer'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
+import { solid } from './solid'
 
 installGpuGlobals()
 const doc = assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['#4f8cff'], layers: [{ type: 'aurora-fbm' }] })
@@ -28,7 +31,7 @@ let fake: ReturnType<typeof fakeGpu>
 let now = 0
 const events = { frame: vi.fn<(id: number) => void>(), fail: vi.fn<() => void>() }
 async function renderer(fps = 30) {
-  return Renderer.create(fake.gpu, events, { fps, now: () => now })
+  return Renderer.create(fake.gpu, events, { fps, now: () => now, generators: (id) => GENERATORS[id] })
 }
 
 beforeEach(() => {
@@ -198,6 +201,20 @@ describe('Renderer', () => {
     await tick()
     await tick()
     expect(events.fail).toHaveBeenCalledOnce()
+  })
+
+  it('renders generators the page registered, as the worker does, and fails on unknown ones', async () => {
+    const flat = assertAurora({ ...doc, layers: [{ type: 'test-solid' }] })
+    const r = await Renderer.create(fake.gpu, events, { fps: 30, now: () => now })
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ doc: flat }))
+    await tick()
+    expect(events.fail).toHaveBeenCalledOnce()
+    const again = await Renderer.create(fake.gpu, events, { fps: 30, now: () => now })
+    again.register(generatorSpec(solid))
+    again.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ doc: flat }))
+    await tick()
+    await tick()
+    expect(events.frame).toHaveBeenCalledWith(1)
   })
 
   it('releases detached surfaces', async () => {

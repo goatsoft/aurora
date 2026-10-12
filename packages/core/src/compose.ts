@@ -1,15 +1,14 @@
 import { COLOR_WGSL } from '@goatsoft/color'
 import type { RgbSpace } from '@goatsoft/color'
 import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
-import type { Generator } from './generators/define'
-import { GENERATORS } from './generators/index'
+import type { GeneratorLookup, GeneratorSpec } from './generators/define'
 import { noiseWgsl } from './generators/noise'
 import type { NoiseModule } from './generators/noise'
 import { STD_WGSL } from './wgsl-std'
 
 /** Where each layer's values live in the uniform array, in vec4 slots. */
 export interface LayerLayout {
-  generator: Generator
+  generator: GeneratorSpec
   /** Slot of `[opacity, param0, param1, …]`, continuing over as many slots as needed. */
   params: number
   /** Slot of the mask's four values, if the layer has a mask. */
@@ -34,14 +33,14 @@ const COMPONENT = ['x', 'y', 'z', 'w'] as const
 /** WGSL reference to scalar `index` of the flat uniform array. */
 const scalar = (index: number) => `U.v[${Math.floor(index / 4)}].${COMPONENT[index % 4]!}`
 
-/** Generator code with every `fn` and `Params` namespaced, so generators can't collide. */
-function namespaced(generator: Generator, prefix: string): string {
-  const names = [...generator.wgsl.matchAll(/\bfn\s+(\w+)/g)].map((m) => m[1]!)
+/** Generator code with every `fn`, `const` and `Params` namespaced, so generators can't collide. */
+function namespaced(generator: GeneratorSpec, prefix: string): string {
+  const names = [...generator.wgsl.matchAll(/\b(?:fn|const)\s+(\w+)/g)].map((m) => m[1]!)
   const pattern = new RegExp(`\\b(${[...names, 'Params'].join('|')})\\b`, 'g')
   return generator.wgsl.replace(pattern, `${prefix}$1`)
 }
 
-function paramsStruct(generator: Generator, prefix: string): string {
+function paramsStruct(generator: GeneratorSpec, prefix: string): string {
   const fields = Object.keys(generator.params).map((name) => `${name}: f32`)
   return `struct ${prefix}Params { ${fields.join(', ')} };`
 }
@@ -84,7 +83,7 @@ const cache = new Map<string, ComposedShader>()
  * composited as premultiplied colour in the output space, like CSS blending. Results are cached by
  * `shaderKey`, so documents that differ only in values share a shader and a pipeline.
  */
-export function compose(doc: AuroraDocument, output: RgbSpace = 'srgb'): ComposedShader {
+export function compose(doc: AuroraDocument, output: RgbSpace, lookup: GeneratorLookup): ComposedShader {
   const key = shaderKey(doc, output)
   const cached = cache.get(key)
   if (cached) return cached
@@ -96,7 +95,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace = 'srgb'): Compose
   let slot = FRAME_SLOTS
 
   doc.layers.forEach((layer, i) => {
-    const generator = GENERATORS[layer.type]
+    const generator = lookup(layer.type)
     if (!generator) throw new Error(`Unknown generator "${layer.type}". Validate documents with validateDocument() first.`)
     const prefix = `${generator.id.replace(/-/g, '_')}_`
     if (!modules.has(generator.id)) modules.set(generator.id, `${paramsStruct(generator, prefix)}\n${namespaced(generator, prefix)}`)

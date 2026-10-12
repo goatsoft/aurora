@@ -2,7 +2,7 @@ import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 import type { Oklab, RgbSpace } from '@goatsoft/color'
 import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { ComposedShader } from './compose'
-import type { Generator } from './generators/define'
+import type { GeneratorSpec } from './generators/define'
 
 /** Per-frame inputs. Sizes are in device pixels of the whole scene (just the surface when alone). */
 export interface FrameState {
@@ -19,13 +19,13 @@ export interface FrameState {
 const FULL = [0, 0, 1, 1] as const
 
 /** Palette indices a layer reads: its `colors`, cycled to the generator's count, or the palette in order. */
-export function colorIndices(layer: AuroraLayer, generator: Generator, paletteSize: number): number[] {
+export function colorIndices(layer: AuroraLayer, generator: GeneratorSpec, paletteSize: number): number[] {
   const source = layer.colors.length ? layer.colors : Array.from({ length: paletteSize }, (_, i) => i)
   return Array.from({ length: generator.colors }, (_, k) => source[k % source.length]!)
 }
 
 /** A parameter's value from the layer, or the generator default. Booleans count as 0 or 1. */
-export function paramValue(layer: AuroraLayer, generator: Generator, name: string): number {
+export function paramValue(layer: AuroraLayer, generator: GeneratorSpec, name: string): number {
   const value = layer.params[name]
   if (typeof value === 'number') return value
   if (typeof value === 'boolean') return value ? 1 : 0

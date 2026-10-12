@@ -1,5 +1,7 @@
 import type { RendererStats, SurfaceState, WorkerRequest, WorkerResponse } from './protocol'
 import type { Renderer } from './renderer'
+import { generatorSpec } from './generators/define'
+import type { Generator } from './generators/define'
 
 export interface LeaseListener {
   /** The surface rendered its first frame. */
@@ -30,7 +32,7 @@ export const PROBE_TIMEOUT = 4000
  * The page's worker backend (ADR-0079): one worker, one lease per surface. The worker starts on the
  * first lease and terminates with the last, and any failure moves every surface to CSS.
  */
-export function createWorkerBackend(factory: () => Worker, fps: () => number): Backend {
+export function createWorkerBackend(factory: () => Worker, fps: () => number, generators: (id: string) => Generator | undefined): Backend {
   let host: ReturnType<typeof start> | undefined
   let nextId = 0
 
@@ -38,6 +40,7 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number): B
     const worker = factory()
     const listeners = new Map<number, LeaseListener>()
     const stats: ((stats: RendererStats) => void)[] = []
+    const registered = new Set<string>()
     let failed = false
     let resolveReady!: (ready: boolean) => void
     const ready = new Promise<boolean>((resolve) => {
@@ -79,7 +82,15 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number): B
       }
     }
     send({ type: 'probe', fps: fps() })
+    /** Sends the worker the generators a document uses, once each, before it needs them. */
+    function register(state: SurfaceState) {
+      for (const { type } of state.doc.layers) {
+        const generator = registered.has(type) ? undefined : generators(type)
+        if (generator && send({ type: 'register', generator: generatorSpec(generator) })) registered.add(type)
+      }
+    }
     return {
+      register,
       ready,
       listeners,
       stats,
@@ -110,11 +121,14 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number): B
           }
           // From here the canvas belongs to the worker: later failures can only fall back to CSS,
           // and a failed send has already told every listener.
+          current.register(state)
           current.send({ type: 'attach', id, canvas: offscreen, state }, [offscreen])
           return true
         },
         update(state) {
-          if (!released) current.send({ type: 'update', id, state })
+          if (released) return
+          current.register(state)
+          current.send({ type: 'update', id, state })
         },
         release() {
           if (released) return
@@ -143,7 +157,7 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number): B
  * Main-thread rendering for browsers without WebGPU in workers (some Safari versions). The renderer
  * is loaded on demand, so pages that never need it don't pay for it.
  */
-export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => number): Backend {
+export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => number, generators: (id: string) => Generator | undefined): Backend {
   const listeners = new Map<number, LeaseListener>()
   let renderer: Promise<Renderer | undefined> | undefined
   let nextId = 0
@@ -155,7 +169,7 @@ export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => n
         renderer = undefined
         for (const listener of listeners.values()) listener.fail()
       },
-    }, { fps: fps() })).catch(() => undefined)
+    }, { fps: fps(), generators })).catch(() => undefined)
   }
 
   return {

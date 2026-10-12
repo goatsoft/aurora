@@ -2,6 +2,7 @@ import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PROBE_TIMEOUT, createMainThreadBackend, createWorkerBackend } from '@/pool'
 import type { SurfaceState, WorkerRequest, WorkerResponse } from '@/protocol'
+import { GENERATORS } from '@/generators/index'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 
 installGpuGlobals()
@@ -46,7 +47,7 @@ afterEach(() => {
 })
 
 describe('worker backend', () => {
-  const backend = () => createWorkerBackend(() => new FakeWorker() as unknown as Worker, () => 24)
+  const backend = () => createWorkerBackend(() => new FakeWorker() as unknown as Worker, () => 24, (id) => GENERATORS[id])
 
   it('shares one worker, probes with the fps budget and transfers canvases after ready', async () => {
     const pool = backend()
@@ -59,7 +60,13 @@ describe('worker backend', () => {
     expect(await a.ready).toBe(true)
     expect(a.attach(canvas(), state)).toBe(true)
     a.update(state)
-    expect(worker.sent.map((m) => m.type)).toEqual(['probe', 'attach', 'update'])
+    expect(worker.sent.map((m) => m.type)).toEqual(['probe', 'register', 'attach', 'update'])
+    // Generators go over once per worker, without their CSS function (functions can't be posted).
+    const registration = worker.sent[1] as Extract<WorkerRequest, { type: 'register' }>
+    expect(registration.generator.id).toBe('aurora-fbm')
+    expect('css' in registration.generator).toBe(false)
+    b.update({ ...state, doc: assertAurora({ ...doc, layers: [{ type: 'nebula' }, { type: 'aurora-fbm' }] }) })
+    expect(worker.sent.filter((m) => m.type === 'register')).toHaveLength(1)
     a.release()
     a.release()
     a.update(state)
@@ -132,7 +139,7 @@ describe('worker backend', () => {
 describe('main-thread backend', () => {
   it('renders on the main thread with a lazily loaded renderer', async () => {
     const fake = fakeGpu()
-    const pool = createMainThreadBackend(() => fake.gpu, () => 30)
+    const pool = createMainThreadBackend(() => fake.gpu, () => 30, (id) => GENERATORS[id])
     const l = listener()
     const lease = pool.acquire(l)
     expect(lease.attach(new fake.Canvas() as unknown as HTMLCanvasElement, state)).toBe(false)
@@ -152,7 +159,7 @@ describe('main-thread backend', () => {
 
   it('moves surfaces to CSS when the renderer fails', async () => {
     const fake = fakeGpu()
-    const pool = createMainThreadBackend(() => fake.gpu, () => 30)
+    const pool = createMainThreadBackend(() => fake.gpu, () => 30, (id) => GENERATORS[id])
     const l = listener()
     const lease = pool.acquire(l)
     await lease.ready
@@ -162,7 +169,7 @@ describe('main-thread backend', () => {
   })
 
   it('reports not ready without WebGPU, and retries on the next lease', async () => {
-    const pool = createMainThreadBackend(() => undefined, () => 30)
+    const pool = createMainThreadBackend(() => undefined, () => 30, (id) => GENERATORS[id])
     expect(await pool.acquire(listener()).ready).toBe(false)
     expect(await pool.stats()).toBeUndefined()
     const released = pool.acquire(listener())

@@ -6,20 +6,20 @@ import { validateDocument } from '@/validate'
 const doc = (layers: AuroraInput['layers']) => assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['#fff'], layers })
 
 describe('validateDocument', () => {
-  it('accepts known generators and params', () => {
-    expect(validateDocument(doc([{ type: 'aurora-fbm', params: { seed: 3, sweep: true } }]))).toEqual([])
+  it('accepts known generators and params', async () => {
+    expect(await validateDocument(doc([{ type: 'aurora-fbm', params: { seed: 3, sweep: true } }]))).toEqual([])
   })
 
   const cases: [AuroraInput['layers'], string, string][] = [
     [[{ type: 'aurora-fmb' }], '$.layers[0].type', 'is not a known generator. Did you mean "aurora-fbm"?'],
-    [[{ type: 'nebula' }], '$.layers[0].type', 'is not a known generator. Available: aurora-fbm.'],
+    [[{ type: 'nebula' }], '$.layers[0].type', 'is not a known generator. Available: aurora-fbm, mesh-gradient, linear-sweep, conic, grain, terrain, wind, fire.'],
     [[{ type: 'aurora-fbm', params: { sped: 1 } }], '$.layers[0].params.sped', 'is not a parameter of aurora-fbm. Did you mean "speed"?'],
     [[{ type: 'aurora-fbm', params: { 'my param': 1 } }], '$.layers[0].params["my param"]', 'is not a parameter of aurora-fbm. Expected one of: intensity, scale, speed, seed, stretch, sweep.'],
     [[{ type: 'aurora-fbm', params: { seed: 'x' } }], '$.layers[0].params.seed', 'must be a number, got "x".'],
     [[{ type: 'aurora-fbm', params: { intensity: 3 } }], '$.layers[0].params.intensity', 'must be between 0 and 2, got 3.'],
   ]
-  it.each(cases)('explains %j', (layers, path, message) => {
-    expect(validateDocument(doc(layers))).toEqual([{ path, message }])
+  it.each(cases)('explains %j', async (layers, path, message) => {
+    expect(await validateDocument(doc(layers))).toEqual([{ path, message }])
   })
 })
 

@@ -1,12 +1,36 @@
-import type { Generator } from './define'
 import { auroraFbm } from './aurora-fbm'
+import type { Generator } from './define'
 
 export { auroraFbm }
 
+/** The flagship ships eagerly; every other built-in is its own chunk, loaded the first time a document uses it. */
+const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
+  'mesh-gradient': () => import('./mesh-gradient').then((m) => m.meshGradient as Generator),
+  'linear-sweep': () => import('./linear-sweep').then((m) => m.linearSweep as Generator),
+  'conic': () => import('./conic').then((m) => m.conic as Generator),
+  'grain': () => import('./grain').then((m) => m.grain as Generator),
+  'terrain': () => import('./terrain').then((m) => m.terrain as Generator),
+  'wind': () => import('./wind').then((m) => m.wind as Generator),
+  'fire': () => import('./fire').then((m) => m.fire as Generator),
+}
+
 const registry: Record<string, Generator> = { [auroraFbm.id]: auroraFbm }
 
-/** Generators by id: the built-ins plus any registered with `registerGenerator`. */
+/** Generators loaded so far, by id: `aurora-fbm`, any built-ins documents have used, and registered ones. */
 export const GENERATORS: Readonly<Record<string, Generator>> = registry
+
+/** Every generator id a document may use: built-ins (loaded or not) and registered ones. */
+export function generatorIds(): string[] {
+  return [...new Set([auroraFbm.id, ...Object.keys(BUILTIN), ...Object.keys(registry)])]
+}
+
+/** Loads the given built-in generators (all of them by default). Unknown ids are ignored. */
+export async function loadGenerators(ids: Iterable<string> = Object.keys(BUILTIN)): Promise<void> {
+  await Promise.all([...new Set(ids)].map(async (id) => {
+    const load = BUILTIN[id]
+    if (!registry[id] && load) registry[id] = await load()
+  }))
+}
 
 const ID = /^[a-z][a-z\d]*(?:-[a-z\d]+)*$/
 

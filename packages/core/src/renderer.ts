@@ -1,5 +1,6 @@
 import { compose } from './compose'
 import type { ComposedShader } from './compose'
+import type { GeneratorLookup, GeneratorSpec } from './generators/define'
 import type { RendererStats, SurfaceState } from './protocol'
 import { packUniforms } from './uniforms'
 
@@ -29,6 +30,8 @@ export interface RendererOptions {
   now?: () => number
   /** Device-loss recoveries to attempt before giving up. */
   recoveries?: number
+  /** Generators available without `register` (the main-thread renderer passes the page's registry). */
+  generators?: GeneratorLookup
 }
 
 const epochNow = () => performance.timeOrigin + performance.now()
@@ -41,6 +44,7 @@ const epochNow = () => performance.timeOrigin + performance.now()
 export class Renderer {
   readonly stats: RendererStats = { surfaces: 0, frames: 0, frameMs: 0 }
   private readonly surfaces = new Map<number, Surface>()
+  private readonly generators = new Map<string, GeneratorSpec>()
   private pipelines = new Map<string, GPURenderPipeline | Promise<void>>()
   private layout!: GPUPipelineLayout
   private group!: GPUBindGroupLayout
@@ -106,6 +110,11 @@ export class Renderer {
     delete surface.configured
     surface.dirty = true
     surface.shown = false
+  }
+
+  /** Makes a generator available to documents. The worker receives them from the page this way. */
+  register(generator: GeneratorSpec): void {
+    this.generators.set(generator.id, generator)
   }
 
   attach(id: number, canvas: Canvas, state: SurfaceState): void {
@@ -202,7 +211,7 @@ export class Renderer {
       for (const [id, surface] of this.surfaces) {
         if (!this.needsFrame(surface)) continue
         const { state, canvas } = surface
-        const shader = compose(state.doc, state.output)
+        const shader = compose(state.doc, state.output, (type) => this.generators.get(type) ?? this.options.generators?.(type))
         const pipeline = this.pipeline(shader)
         if (!pipeline) continue
         if (canvas.width !== state.width) canvas.width = state.width

@@ -1,7 +1,8 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { compose, shaderKey } from '@/compose'
+import { shaderKey } from '@/compose'
+import { compose } from '@/shader'
 
 const doc = (layers: AuroraInput['layers'], extra: Partial<AuroraInput> = {}) =>
   assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['#4f8cff', '#a855f7', '#22d3ee'], layers, ...extra })

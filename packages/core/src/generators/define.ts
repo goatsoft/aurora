@@ -49,6 +49,17 @@ export interface Generator<P extends string = string> {
   css: (context: CssContext<P>) => string[]
 }
 
+/** Everything the GPU side needs: a generator without its CSS function, so it can be posted to the worker. */
+export type GeneratorSpec<P extends string = string> = Omit<Generator<P>, 'css'>
+
+/** Finds a generator by id. */
+export type GeneratorLookup = (id: string) => GeneratorSpec | undefined
+
+/** The serialisable part of a generator. */
+export function generatorSpec({ css: _, ...spec }: Generator): GeneratorSpec {
+  return spec
+}
+
 /** Declares a generator with its parameter names inferred, for type-safe `css` callbacks. */
 export function defineGenerator<const P extends string>(generator: Generator<P>): Generator<P> {
   return generator
