@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "outDir": "node_modules/.cache/tsc/node",
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
+  "include": ["*.config.ts", "vite.library.ts", "packages/*/vite.config.ts"]
+}

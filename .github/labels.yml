@@ -1,0 +1,55 @@
+# Source of truth for the repo's issue and PR labels.
+# `.github/workflows/labels.yml` syncs this file to GitHub: labels not listed here are deleted,
+# and `from_name` renames a GitHub default label so issues already using it keep it.
+# Phases are GitHub milestones, not labels. Add a `pkg:` label when its package is created.
+
+# type: one per issue
+- name: "type: bug"
+  color: "d73a4a"
+  description: "Something renders, builds or behaves wrongly"
+  from_name: "bug"
+- name: "type: feature"
+  color: "0e8a16"
+  description: "New capability or improvement"
+  from_name: "enhancement"
+- name: "type: docs"
+  color: "0075ca"
+  description: "Docs, ADRs, README or PLAN"
+  from_name: "documentation"
+- name: "type: perf"
+  color: "fbca04"
+  description: "Frame time, bundle size or memory"
+- name: "type: chore"
+  color: "ededed"
+  description: "Tooling, CI, tests or housekeeping"
+- name: "type: security"
+  color: "b60205"
+  description: "Security issue or hardening"
+
+# pkg: also added to PRs from changed paths (.github/labeler.yml)
+- name: "pkg: format"
+  color: "1d76db"
+  description: "@goatsoft/aurora-format"
+- name: "pkg: core"
+  color: "1d76db"
+  description: "@goatsoft/aurora runtime"
+- name: "pkg: workspace"
+  color: "1d76db"
+  description: "Root config, build, lint, test and CI setup"
+
+# flags
+- name: "parity"
+  color: "f9d0c4"
+  description: "Pixel parity with the GOAT aurora"
+- name: "breaking change"
+  color: "b60205"
+  description: "Changes a public API or the .aurora format; needs a major changeset"
+- name: "blocked"
+  color: "000000"
+  description: "Waiting on something outside this issue"
+- name: "needs design"
+  color: "d4c5f9"
+  description: "Needs a decision or ADR before work starts"
+- name: "good first issue"
+  color: "7057ff"
+  description: "Small and well scoped"
