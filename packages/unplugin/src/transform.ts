@@ -26,10 +26,10 @@ function syntaxLocation(text: string, message: string): Location {
  * AuroraBuildError naming every problem with its line and column. `root` keeps ids relative,
  * so no absolute paths end up in the bundle.
  */
-export function transformAurora(text: string, file: string, root: string): string {
+export async function transformAurora(text: string, file: string, root: string): Promise<string> {
   const name = relative(root, file) || file
   const result = parseAurora(text)
-  const issues = result.ok ? validateDocument(result.doc) : result.issues
+  const issues = result.ok ? await validateDocument(result.doc) : result.issues
   if (!result.ok || issues.length) {
     const map = jsonLocations(text)
     const located = issues.map((issue) => ({

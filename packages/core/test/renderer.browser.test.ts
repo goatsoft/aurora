@@ -1,7 +1,8 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { compose } from '@/compose'
+import { compose } from '@/shader'
 import type { SurfaceState } from '@/protocol'
+import { GENERATORS } from '@/generators/index'
 import { Renderer } from '@/renderer'
 import { packUniforms } from '@/uniforms'
 import { TextureCanvas, device, diff, render } from './gpu'
@@ -39,7 +40,7 @@ async function frame(renderer: Renderer, frames: ReturnType<typeof vi.fn>, id: n
 describe('Renderer on a real GPU', () => {
   it('renders exactly what the composed shader renders, and reports the frame after completion', async () => {
     const frames = vi.fn()
-    const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60 })
+    const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60, generators: (id) => GENERATORS[id] })
     const actual = await frame(renderer, frames, 1, new TextureCanvas(), state())
     const shader = compose(hero)
     const expected = await render(reference, shader.code, packUniforms(hero, shader, { width: W, height: H, time: 0, scroll: 0 }), W, H)
@@ -51,7 +52,7 @@ describe('Renderer on a real GPU', () => {
 
   it('renders scene members as one continuous field', async () => {
     const frames = vi.fn()
-    const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60 })
+    const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60, generators: (id) => GENERATORS[id] })
     const half = W / 2
     const left = await frame(renderer, frames, 1, new TextureCanvas(), state({ width: half, scene: { width: W, height: H, rect: [0, 0, 0.5, 1] } }))
     const right = await frame(renderer, frames, 2, new TextureCanvas(), state({ width: half, scene: { width: W, height: H, rect: [0.5, 0, 0.5, 1] } }))

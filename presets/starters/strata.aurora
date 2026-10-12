@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Strata starter",
+  "palette": [
+    "oklch(0.46 0.11 34)",
+    "oklch(0.67 0.13 50)",
+    "oklch(0.9 0.05 78)"
+  ],
+  "layers": [
+    {
+      "type": "strata"
+    }
+  ]
+}

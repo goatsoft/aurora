@@ -13,31 +13,26 @@ const pillars = [
 </script>
 
 <template>
-  <main>
-    <section class="hero">
+  <main class="min-h-dvh bg-[#07060f] font-sans text-indigo-50">
+    <section class="relative isolate grid min-h-[60vh] place-content-center text-center">
       <AuroraBackground v-slot="{ mode }" :src="hero">
-        <span class="badge">{{ mode }}</span>
+        <span class="absolute right-4 bottom-4 font-mono text-xs opacity-60">{{ mode }}</span>
       </AuroraBackground>
-      <h1>Aurora</h1>
+      <h1 class="text-[clamp(3rem,10vw,7rem)] font-semibold tracking-tight">
+        Aurora
+      </h1>
       <p>WebGPU backgrounds with a CSS fallback, imported as <code>.aurora</code> files.</p>
     </section>
 
     <AuroraScene name="pillars">
-      <div class="pillars">
-        <article v-for="pillar in pillars" :key="pillar.title">
+      <div class="grid grid-cols-3 gap-4 p-8">
+        <article v-for="pillar in pillars" :key="pillar.title" class="relative isolate flex h-64 flex-col justify-end overflow-hidden rounded-2xl p-6">
           <AuroraBackground :src="pillar.src" />
-          <h2>{{ pillar.title }}</h2>
+          <h2 class="text-xl font-medium">
+            {{ pillar.title }}
+          </h2>
         </article>
       </div>
     </AuroraScene>
   </main>
 </template>
-
-<style>
-body { margin: 0; background: #07060f; color: #eef; font: 16px/1.5 system-ui, sans-serif }
-.hero { position: relative; isolation: isolate; min-height: 60vh; display: grid; place-content: center; text-align: center }
-.hero h1 { font-size: clamp(3rem, 10vw, 7rem); margin: 0 }
-.badge { position: absolute; right: 1rem; bottom: 1rem; font: 12px ui-monospace, monospace; opacity: 0.6 }
-.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 2rem }
-.pillars article { position: relative; isolation: isolate; height: 16rem; border-radius: 1rem; overflow: hidden; display: grid; place-content: end start; padding: 1.5rem }
-</style>

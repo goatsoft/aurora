@@ -1,6 +1,7 @@
 import type { RgbSpace } from '@goatsoft/color'
 import { getConfig } from './config'
 import { DRIFT_KEYFRAMES, compileCss } from './css'
+import { GENERATORS, loadGenerators } from './generators/index'
 import { createMainThreadBackend, createWorkerBackend } from './pool'
 import type { Backend, Lease } from './pool'
 import type { SurfaceState } from './protocol'
@@ -29,14 +30,16 @@ export interface AuroraSurface {
   dispose: () => void
 }
 
+const generators = (id: string) => GENERATORS[id]
 let backends: { worker: Backend, main: Backend } | undefined
 function getBackends() {
   backends ??= {
     worker: createWorkerBackend(
       () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module', name: 'Aurora' }),
       () => getConfig().fps,
+      generators,
     ),
-    main: createMainThreadBackend(() => navigator.gpu, () => getConfig().fps),
+    main: createMainThreadBackend(() => navigator.gpu, () => getConfig().fps, generators),
   }
   return backends
 }
@@ -50,6 +53,12 @@ export function getBackendsForStats(): { worker: Backend, main: Backend } {
 export function setBackends(next: { worker: Backend, main: Backend } | undefined): void {
   backends = next
 }
+
+/**
+ * How a background fills its positioned parent. Bindings put it on their host element so server
+ * HTML and the mounted surface agree; it's the only layout CSS Aurora ships.
+ */
+export const FILL_STYLE = 'position:absolute;inset:0;overflow:hidden;pointer-events:none'
 
 const CROSSFADE_MS = 300
 const epochNow = () => performance.timeOrigin + performance.now()
@@ -88,7 +97,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const root = document.createElement('div')
   root.setAttribute('aria-hidden', 'true')
   root.dataset['aurora'] = 'css'
-  root.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;contain:strict'
+  root.style.cssText = `${FILL_STYLE};contain:strict`
   const fallback = document.createElement('div')
   const canvas = document.createElement('canvas')
   canvas.style.cssText = `position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity ${CROSSFADE_MS}ms ease`
@@ -139,8 +148,12 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     }
   }
 
+  const isDisposed = () => disposed
+  /** Whether every generator the document uses is loaded (built-ins load lazily on first use). */
+  const loaded = () => doc.layers.every((layer) => layer.type in GENERATORS)
+
   function push() {
-    if (!disposed) lease?.update(state())
+    if (!disposed && loaded()) lease?.update(state())
   }
 
   function setMode(next: AuroraMode) {
@@ -167,7 +180,18 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     setMode('css')
   }
 
+  /** Loads the built-in generators the document uses, then repaints; unknown generators mean CSS. */
+  const prepare = () => loadGenerators(doc.layers.map((layer) => layer.type)).then(() => {
+    if (disposed) return
+    paintFallback()
+    if (!loaded()) toCss()
+    else push()
+  })
+  let generatorsReady = prepare()
+
   async function start() {
+    await generatorsReady
+    if (disposed || !loaded()) return
     const config = getConfig()
     if (cssOnly() || typeof navigator === 'undefined' || !('gpu' in navigator)) return
     if (config.touch === 'css' && media('(pointer: coarse)')) return
@@ -177,10 +201,11 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     for (const backend of candidates) {
       const next = backend.acquire(listener)
       lease = next
-      if (!(await next.ready) || disposed || lease !== next) {
+      // Awaiting lets dispose() or a newer start() run in between, so re-read the state.
+      if (!(await next.ready) || isDisposed() || lease !== next) {
         next.release()
         if (lease === next) lease = undefined
-        if (disposed) return
+        if (isDisposed()) return
         continue
       }
       if (next.attach(canvas, state())) return
@@ -232,6 +257,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       unwatch = watchModule(next.id, (doc) => update(doc))
     }
     doc = documentOf(next)
+    generatorsReady = prepare()
     paintFallback()
     if (cssOnly()) toCss()
     else {

@@ -1,7 +1,7 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { compose } from '@/compose'
+import { compose } from '@/shader'
 import { packUniforms } from '@/uniforms'
 import { GOAT_WGSL } from './fixtures/goat-aurora'
 import { device, diff, render } from './gpu'

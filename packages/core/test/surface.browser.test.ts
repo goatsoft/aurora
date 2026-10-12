@@ -8,6 +8,7 @@ import type { Backend, LeaseListener } from '@/pool'
 import type { SurfaceState } from '@/protocol'
 import { setBackends } from '@/surface'
 import AuroraWorker from '@/worker?worker'
+import { GENERATORS } from '@/generators/index'
 
 const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const doc = (extra: Partial<AuroraInput> = {}) => assertAurora({ ...hero, ...extra })
@@ -74,8 +75,8 @@ describe('mountAurora with the real renderer', () => {
     configureAurora({ worker })
     const events: string[] = []
     setBackends({
-      worker: observed(createWorkerBackend(() => new AuroraWorker(), () => 30), events),
-      main: observed(createMainThreadBackend(() => navigator.gpu, () => 30), events),
+      worker: observed(createWorkerBackend(() => new AuroraWorker(), () => 30, (id) => GENERATORS[id]), events),
+      main: observed(createMainThreadBackend(() => navigator.gpu, () => 30, (id) => GENERATORS[id]), events),
     })
     const modes: AuroraMode[] = []
     const surface = mountAurora(host, hero, { onModeChange: (m) => { events.push(`mode ${m}`); modes.push(m) } })

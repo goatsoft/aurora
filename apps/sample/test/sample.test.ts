@@ -21,7 +21,7 @@ describe('sample app (PLAN.md Phase 3)', () => {
     expect(html.match(/class="aurora-background"/g)).toHaveLength(4)
     expect(html.match(/data-aurora-ssr/g)).toHaveLength(4)
     expect(html.match(/background-image:radial-gradient\(/g)).toHaveLength(4)
-    expect(html).toContain('<span class="badge">css</span>')
+    expect(html).toMatch(/<span [^>]*>css<\/span>/)
   })
 
   it('builds for the browser with the .aurora files compiled in, and no absolute paths', () => {

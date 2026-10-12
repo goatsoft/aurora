@@ -1,14 +1,16 @@
 import { jsonPath, suggest } from '@goatsoft/aurora-format'
 import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
-import { GENERATORS } from './generators/index'
+import { GENERATORS, generatorIds, loadGenerators } from './generators/index'
 
 /**
  * Checks what the format can't: that every layer's generator exists and its params are known
- * and in range. Returns issues in the same shape as `parseAurora`.
+ * and in range, loading the built-in generators the document uses. Returns issues in the same
+ * shape as `parseAurora`.
  */
-export function validateDocument(doc: AuroraDocument): FormatIssue[] {
+export async function validateDocument(doc: AuroraDocument): Promise<FormatIssue[]> {
+  await loadGenerators(doc.layers.map((layer) => layer.type))
   const issues: FormatIssue[] = []
-  const ids = Object.keys(GENERATORS)
+  const ids = generatorIds()
   doc.layers.forEach((layer, i) => {
     const generator = GENERATORS[layer.type]
     if (!generator) {

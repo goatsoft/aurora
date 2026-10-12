@@ -2,7 +2,7 @@ import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { compose } from '@/compose'
+import { compose } from '@/shader'
 import { auroraFbm } from '@/generators/index'
 import { colorIndices, packUniforms, paramValue, shaderColor } from '@/uniforms'
 

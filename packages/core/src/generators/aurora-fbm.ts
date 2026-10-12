@@ -10,6 +10,7 @@ export const auroraFbm = defineGenerator({
   label: 'Aurora',
   description: 'Drifting aurora ribbons from domain-warped fractal noise.',
   colors: 3,
+  palette: ['oklch(0.68 0.16 245)', 'oklch(0.56 0.22 285)', 'oklch(0.58 0.25 310)'],
   params: {
     intensity: { default: 1, min: 0, max: 2, step: 0.01, label: 'Intensity', description: 'Overall opacity of the ribbons. Above 1 overdrives the glow.' },
     scale: { default: 1.6, min: 0.1, max: 5, step: 0.01, label: 'Scale', description: 'Noise zoom: smaller gives broader ribbons.' },

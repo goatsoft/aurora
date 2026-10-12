@@ -7,6 +7,6 @@
     "outDir": "../../node_modules/.cache/tsc/vue",
     "emitDeclarationOnly": true
   },
-  "include": ["src", "test"],
+  "include": ["src", "src/**/*.vue", "test"],
   "references": [{ "path": "../core" }, { "path": "../format" }]
 }

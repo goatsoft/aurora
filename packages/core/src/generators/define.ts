@@ -1,4 +1,5 @@
 import type { Oklab } from '@goatsoft/color'
+import type { NoiseModule } from './noise'
 
 /** A numeric generator parameter. Studio builds its inspector controls from these. */
 export interface ParamSpec {
@@ -31,6 +32,10 @@ export interface Generator<P extends string = string> {
   description: string
   /** How many palette colours the generator reads, in order. */
   colors: number
+  /** A palette that shows the generator at its best: Studio's starting colours and the starter preset. */
+  palette: readonly string[]
+  /** Shared noise modules the WGSL calls (`noise_simplex`, `noise_fbm`, …). */
+  requires?: readonly NoiseModule[]
   /** Parameters, in uniform order. */
   params: Readonly<Record<P, ParamSpec>>
   /**
@@ -42,6 +47,17 @@ export interface Generator<P extends string = string> {
   wgsl: string
   /** CSS `<image>` values approximating the generator for the CSS fallback, bottom layer last. */
   css: (context: CssContext<P>) => string[]
+}
+
+/** Everything the GPU side needs: a generator without its CSS function, so it can be posted to the worker. */
+export type GeneratorSpec<P extends string = string> = Omit<Generator<P>, 'css'>
+
+/** Finds a generator by id. */
+export type GeneratorLookup = (id: string) => GeneratorSpec | undefined
+
+/** The serialisable part of a generator. */
+export function generatorSpec({ css: _, ...spec }: Generator): GeneratorSpec {
+  return spec
 }
 
 /** Declares a generator with its parameter names inferred, for type-safe `css` callbacks. */

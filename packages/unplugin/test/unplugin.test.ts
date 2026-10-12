@@ -41,24 +41,24 @@ describe('transformAurora', () => {
   const hero = resolve(root, 'presets/goat/hero.aurora')
 
   it('exports { id, doc, css } with a root-relative id and accepts hot updates', async () => {
-    const code = transformAurora(read(hero), hero, root)
+    const code = await transformAurora(read(hero), hero, root)
     expect(code).toContain('import.meta.hot.accept')
     const module = (await import(`data:text/javascript,${encodeURIComponent(code)}`) as { default: { id: string, doc: { name: string }, css: { backgroundImage: string } } }).default
     expect(module.id).toBe('presets/goat/hero.aurora')
     expect(module.doc.name).toBe('GOAT hero')
     expect(module.css.backgroundImage).toContain('radial-gradient')
-    expect(transformAurora(read(hero), hero, hero)).toContain('"id":"/')
+    expect(await transformAurora(read(hero), hero, hero)).toContain('"id":"/')
   })
 
   it.each([
     ['broken.aurora', 'Invalid .aurora file broken.aurora:\n  broken.aurora:6:38  $.layers[0].blnd is not a known key. Did you mean "blend"?', { line: 6, column: 37 }],
     ['range.aurora', 'Invalid .aurora file range.aurora:\n  range.aurora:2:50  $.layers[0].params.intensity must be between 0 and 2, got 5.', { line: 2, column: 49 }],
     ['syntax.aurora', /^Invalid \.aurora file syntax\.aurora:\n {2}syntax\.aurora:5:3 {2}\$ is not valid JSON: /, { line: 5, column: 2 }],
-  ] as const)('points at the problem in %s', (name, message, loc) => {
+  ] as const)('points at the problem in %s', async (name, message, loc) => {
     const file = fixture(name)
     let error: unknown
     try {
-      transformAurora(read(file), file, resolve(here, 'fixtures'))
+      await transformAurora(read(file), file, resolve(here, 'fixtures'))
     } catch (e) {
       error = e
     }

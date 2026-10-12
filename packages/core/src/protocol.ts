@@ -1,5 +1,6 @@
 import type { RgbSpace } from '@goatsoft/color'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
+import type { GeneratorSpec } from './generators/define'
 
 /** Everything a renderer needs to draw one surface. Sent on attach and on every change. */
 export interface SurfaceState {
@@ -21,6 +22,7 @@ export interface SurfaceState {
 
 export type WorkerRequest
   = | { type: 'probe', fps: number }
+    | { type: 'register', generator: GeneratorSpec }
     | { type: 'attach', id: number, canvas: OffscreenCanvas, state: SurfaceState }
     | { type: 'update', id: number, state: SurfaceState }
     | { type: 'detach', id: number }

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Grain starter",
+  "palette": [
+    "oklch(1 0 0)"
+  ],
+  "layers": [
+    {
+      "type": "grain"
+    }
+  ]
+}

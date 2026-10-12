@@ -35,6 +35,9 @@ scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
         post({ type: 'ready', available: false })
       })
       return
+    case 'register':
+      renderer?.register(data.generator)
+      return
     case 'attach':
       if (failed || !renderer) post({ type: 'fail' })
       else renderer.attach(data.id, data.canvas, data.state)

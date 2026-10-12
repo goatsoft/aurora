@@ -1,0 +1,49 @@
+# Starfield (`starfield`)
+
+A night sky: twinkling stars, a faint milky way and the odd shooting star.
+
+![Starfield with its defaults](/packages/core/test/golden/starfield.png)
+
+Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
+
+## Parameters
+
+| Name | Label | Default | Range | What it does |
+|---|---|---|---|---|
+| `density` | Density | 0.65 | 0 to 1 | How many stars there are. |
+| `brightness` | Brightness | 1 | 0 to 2 | How bright the stars shine. |
+| `twinkle` | Twinkle | 0.5 | 0 to 1 | How much the stars shimmer. |
+| `milkyway` | Milky way | 0.6 | 0 to 1 | Strength of the band of faint stars and glow. |
+| `meteors` | Meteors | 0.35 | 0 to 1 | How often a shooting star crosses the sky. |
+| `speed` | Speed | 0.5 | 0 to 4 | How fast the sky turns. |
+| `sky` | Sky | 1 | 0 to 1 | Opacity of the night-sky gradient behind the stars; 0 for stars alone. |
+| `seed` | Seed | 0 | 0 to 100 | A different sky. |
+
+## Default palette
+
+- `oklch(0.12 0.03 268)`
+- `oklch(0.26 0.07 288)`
+- `oklch(0.97 0.02 245)`
+
+## Starter
+
+[`presets/starters/starfield.aurora`](/presets/starters/starfield.aurora)
+
+```json
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Starfield starter",
+  "palette": [
+    "oklch(0.12 0.03 268)",
+    "oklch(0.26 0.07 288)",
+    "oklch(0.97 0.02 245)"
+  ],
+  "layers": [
+    {
+      "type": "starfield"
+    }
+  ]
+}
+```

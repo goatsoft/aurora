@@ -1,0 +1,19 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Golden hour",
+  "palette": [
+    "oklch(0.45 0.1 285)",
+    "oklch(0.55 0.12 15)",
+    "oklch(0.9 0.1 70)"
+  ],
+  "layers": [
+    {
+      "type": "clouds",
+      "params": {
+        "speed": 0.35
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { defineComponent, inject, provide } from 'vue'
-import type { InjectionKey, PropType } from 'vue'
+import { inject } from 'vue'
+import type { InjectionKey } from 'vue'
 
 export const SCENE: InjectionKey<() => string | undefined> = Symbol('aurora-scene')
 
@@ -7,18 +7,3 @@ export const SCENE: InjectionKey<() => string | undefined> = Symbol('aurora-scen
 export function useAuroraScene(): () => string | undefined {
   return inject(SCENE, () => undefined)
 }
-
-/**
- * Puts every `<AuroraBackground>` inside it into one scene: one clock and one continuous field
- * across separate panels. Renders no element of its own.
- */
-export const AuroraScene = defineComponent({
-  name: 'AuroraScene',
-  props: {
-    name: { type: String as PropType<string>, required: true },
-  },
-  setup(props, { slots }) {
-    provide(SCENE, () => props.name)
-    return () => slots['default']?.()
-  },
-})
