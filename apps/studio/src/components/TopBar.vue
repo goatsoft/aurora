@@ -2,6 +2,7 @@
 import { useStudio } from '@/editor/studio'
 import type { Preview, Viewport } from '@/editor/studio'
 import { download, snippets } from '@/editor/export'
+import mark from '~/assets/brand/favicon-dark.svg?url'
 
 const studio = useStudio()
 const { ui } = studio
@@ -123,7 +124,8 @@ defineExpose({ save: () => void save(), share, saveAs })
 <template>
   <header class="pointer-events-none absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4">
     <div class="glass pointer-events-auto flex h-11 items-center gap-2.5 rounded-2xl pr-3 pl-2.5 animate-[rise-in_350ms_cubic-bezier(0.2,0.9,0.1,1)]">
-      <div class="size-6 rounded-lg bg-[conic-gradient(from_200deg_in_oklch,oklch(0.75_0.17_160),oklch(0.68_0.16_245),oklch(0.6_0.24_305),oklch(0.75_0.17_160))] shadow-[0_0_16px_oklch(0.68_0.16_245/0.6)]" />
+      <!-- The compact mark below 48 px (assets/brand/README.md); Studio's chrome is always dark. -->
+      <img :src="mark" alt="" width="24" height="24" class="size-6">
       <span class="text-xs font-semibold tracking-tight">Aurora Studio</span>
       <span class="h-4 w-px bg-panel-border" />
       <input
