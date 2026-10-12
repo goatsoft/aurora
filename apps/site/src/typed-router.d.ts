@@ -52,55 +52,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/docs/adr/0001-workspace-and-toolchain': RouteRecordInfo<
-      '/docs/adr/0001-workspace-and-toolchain',
-      '/docs/adr/0001-workspace-and-toolchain',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0002-aurora-format': RouteRecordInfo<
-      '/docs/adr/0002-aurora-format',
-      '/docs/adr/0002-aurora-format',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0003-colour': RouteRecordInfo<
-      '/docs/adr/0003-colour',
-      '/docs/adr/0003-colour',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0004-runtime-and-fallback': RouteRecordInfo<
-      '/docs/adr/0004-runtime-and-fallback',
-      '/docs/adr/0004-runtime-and-fallback',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0005-bindings': RouteRecordInfo<
-      '/docs/adr/0005-bindings',
-      '/docs/adr/0005-bindings',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0006-generators': RouteRecordInfo<
-      '/docs/adr/0006-generators',
-      '/docs/adr/0006-generators',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/docs/adr/0007-studio': RouteRecordInfo<
-      '/docs/adr/0007-studio',
-      '/docs/adr/0007-studio',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/docs/generators/README': RouteRecordInfo<
       '/docs/generators/README',
       '/docs/generators',
@@ -259,62 +210,6 @@ declare module 'vue-router/auto-routes' {
     '../../docs/index.md': {
       routes:
         | '/docs/'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0001-workspace-and-toolchain.md': {
-      routes:
-        | '/docs/adr/0001-workspace-and-toolchain'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0002-aurora-format.md': {
-      routes:
-        | '/docs/adr/0002-aurora-format'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0003-colour.md': {
-      routes:
-        | '/docs/adr/0003-colour'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0004-runtime-and-fallback.md': {
-      routes:
-        | '/docs/adr/0004-runtime-and-fallback'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0005-bindings.md': {
-      routes:
-        | '/docs/adr/0005-bindings'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0006-generators.md': {
-      routes:
-        | '/docs/adr/0006-generators'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    '../../docs/adr/0007-studio.md': {
-      routes:
-        | '/docs/adr/0007-studio'
       views:
         | never
       pathParamNames:

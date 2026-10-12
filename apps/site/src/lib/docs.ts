@@ -11,7 +11,6 @@ const GROUPS: { title: string, match: (route: string) => boolean }[] = [
   { title: 'Get started', match: (r) => r === '/docs' || r.startsWith('/docs/guide/') },
   { title: 'Generators', match: (r) => r.startsWith('/docs/generators') },
   { title: 'Reference', match: (r) => r.startsWith('/docs/reference/') || r === '/docs/glossary' },
-  { title: 'Decisions', match: (r) => r.startsWith('/docs/adr/') },
 ]
 
 const byOrder = (a: PageInfo, b: PageInfo) => (a.order ?? 1e9) - (b.order ?? 1e9) || a.route.localeCompare(b.route)

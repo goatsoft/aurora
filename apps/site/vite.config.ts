@@ -18,9 +18,12 @@ const root = searchForWorkspaceRoot(here)
 const docs = join(root, 'docs')
 const REPO = 'https://github.com/goatsoft/aurora'
 
+/** Decision records stay in the repo for contributors; links to them go to GitHub. */
+const internal = join(docs, 'adr')
+
 /** `docs/guide/vue.md` → `/docs/guide/vue`; a folder's `index.md` or `README.md` is the folder. */
 function route(file: string): string | undefined {
-  if (!file.startsWith(`${docs}/`) || !file.endsWith('.md')) return undefined
+  if (!file.startsWith(`${docs}/`) || !file.endsWith('.md') || file.startsWith(`${internal}/`)) return undefined
   const path = relative(docs, file).replace(/\.md$/, '').replace(/(^|\/)(index|README)$/, '')
   return `/docs${path ? `/${path}` : ''}`
 }
@@ -39,7 +42,7 @@ export default defineConfig({
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
     VueRouter({
       root: here,
-      routesFolder: [{ src: `${here}src/pages` }, { src: docs, path: 'docs/' }],
+      routesFolder: [{ src: `${here}src/pages` }, { src: docs, path: 'docs/', exclude: ['**/adr/**'] }],
       extensions: ['.vue', '.md'],
       dts: `${here}src/typed-router.d.ts`,
       extendRoute(node) {
