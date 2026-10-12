@@ -13,7 +13,7 @@ const html = (props: { src: AuroraSource | string }) => renderToString(createSSR
 describe('server rendering', () => {
   it('renders the CSS fallback into the HTML, hidden from assistive tech', async () => {
     const out = await html({ src: module })
-    expect(out).toMatch(/^(<!--\[-->)?<div class="aurora-background" aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none" data-aurora-ssr>/)
+    expect(out).toMatch(/^(<!--\[-->)?<div class="aurora-background" aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;?" data-aurora-ssr>/)
     expect(out).toContain('background-image:radial-gradient(60% 40% at 20% 30% in oklab, oklch(0.68 0.16 245 / 0.28), transparent 70%)')
     expect(out).toContain('mask-image:linear-gradient(to bottom')
   })

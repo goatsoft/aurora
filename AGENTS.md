@@ -9,7 +9,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 ## Stack
 
 - **Node 24** (`.nvmrc`), **pnpm 10** workspaces (`packages/*`, `apps/*`), ESM only.
-- **TypeScript 5.9**, strict (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`). Typecheck is `tsc -b` over project references.
+- **TypeScript 5.9**, strict (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`). Typecheck is `vue-tsc -b` over project references, so `.vue` files are checked too.
 - **Vite 8** library mode builds each package to `dist/`; `tsc` emits declarations.
 - **Vitest 4**: `unit` project (Node) and `browser` project (Playwright Chromium with real WebGPU via SwiftShader).
 - **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, and **ESLint Stylistic for formatting**. There is no Prettier.
@@ -24,7 +24,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 packages/color    @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps)
 packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations
 packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback; /element is <aurora-bg>, /load is loadAurora
-packages/vue      @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), <AuroraScene> (written in TS with h(), no SFC build)
+packages/vue      @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), <AuroraScene> (`<script setup>` SFCs)
 packages/unplugin @goatsoft/aurora-unplugin .aurora imports: build-time validation, typed modules, HMR
 apps/sample       Vite + Vue SSR app using all of the above
 presets/goat/     The GOAT pack: the parity reference and default demo themes

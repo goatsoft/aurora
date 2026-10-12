@@ -1,4 +1,5 @@
 import { playwright } from '@vitest/browser-playwright'
+import vue from '@vitejs/plugin-vue'
 import { defaultClientConditions, defaultServerConditions } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { ROOT, packageSrcAlias, rootAlias } from './aliases.ts'
@@ -8,7 +9,7 @@ const source = '@goatsoft/source'
 const resolve = { conditions: [source, ...defaultClientConditions], alias: [rootAlias] }
 const ssr = { resolve: { conditions: [source, ...defaultServerConditions] } }
 // `@/x` is the importing package's src/x; `~/x` is the repo root (see aliases.ts and each tsconfig's paths).
-const plugins = [packageSrcAlias()]
+const plugins = [packageSrcAlias(), vue()]
 
 // Headless Chromium has no GPU on CI runners: SwiftShader gives it a real, spec-conformant WebGPU adapter.
 const chromiumWebGPU = [

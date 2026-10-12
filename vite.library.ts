@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
+import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import type { UserConfig } from 'vite'
 
@@ -24,6 +25,8 @@ export function libraryConfig(root: string): UserConfig {
 
   return {
     root,
+    // Packages built on Vue ship single-file components.
+    plugins: manifest.peerDependencies?.['vue'] ? [vue()] : [],
     build: {
       target: 'es2023',
       sourcemap: true,
