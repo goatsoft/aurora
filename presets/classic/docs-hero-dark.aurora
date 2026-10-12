@@ -2,7 +2,7 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT docs hero (light)",
+  "name": "Classic docs hero (dark)",
   "canvas": {
     "fade": "y"
   },
@@ -16,7 +16,7 @@
       "type": "aurora-fbm",
       "blend": "normal",
       "params": {
-        "intensity": 0.35,
+        "intensity": 0.3,
         "scale": 1.1,
         "speed": 0.09,
         "seed": 3,

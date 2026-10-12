@@ -159,7 +159,7 @@
               "srgb"
             ],
             "type": "string",
-            "description": "Colour space for blending this layer's colours. \"srgb\" exists for bit-exact GOAT parity.",
+            "description": "Colour space for blending this layer's colours. \"srgb\" exists for bit-exact parity with the classic presets.",
             "default": "oklab"
           },
           "mask": {

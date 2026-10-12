@@ -2,14 +2,11 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT DocDialog",
-  "canvas": {
-    "fade": "y"
-  },
+  "name": "Classic download card 3",
   "palette": [
-    "color(srgb 0.23 0.63 1)",
+    "color(srgb 0.71 0.29 1)",
     "color(srgb 0.48 0.36 1)",
-    "color(srgb 0.71 0.29 1)"
+    "color(srgb 0.88 0.55 1)"
   ],
   "layers": [
     {
@@ -17,17 +14,23 @@
       "blend": "normal",
       "params": {
         "intensity": 0.9,
-        "scale": 1.15,
-        "speed": 0.08,
-        "seed": 21,
-        "stretch": 0.5
+        "scale": 1.2,
+        "speed": 0.045,
+        "seed": 25,
+        "stretch": 0.9
       },
       "colors": [
         0,
         1,
         2
       ],
-      "mix": "srgb"
+      "mix": "srgb",
+      "mask": {
+        "type": "linear",
+        "angle": 180,
+        "start": 0.1,
+        "end": 0.9
+      }
     }
   ]
 }

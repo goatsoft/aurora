@@ -49,7 +49,7 @@
 # flags
 - name: "parity"
   color: "f9d0c4"
-  description: "Pixel parity with the GOAT aurora"
+  description: "Pixel parity with the classic presets"
 - name: "breaking change"
   color: "b60205"
   description: "Changes a public API or the .aurora format; needs a major changeset"

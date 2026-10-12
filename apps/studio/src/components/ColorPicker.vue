@@ -6,7 +6,7 @@ import { snap } from '@/editor/document'
 /**
  * An OKLCH picker. The plane is lightness (up) by chroma (right) at the current hue, with the sRGB
  * gamut boundary drawn solid and Display P3 dashed; colours past sRGB are shown gamut-mapped. The
- * text field takes any CSS colour Aurora understands and keeps it as typed (GOAT parity presets use
+ * text field takes any CSS colour Aurora understands and keeps it as typed (the classic presets use
  * `color(srgb …)`); dragging writes canonical `oklch()`.
  */
 const props = defineProps<{ page: 'dark' | 'light' }>()

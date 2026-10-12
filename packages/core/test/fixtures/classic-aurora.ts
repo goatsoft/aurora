@@ -1,8 +1,8 @@
 /**
- * The GOAT aurora shader, copied verbatim from goatsoft/GOAT web/src/lib/aurora-shaders.ts.
+ * The original aurora shader behind the classic presets, copied verbatim.
  * It is the parity reference: never edit it to make a test pass.
  */
-export const GOAT_WGSL = /* wgsl */ `
+export const CLASSIC_WGSL = /* wgsl */ `
 struct U {
   res: vec2f, time: f32, scroll: f32,
   c0: vec3f, intensity: f32,

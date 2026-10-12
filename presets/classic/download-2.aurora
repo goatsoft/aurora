@@ -2,7 +2,7 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT download card 2",
+  "name": "Classic download card 2",
   "palette": [
     "color(srgb 0.47 0.46 1)",
     "color(srgb 0.48 0.59 1)",

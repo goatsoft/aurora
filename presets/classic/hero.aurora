@@ -2,7 +2,7 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT hero",
+  "name": "Classic hero",
   "canvas": {
     "fade": "y"
   },

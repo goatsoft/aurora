@@ -14,7 +14,7 @@ function picker(css: string) {
 }
 
 describe('ColorPicker', () => {
-  it('keeps typed colours exactly as written, so GOAT parity colours survive', async () => {
+  it('keeps typed colours exactly as written, so classic parity colours survive', async () => {
     const wrapper = picker('oklch(0.7 0.15 250)')
     const input = wrapper.get('input[aria-label="CSS colour"]')
     await input.setValue('color(srgb 0.23 0.63 1)')

@@ -2,7 +2,7 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT download card 3",
+  "name": "Classic pillar, violet",
   "palette": [
     "color(srgb 0.71 0.29 1)",
     "color(srgb 0.48 0.36 1)",
@@ -13,24 +13,18 @@
       "type": "aurora-fbm",
       "blend": "normal",
       "params": {
-        "intensity": 0.9,
-        "scale": 1.2,
-        "speed": 0.045,
-        "seed": 25,
-        "stretch": 0.9
+        "intensity": 0.6,
+        "scale": 1.5,
+        "speed": 0.06,
+        "seed": 7,
+        "stretch": 0.22
       },
       "colors": [
         0,
         1,
         2
       ],
-      "mix": "srgb",
-      "mask": {
-        "type": "linear",
-        "angle": 180,
-        "start": 0.1,
-        "end": 0.9
-      }
+      "mix": "srgb"
     }
   ]
 }

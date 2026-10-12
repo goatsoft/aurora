@@ -8,20 +8,20 @@ Aurora is a **GOATsoft library for animated backgrounds that are WebGPU-only and
 
 - You design a background in **Aurora Studio** and export a `.aurora` file.
 - Any GOATsoft site drops that file in with one line. WebGPU renders it. Browsers without WebGPU get a generated CSS fallback, so there is no WebGL or GLSL path at all.
-- The first preset pack is the aurora from the GOAT website, reproduced exactly. The format and builder also allow other background types (mesh gradients, waves, grain and others). All of them are authored and blended in **OKLab/OKLCH**.
+- The first preset pack, the classic presets, is the original aurora reproduced exactly. The format and builder also allow other background types (mesh gradients, waves, grain and others). All of them are authored and blended in **OKLab/OKLCH**.
 - The project produces four things: the **library**, the **Studio** (a dev tool that we also host), a **marketing site** and a **docs site**. The docs and site run on **gruff**, our own rustic-and-ready static site generator built on `unplugin-vue-markdown` (markdown-it), without VitePress.
 
 ### Why this is a rewrite and not a refactor
 
-The current checkpoint was written by a model, and its config schema (`blur`, `particleCount`, `gradientRotation`) does not describe the GOAT shader at all. It has one shader and no layer model or OKLab. Two ideas are worth carrying forward:
+The current checkpoint was written by a model, and its config schema (`blur`, `particleCount`, `gradientRotation`) does not describe the original shader at all. It has one shader and no layer model or OKLab. Two ideas are worth carrying forward:
 - `scene.ts`: several panels sharing one continuous coordinate space and clock.
-- `sharedSurface.ts`: device sharing. This one gets superseded by the GOAT worker design.
+- `sharedSurface.ts`: device sharing. This one gets superseded by the original worker design.
 
 The plan is to freeze the current tree on a `legacy/checkpoint-2026-09` branch and start a clean workspace.
 
-## 2. What exists in GOAT (the parity target)
+## 2. What exists in the original implementation (the parity target)
 
-These facts come from the GOAT source (`GOAT/web/src/lib/aurora-*`) and ADR-0041, ADR-0044, ADR-0077 and ADR-0079.
+These facts come from the original source (`web/src/lib/aurora-*`) and its ADR-0041, ADR-0044, ADR-0077 and ADR-0079.
 
 **Shader.** Domain-warped fbm built on value noise:
 - 4 octaves, rotation `mat2(0.8,0.6,-0.6,0.8)`, lacunarity 2.02, gain 0.5.
@@ -74,7 +74,7 @@ aurora/                          pnpm workspace · Vite 8 · Vue 3.5 · TS 5.9 �
 ├─ apps/
 │  └─ site/          marketing + /docs + hosted /studio (prerendered SSG) → GitHub Pages at aurora.goatsoft.io
 ├─ docs/             docs content (.md)
-└─ presets/          goat.aurora-pack, goatsoft-mono.aurora-pack, starter packs
+└─ presets/          classic.aurora-pack, goatsoft-mono.aurora-pack, starter packs
 ```
 
 **One repo.** `goatsoft/aurora` holds the library, Studio, docs and website, and publishes its own GitHub Pages site to `aurora.goatsoft.io`. The site uses the workspace packages directly, so every change ships the library, docs and site together. goatsoft.io simply links to it.
@@ -87,21 +87,21 @@ The file is declarative JSON. It never contains arbitrary WGSL, because a file m
 {
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora", "version": 1,
-  "name": "GOAT Hero",
+  "name": "Classic Hero",
   "canvas": { "fade": "y", "fixed": false, "parallax": 0 },
   "motion": { "speed": 1, "reduced": "still" },        // still | slow | css
   "palette": ["oklch(0.68 0.16 245)", "oklch(0.56 0.22 285)", "oklch(0.58 0.25 310)"],
   "layers": [
     { "type": "aurora-fbm", "blend": "screen", "opacity": 1,
       "params": { "intensity": 0.38, "scale": 1.1, "speed": 0.09, "seed": 3, "stretch": 0.45, "sweep": 0 },
-      "colors": [0, 1, 2], "mix": "oklab" }              // "srgb" = bit-exact GOAT parity
+      "colors": [0, 1, 2], "mix": "oklab" }              // "srgb" = bit-exact classic parity
   ],
   "fallback": { "mode": "auto" }                         // auto-generated, or hand-tuned CSS layers
 }
 ```
 
 - **Generator registry.** Each `type` maps to a generator with a typed param schema. The schema includes ranges, defaults, units and UI hints, so the Studio inspectors are generated from it rather than hand-built.
-- **Layers.** A file is a stack of layers with `normal | screen | add | multiply | overlay` blending and per-layer masks (linear or radial fade). This is what lets one format hold GOAT auroras and anything else.
+- **Layers.** A file is a stack of layers with `normal | screen | add | multiply | overlay` blending and per-layer masks (linear or radial fade). This is what lets one format hold the classic auroras and anything else.
 - **Colour.** Colours are stored as OKLCH strings, converted to OKLab on the CPU, mixed in OKLab in the shader, and gamut-mapped at output. The canvas uses `colorSpace: 'display-p3'` when the browser supports it. The maths lives in `@goatsoft/color` (Björn Ottosson's matrices, as in `OKLabColorPicker/OKLabColor.swift`), so every GOATsoft project shares one implementation.
 - **Versioning.** `version` is an integer with forward migrations in `format/migrations`. Validation uses Valibot (about 1 kB) and reports errors with JSON paths and "did you mean" suggestions (ADR-0002).
 - **Validation in tooling.** A JSON Schema is generated from the Valibot schema and published, so editors autocomplete `.aurora` files.
@@ -145,7 +145,7 @@ The file is declarative JSON. It never contains arbitrary WGSL, because a file m
 - `unplugin-auto-import`, `unplugin-vue-components` and `unplugin-icons` with Hugeicons (`.hg`, 2px stroke).
 - shadcn-vue (reka-ui), Tailwind 4 and motion-v.
 
-This matches the GOAT web stack, so components can move between projects.
+This matches the original web stack, so components can move between projects.
 
 **Layout.** The window is a full-bleed live canvas with floating glass panels:
 - **Left: Layers.** Add, reorder, duplicate, solo and mute layers. Each layer gets a generator picker with live thumbnails.
@@ -172,7 +172,7 @@ This matches the GOAT web stack, so components can move between projects.
 - Copy-snippet for Vue, HTML custom element and plain CSS fallback.
 - PNG poster frame for `og:image` and posters.
 
-**Preset gallery.** It ships with the GOAT pack (the eight usages, named), the GOATsoft mono pack and starters for each generator type.
+**Preset gallery.** It ships with the classic presets (the eight original usages, named), the GOATsoft mono pack and starters for each generator type.
 
 **Dev-tool mode.** Run `npx aurora studio` in a project, or use the unplugin's dev middleware. Studio then opens the project's `.aurora` files and saves edits straight back to disk, and HMR pushes them into the running site.
 
@@ -186,7 +186,7 @@ This matches the GOAT web stack, so components can move between projects.
 - Plugins:
   - Anchors and TOC extraction.
   - Containers: `tip`, `warning`, `details`, `code-group`.
-  - Wikilinks and the glossary, both ported from GOAT's in-repo plugins.
+  - Wikilinks and the glossary, both ported from the original in-repo plugins.
   - Mermaid, bundled with no CDN.
 - **Live demos.** A ```` ```aurora ```` fence renders a live, editable background next to its source.
 - `unplugin-vue-markdown` turns `docs/**/*.md` into Vue components, which vue-router 5 file routes pick up as pages.
@@ -217,24 +217,24 @@ Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's 
 |---|---|---|---|
 | 0 | **Reset** | Legacy work moved to `~/Projects/aurora-legacy`, and the new repo is `goatsoft/aurora` with fresh history. Scaffold the pnpm workspace with Vite 8, TS, ESLint, Vitest 4 (unit and **browser mode on Chromium with real WebGPU**), Changesets and CI. | `pnpm verify` passes on an empty skeleton |
 | 1 | **Format + colour** | `aurora-format`: schema, validation, migrations, OKLab/OKLCH/P3 maths, gamut mapping, JSON Schema emit | 100% unit coverage. Round-trip and fuzz tests pass. |
-| 2 | **Runtime** | Composer, `aurora-fbm` generator, worker pool, scenes, CSS compiler | **GOAT parity:** all 8 GOAT usages render pixel-identical in `mix:"srgb"` (screenshot diff ≤ 1%). Lifecycle and fallback tests pass. Size budgets are met. |
+| 2 | **Runtime** | Composer, `aurora-fbm` generator, worker pool, scenes, CSS compiler | **Classic parity:** all 8 original usages render pixel-identical in `mix:"srgb"` (screenshot diff ≤ 1%). Lifecycle and fallback tests pass. Size budgets are met. |
 | 3 | **Bindings** | `<aurora-bg>`, `aurora-vue`, `aurora-unplugin` with HMR | A sample app imports `.aurora`, there is no flash, and the SSR fallback works |
 | 4 | **More generators** | A shared WGSL noise library (value, gradient/Perlin, simplex, cellular/Worley, curl, ridged and turbulent fbm). Themed elemental generators on top of it: **Earth** (`strata`: flowing, sunlit sandstone layers; `mountains`: ridges fading into haze, the horizon for the site hero), **Air** (`clouds`, the default: Perlin-Worley cumulus, sunlit, at two depths; and `wind`: silky wisps bent by curl-noise gusts), **Fire** (`fire`: flame tongues and rising embers) and **Water** (`water`: sunlight caustics). A `starfield` (twinkling stars, milky way, meteors) to set the aurora against, and art-directed scenes in `presets/scenes`. Classic animated gradients: mesh, linear and conic sweeps. Grain. Each ships with tuned defaults that look good untouched. (Layer blending and masks landed in Phase 2.) | Each generator has param schema, docs and a golden image |
-| 5 | **Studio** | Builder as in section 4, hosted and local dev-tool mode | It can recreate every GOAT preset from scratch and export a file identical to the pack |
+| 5 | **Studio** | Builder as in section 4, hosted and local dev-tool mode | It can recreate every classic preset from scratch and export a file identical to the pack |
 | 6 | **Docs + site** | `packages/gruff`, `apps/site`, prerender, and Pages deploy to aurora.goatsoft.io | Lighthouse targets are met and all docs examples are live |
-| 7 | **Rollout** | Replace the aurora in GOAT/web, the GOAT docs theme and goatsoft.io. Delete their shader copies and GLSL paths. Supersede GOAT ADR-0079 and GOATsoft ADR-0005 with Aurora ADRs. | Every GOATsoft site runs on `@goatsoft/aurora` |
+| 7 | **Rollout** | Replace the original aurora in its web app, its docs theme and goatsoft.io. Delete their shader copies and GLSL paths. Supersede the original runtime ADR-0079 and GOATsoft ADR-0005 with Aurora ADRs. | Every GOATsoft site runs on `@goatsoft/aurora` |
 
 Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API is stable after Phase 2.
 
 **Auroras are the flagship.** `aurora-fbm` is the default generator, and the aurora presets are the default demo themes everywhere: Studio's starting document, docs examples and the site hero. The elements (Earth, Air, Fire, Water), the starfield and the gradients sit alongside them.
 
-**Phase 6 notes (in progress, `feature/phase-6-site`).** gruff (`packages/gruff`, private) turns Markdown into Vue pages: anchors and outline, Shiki, callouts, code groups with prerendered tabs, live `aurora` fences, repo-relative links, glossary terms, a MiniSearch index and page titles via `virtual:gruff`, and a prerender. `apps/site` is the landing page, `/docs` (the repo's `docs/`), the hosted Studio at `/studio/` and a 404. `pnpm build` builds it, and `pages.yml` deploys it from `main`. Linting now covers SFCs (eslint-plugin-vue), import order (perfectionist, type imports first) and Tailwind classes (better-tailwindcss). Site copy doesn't mention GOAT. Still to do: real-browser acceptance of WebGPU on the site, Lighthouse targets, a review of remaining GOAT references in Studio's gallery and the docs, the GOATsoft mono pack, an ADR for gruff and the site, and the Phase 6 PR.
+**Phase 6 notes (in progress, `feature/phase-6-site`).** gruff (`packages/gruff`, private) turns Markdown into Vue pages: anchors and outline, Shiki, callouts, code groups with prerendered tabs, live `aurora` fences, repo-relative links, glossary terms, a MiniSearch index and page titles via `virtual:gruff`, and a prerender. `apps/site` is the landing page, `/docs` (the repo's `docs/`), the hosted Studio at `/studio/` and a 404. `pnpm build` builds it, and `pages.yml` deploys it from `main`. Linting now covers SFCs (eslint-plugin-vue), import order (perfectionist, type imports first) and Tailwind classes (better-tailwindcss). Aurora stands on its own: nothing in the repo names the project it started in, and its original backgrounds are the classic presets. Still to do: real-browser acceptance of WebGPU on the site, Lighthouse targets, the GOATsoft mono pack, an ADR for gruff and the site, and the Phase 6 PR.
 
-**Phase 5 notes.** Studio edits documents as authored, so every GOAT preset rebuilt from scratch saves byte-identical (ADR-0007). Dev-tool mode is the unplugin's dev server or `npx aurora studio` (a bin in `@goatsoft/aurora-unplugin`), behind a per-session token. Posters and the fidelity score use `@goatsoft/aurora/poster`. Still to come with the site in Phase 6: the hosted `/studio` build and the GOATsoft mono pack.
+**Phase 5 notes.** Studio edits documents as authored, so every classic preset rebuilt from scratch saves byte-identical (ADR-0007). Dev-tool mode is the unplugin's dev server or `npx aurora studio` (a bin in `@goatsoft/aurora-unplugin`), behind a per-session token. Posters and the fidelity score use `@goatsoft/aurora/poster`. Still to come with the site in Phase 6: the hosted `/studio` build and the GOATsoft mono pack.
 
 **Phase 3 notes.** `<aurora-bg>` ships as `@goatsoft/aurora/element` rather than its own package, and exposes its mode as `:state(webgpu|css)`. The Vue bindings are `<script setup>` SFCs (converted at the start of Phase 4). The unplugin reports every issue at `file:line:column` (ADR-0005).
 
-**Phase 2 notes.** Parity is stricter than planned: every GOAT preset renders bit-identically to GOAT's own shader (0 differing pixels). Headless SwiftShader can't present WebGPU canvases (the device is lost on first present), so CI checks rendering through texture-backed canvases and checks presentation only for truthful fallback; on-screen presentation needs real-device acceptance (ADR-0004).
+**Phase 2 notes.** Parity is stricter than planned: every classic preset renders bit-identically to the original shader (0 differing pixels). Headless SwiftShader can't present WebGPU canvases (the device is lost on first present), so CI checks rendering through texture-backed canvases and checks presentation only for truthful fallback; on-screen presentation needs real-device acceptance (ADR-0004).
 
 ## 7. Engineering bars ("really, really slick")
 

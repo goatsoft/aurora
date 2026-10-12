@@ -38,14 +38,14 @@ describe('locate', () => {
 })
 
 describe('transformAurora', () => {
-  const hero = resolve(root, 'presets/goat/hero.aurora')
+  const hero = resolve(root, 'presets/classic/hero.aurora')
 
   it('exports { id, doc, css } with a root-relative id and accepts hot updates', async () => {
     const code = await transformAurora(read(hero), hero, root)
     expect(code).toContain('import.meta.hot.accept')
     const module = (await import(`data:text/javascript,${encodeURIComponent(code)}`) as { default: { id: string, doc: { name: string }, css: { backgroundImage: string } } }).default
-    expect(module.id).toBe('presets/goat/hero.aurora')
-    expect(module.doc.name).toBe('GOAT hero')
+    expect(module.id).toBe('presets/classic/hero.aurora')
+    expect(module.doc.name).toBe('Classic hero')
     expect(module.css.backgroundImage).toContain('radial-gradient')
     expect(await transformAurora(read(hero), hero, hero)).toContain('"id":"/')
   })
@@ -86,7 +86,7 @@ describe('bundlers', () => {
       build: { write: false, lib: { entry: fixture('app.ts'), formats: ['es'], fileName: 'app' }, minify: false },
     })
     const code = (Array.isArray(output) ? output : [output]).flatMap((o) => 'output' in o ? o.output : []).map((o) => ('code' in o ? o.code : '')).join('\n')
-    expect(code).toContain('GOAT hero')
+    expect(code).toContain('Classic hero')
     expect(code).toContain('radial-gradient(60% 40% at 20% 30% in srgb')
     expect(code).not.toContain(here)
   })
@@ -101,13 +101,13 @@ describe('bundlers', () => {
       server: { middlewareMode: true, hmr: false },
     })
     try {
-      const raw = await server.transformRequest('/presets/goat/hero.aurora?raw')
-      expect(raw?.code).toContain(JSON.stringify(readFileSync(resolve(root, 'presets/goat/hero.aurora'), 'utf8')))
-      const url = await server.transformRequest('/presets/goat/hero.aurora?url')
-      expect(url?.code).toContain('/presets/goat/hero.aurora')
-      expect(url?.code).not.toContain('GOAT hero')
-      const module = await server.transformRequest('/presets/goat/hero.aurora?import&v=1')
-      expect(module?.code).toContain('"id":"presets/goat/hero.aurora"')
+      const raw = await server.transformRequest('/presets/classic/hero.aurora?raw')
+      expect(raw?.code).toContain(JSON.stringify(readFileSync(resolve(root, 'presets/classic/hero.aurora'), 'utf8')))
+      const url = await server.transformRequest('/presets/classic/hero.aurora?url')
+      expect(url?.code).toContain('/presets/classic/hero.aurora')
+      expect(url?.code).not.toContain('Classic hero')
+      const module = await server.transformRequest('/presets/classic/hero.aurora?import&v=1')
+      expect(module?.code).toContain('"id":"presets/classic/hero.aurora"')
     } finally {
       await server.close()
     }
@@ -134,8 +134,8 @@ describe('bundlers', () => {
       server: { middlewareMode: true, hmr: false },
     })
     try {
-      const result = await server.transformRequest('/presets/goat/hero.aurora')
-      expect(result?.code).toContain('"id":"presets/goat/hero.aurora"')
+      const result = await server.transformRequest('/presets/classic/hero.aurora')
+      expect(result?.code).toContain('"id":"presets/classic/hero.aurora"')
       expect(result?.code).toContain('import.meta.hot')
     } finally {
       await server.close()

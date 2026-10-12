@@ -2,7 +2,10 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT stack tile",
+  "name": "Classic dialog",
+  "canvas": {
+    "fade": "y"
+  },
   "palette": [
     "color(srgb 0.23 0.63 1)",
     "color(srgb 0.48 0.36 1)",
@@ -13,12 +16,11 @@
       "type": "aurora-fbm",
       "blend": "normal",
       "params": {
-        "intensity": 1.2,
-        "scale": 0.7,
-        "speed": 0.05,
-        "seed": 3,
-        "stretch": 0.4,
-        "sweep": 1
+        "intensity": 0.9,
+        "scale": 1.15,
+        "speed": 0.08,
+        "seed": 21,
+        "stretch": 0.5
       },
       "colors": [
         0,

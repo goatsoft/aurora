@@ -7,9 +7,9 @@ import { createSSRApp, defineComponent, h, nextTick, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { AuroraBackground, AuroraScene, useAurora } from '@/index'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
-const tile = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/stack-tile.aurora', { query: '?raw', import: 'default', eager: true }))[0])
-const heroModule = { id: 'presets/goat/hero.aurora', doc: hero, css: compileCss(hero) }
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/classic/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const tile = assertAurora(Object.values(import.meta.glob<string>('~/presets/classic/stack-tile.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const heroModule = { id: 'presets/classic/hero.aurora', doc: hero, css: compileCss(hero) }
 
 const leases: { listener: LeaseListener, states: SurfaceState[], released: boolean }[] = []
 const backend: Backend = {
@@ -60,7 +60,7 @@ describe('<AuroraBackground>', () => {
     src.value = tile
     await nextTick()
     expect(leases).toHaveLength(1)
-    expect(leases[0]!.states.at(-1)!.doc.name).toBe('GOAT stack tile')
+    expect(leases[0]!.states.at(-1)!.doc.name).toBe('Classic stack tile')
     wrapper.unmount()
     expect(leases[0]!.released).toBe(true)
   })
@@ -68,10 +68,10 @@ describe('<AuroraBackground>', () => {
   it('loads URLs and reports load errors', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const errors: Error[] = []
-    const src = ref('/presets/goat/hero.aurora')
+    const src = ref('/presets/classic/hero.aurora')
     const wrapper = mount(defineComponent({ setup: () => () => h(AuroraBackground, { src: src.value, onError: (e: Error) => errors.push(e) }) }), { attachTo: parent })
     await until(() => leases.length === 1)
-    expect(leases[0]!.states[0]!.doc.name).toBe('GOAT hero')
+    expect(leases[0]!.states[0]!.doc.name).toBe('Classic hero')
     src.value = '/missing.aurora'
     await until(() => errors.length === 1)
     expect(errors[0]!.message).toMatch(/Could not load .*\/missing\.aurora: 404/)

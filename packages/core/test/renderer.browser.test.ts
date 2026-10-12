@@ -7,7 +7,7 @@ import { compose } from '@/shader'
 import { packUniforms } from '@/uniforms'
 import { device, diff, render, TextureCanvas } from './gpu'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/classic/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const W = 256
 const H = 144
 const state = (overrides: Partial<SurfaceState> = {}): SurfaceState => ({

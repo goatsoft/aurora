@@ -2,9 +2,10 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT hero (touch)",
+  "name": "Classic ambient page background",
   "canvas": {
-    "fade": "y"
+    "fixed": true,
+    "parallax": 0.22
   },
   "palette": [
     "color(srgb 0.23 0.63 1)",
@@ -16,11 +17,11 @@
       "type": "aurora-fbm",
       "blend": "normal",
       "params": {
-        "intensity": 0.56,
-        "scale": 1.6,
-        "speed": 0.09,
-        "seed": 3,
-        "stretch": 0.95
+        "intensity": 0.18,
+        "scale": 1,
+        "speed": 0.04,
+        "seed": 0,
+        "stretch": 0.55
       },
       "colors": [
         0,

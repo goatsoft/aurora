@@ -264,7 +264,7 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
           </Row>
           <Row
             label="Mix in"
-            hint="Colour space for blending this layer's colours. sRGB exists for GOAT parity."
+            hint="Colour space for blending this layer's colours. sRGB exists for bit-exact parity with the classic presets."
           >
             <Segmented
               :model-value="layer.mix"

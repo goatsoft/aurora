@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { AuroraBackground, AuroraScene } from '@goatsoft/aurora-vue'
-import hero from '~/presets/goat/hero.aurora'
-import pillarBlue from '~/presets/goat/pillar-blue.aurora'
-import pillarIndigo from '~/presets/goat/pillar-indigo.aurora'
-import pillarViolet from '~/presets/goat/pillar-violet.aurora'
+import hero from '~/presets/classic/hero.aurora'
+import pillarBlue from '~/presets/classic/pillar-blue.aurora'
+import pillarIndigo from '~/presets/classic/pillar-indigo.aurora'
+import pillarViolet from '~/presets/classic/pillar-violet.aurora'
 
 const pillars = [
   { title: 'Blue', src: pillarBlue },

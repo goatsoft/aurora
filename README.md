@@ -46,7 +46,7 @@ Style it with `aurora-bg:state(webgpu)` and `aurora-bg:state(css)`; listen for `
 
 Twelve generators ship built in: the flagship **aurora** and a **starfield** to set it against, the elements (**strata** and **mountains** for Earth, **clouds** and **wind** for Air, **fire**, **water**), animated gradients (**mesh-gradient**, **linear-sweep**, **conic**) and **grain**. See [docs/generators](docs/generators) for every parameter, [presets/starters](presets/starters) for a starter file each, and [presets/scenes](presets/scenes) for art-directed scenes such as northern lights over a starfield. Only `aurora-fbm` ships eagerly; the others load the first time a document uses them.
 
-The GOAT pack in [`presets/goat`](presets/goat) is the place to start, and [`apps/sample`](apps/sample) shows all of it together.
+The classic presets in [`presets/classic`](presets/classic) is the place to start, and [`apps/sample`](apps/sample) shows all of it together.
 
 | Package | What it is |
 |---|---|

@@ -1,7 +1,7 @@
 import type { AuroraDocument, FormatIssue } from '@/index'
 import { describe, expect, it } from 'vitest'
 import { assertAurora, AuroraFormatError, defineAurora, parseAurora, SCHEMA_URL, stringifyAurora } from '@/index'
-import goatHero from './fixtures/goat-hero.aurora?raw'
+import classicHero from './fixtures/classic-hero.aurora?raw'
 
 const minimal = { format: 'aurora', version: 1, name: 'Minimal', palette: ['#4f8cff'], layers: [{ type: 'aurora-fbm' }] }
 
@@ -12,8 +12,8 @@ function issuesOf(input: unknown): FormatIssue[] {
 }
 
 describe('parseAurora', () => {
-  it('parses the GOAT hero from a JSON string', () => {
-    const result = parseAurora(goatHero)
+  it('parses the classic hero from a JSON string', () => {
+    const result = parseAurora(classicHero)
     expect(result.ok).toBe(true)
     expect(result.ok && result.doc.layers[0]!.params).toMatchObject({ intensity: 0.38, seed: 3 })
     expect(result.ok && result.sourceVersion).toBe(1)
@@ -119,8 +119,8 @@ describe('stringifyAurora', () => {
     expect(text).toContain('\n  "name": "Minimal",\n')
   })
 
-  it('round-trips the GOAT hero exactly', () => {
-    const doc: AuroraDocument = assertAurora(goatHero)
+  it('round-trips the classic hero exactly', () => {
+    const doc: AuroraDocument = assertAurora(classicHero)
     expect(assertAurora(stringifyAurora(doc))).toEqual(doc)
   })
 })

@@ -45,7 +45,7 @@ function oklab(color: string): Oklab {
 }
 
 /**
- * A palette colour as the shader wants it: gamma-encoded sRGB for `mix: "srgb"` (exact, for GOAT
+ * A palette colour as the shader wants it: gamma-encoded sRGB for `mix: "srgb"` (exact, for classic
  * parity), or OKLab gamut-mapped into the output space for `mix: "oklab"`.
  */
 export function shaderColor(color: string, mix: AuroraLayer['mix'], output: RgbSpace): [number, number, number] {

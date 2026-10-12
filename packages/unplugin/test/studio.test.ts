@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest'
 import { createStudioApi, studioLink } from '@/studio'
 
-const hero = readFileSync(`${inject('root')}/presets/goat/hero.aurora`, 'utf8')
+const hero = readFileSync(`${inject('root')}/presets/classic/hero.aurora`, 'utf8')
 const root = mkdtempSync(join(tmpdir(), 'aurora-studio-'))
 const outside = mkdtempSync(join(tmpdir(), 'aurora-outside-'))
 mkdirSync(join(root, 'presets'))
@@ -50,7 +50,7 @@ describe('Studio dev-tool API', () => {
   })
 
   it('writes valid documents and refuses invalid ones', async () => {
-    const renamed = hero.replace('GOAT hero', 'Renamed')
+    const renamed = hero.replace('Classic hero', 'Renamed')
     expect((await call('/__aurora/file?path=presets/new.aurora', { method: 'PUT', body: renamed })).status).toBe(200)
     expect(readFileSync(join(root, 'presets', 'new.aurora'), 'utf8')).toBe(renamed)
     const bad = await call('/__aurora/file?path=presets/new.aurora', { method: 'PUT', body: hero.replace('"blend"', '"blnd"') })

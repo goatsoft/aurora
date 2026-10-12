@@ -10,7 +10,7 @@ import { createMainThreadBackend, createWorkerBackend } from '@/pool'
 import { setBackends } from '@/surface'
 import AuroraWorker from '@/worker?worker'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/classic/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const doc = (extra: Partial<AuroraInput> = {}) => assertAurora({ ...hero, ...extra })
 
 let host: HTMLDivElement

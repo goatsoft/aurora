@@ -1,10 +1,10 @@
 # ADR-0004: Runtime and fallback
 
-Status: accepted · 12 October 2026 · Ports and supersedes GOAT ADR-0079 for Aurora
+Status: accepted · 12 October 2026 · Ports and supersedes the original runtime ADR for Aurora
 
 ## Context
 
-Backgrounds are decoration: they must never cost input latency, never flash, never lie about what is on screen, and never break the page when the GPU misbehaves. GOAT's ADR-0079 runtime met most of this for one shader. Aurora needs the same for any layer stack, on any GOATsoft site.
+Backgrounds are decoration: they must never cost input latency, never flash, never lie about what is on screen, and never break the page when the GPU misbehaves. The original runtime met most of this for one shader. Aurora needs the same for any layer stack, on any GOATsoft site.
 
 ## Decision
 
@@ -23,7 +23,7 @@ Backgrounds are decoration: they must never cost input latency, never flash, nev
 Headless SwiftShader in Chromium 141 loses the device the moment a WebGPU canvas is configured and presented ("A valid external Instance reference no longer exists"), with or without a display. So:
 
 - Rendering is verified on the real GPU through a texture-backed canvas: the renderer's output is bit-identical to the composed shader, and scene members tile seamlessly.
-- GOAT parity is verified by rendering GOAT's own WGSL and ours to textures: 0 differing pixels for all presets.
+- Classic parity is verified by rendering the original WGSL and ours to textures: 0 differing pixels for all presets.
 - Lifecycle rules (budget, completion gating, recovery, reduced motion, leases) are verified with a scripted fake GPU and fake workers.
 - With the real worker in a real browser, a test asserts the surface never claims WebGPU before a frame, which here exercises the device-loss → CSS path end to end.
 - On-screen presentation itself needs acceptance on real devices.

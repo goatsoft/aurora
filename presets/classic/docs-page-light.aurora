@@ -2,9 +2,10 @@
   "$schema": "https://aurora.goatsoft.io/schema/v1.json",
   "format": "aurora",
   "version": 1,
-  "name": "GOAT docs hero (dark)",
+  "name": "Classic docs page background (light)",
   "canvas": {
-    "fade": "y"
+    "fixed": true,
+    "parallax": 0.2
   },
   "palette": [
     "color(srgb 0.23 0.63 1)",
@@ -16,11 +17,11 @@
       "type": "aurora-fbm",
       "blend": "normal",
       "params": {
-        "intensity": 0.3,
-        "scale": 1.1,
-        "speed": 0.09,
-        "seed": 3,
-        "stretch": 0.45
+        "intensity": 0.1,
+        "scale": 1,
+        "speed": 0.04,
+        "seed": 0,
+        "stretch": 0.55
       },
       "colors": [
         0,

@@ -2,7 +2,7 @@ import { formatOklch } from '@goatsoft/color'
 import { defineGenerator } from './define'
 
 /**
- * Domain-warped fbm on value noise: the GOAT aurora, bit-for-bit (GOAT web/src/lib/aurora-shaders.ts).
+ * Domain-warped fbm on value noise: the original aurora shader, bit-for-bit.
  * 4 octaves, rotation (0.8, 0.6, -0.6, 0.8), lacunarity 2.02, gain 0.5; a band and a glow from the field.
  */
 export const auroraFbm = defineGenerator({
@@ -47,7 +47,7 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   return vec4f(col, a);
 }
 `,
-  // GOAT's fallback: three soft radial clouds at 0.28 × intensity.
+  // The original fallback: three soft radial clouds at 0.28 × intensity.
   css: ({ colors, params, space, opacity }) => {
     const alpha = 0.28 * params.intensity * opacity
     const [a, b, c] = colors.map((color) => formatOklch({ ...color, alpha: Math.min(1, alpha) }))
