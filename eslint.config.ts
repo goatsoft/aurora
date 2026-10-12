@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
@@ -8,6 +9,8 @@ export default defineConfig(
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
+  // Formatting is enforced by ESLint Stylistic (`pnpm lint:fix` formats); there is no Prettier.
+  stylistic.configs.customize({ indent: 2, quotes: 'single', semi: false, braceStyle: '1tbs' }),
   {
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },

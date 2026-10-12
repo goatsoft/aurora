@@ -20,10 +20,11 @@ pnpm verify                             # lint, typecheck, unit + WebGPU browser
 |---|---|
 | `pnpm test` | Unit tests (Node) |
 | `pnpm test:browser` | Browser tests in headless Chromium with real WebGPU |
+| `pnpm lint:fix` | Fix lint and formatting (ESLint Stylistic) |
 | `pnpm coverage` | Unit tests with V8 coverage |
 | `pnpm changeset` | Record a change for the next release |
 
-Tooling decisions live in [docs/adr](docs/adr).
+Tooling decisions live in [docs/adr](docs/adr). Agent and contributor rules are in [AGENTS.md](AGENTS.md).
 
 ## License
 

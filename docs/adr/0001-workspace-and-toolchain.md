@@ -15,7 +15,7 @@ Aurora ships several packages (format, runtime, bindings, Studio, docs-kit) and 
 - **Vitest 4** with two projects:
   - `unit`: Node environment, `test/**/*.test.ts`.
   - `browser`: Playwright Chromium, `test/**/*.browser.test.ts`. Chromium runs with `--enable-unsafe-webgpu --use-webgpu-adapter=swiftshader`, which gives a real WebGPU adapter on GPU-less CI runners. A harness test runs a compute pass so a broken setup fails loudly.
-- **ESLint 10** flat config with `typescript-eslint` strict and stylistic type-checked rules.
+- **ESLint 10** flat config with `typescript-eslint` strict and stylistic type-checked rules. Formatting is ESLint Stylistic (`@stylistic/eslint-plugin`: 2 spaces, single quotes, no semicolons), fixed by `pnpm lint:fix`. No Prettier, so there is one tool and one config.
 - **Changesets** for versions and changelogs. `@goatsoft/*` packages are linked and publish to GitHub Packages once Phase 2 parity passes.
 - **`pnpm verify`** (lint, typecheck, all tests, build) is the single gate, run locally and in CI.
 
