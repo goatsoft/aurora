@@ -23,6 +23,7 @@ export default defineConfig(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
       // noUncheckedIndexedAccess makes `!` the honest way to say "this index exists".
       '@typescript-eslint/no-non-null-assertion': 'off',
     },

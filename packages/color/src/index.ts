@@ -12,3 +12,4 @@ export {
 export type { Oklab, Oklch, Rgb, RgbSpace } from './oklab'
 export { COLOR_SYNTAX, formatOklch, parseColor } from './css'
 export type { ColorParseResult } from './css'
+export { COLOR_WGSL } from './wgsl'

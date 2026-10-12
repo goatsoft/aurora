@@ -1,0 +1,30 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "GOAT pillar, violet",
+  "palette": [
+    "color(srgb 0.71 0.29 1)",
+    "color(srgb 0.48 0.36 1)",
+    "color(srgb 0.88 0.55 1)"
+  ],
+  "layers": [
+    {
+      "type": "aurora-fbm",
+      "blend": "normal",
+      "params": {
+        "intensity": 0.6,
+        "scale": 1.5,
+        "speed": 0.06,
+        "seed": 7,
+        "stretch": 0.22
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "srgb"
+    }
+  ]
+}

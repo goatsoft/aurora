@@ -30,7 +30,7 @@ export interface Rgb {
 export type RgbSpace = 'srgb' | 'display-p3'
 
 type Vec3 = readonly [number, number, number]
-type Mat3 = readonly [Vec3, Vec3, Vec3]
+export type Mat3 = readonly [Vec3, Vec3, Vec3]
 
 const mul = (m: Mat3, [x, y, z]: Vec3): Vec3 => [
   m[0][0] * x + m[0][1] * y + m[0][2] * z,
@@ -71,6 +71,9 @@ const LINEAR_P3_TO_LINEAR_SRGB: Mat3 = [
 const LMS_TO_LINEAR_SRGB = invert(LINEAR_SRGB_TO_LMS)
 const OKLAB_TO_LMS = invert(LMS_TO_OKLAB)
 const LINEAR_SRGB_TO_LINEAR_P3 = invert(LINEAR_P3_TO_LINEAR_SRGB)
+
+/** The matrices behind every conversion, shared with the WGSL in `./wgsl`. Row-major. */
+export const MATRICES = { OKLAB_TO_LMS, LMS_TO_LINEAR_SRGB, LINEAR_SRGB_TO_LINEAR_P3 } as const
 
 /** sRGB (and Display P3) transfer function, decode. Sign-preserving so out-of-gamut values survive. */
 export function srgbToLinear(c: number): number {

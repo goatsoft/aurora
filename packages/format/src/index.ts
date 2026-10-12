@@ -2,7 +2,7 @@ export { BLEND_MODES, FADES, FORMAT_ID, FORMAT_VERSION, MIX_SPACES, REDUCED_MOTI
 export type { AuroraDocument, AuroraInput, AuroraLayer, BlendMode, MixSpace } from './schema'
 export { assertAurora, defineAurora, parseAurora, stringifyAurora } from './document'
 export type { ParseResult } from './document'
-export { AuroraFormatError } from './issues'
+export { AuroraFormatError, jsonPath, suggest } from './issues'
 export type { FormatIssue } from './issues'
 export { MIGRATIONS, migrate } from './migrate'
 export type { Migration, MigrateResult } from './migrate'

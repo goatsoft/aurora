@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "GOAT download card 1",
+  "palette": [
+    "color(srgb 0.23 0.63 1)",
+    "color(srgb 0.48 0.82 1)",
+    "color(srgb 0.48 0.36 1)"
+  ],
+  "layers": [
+    {
+      "type": "aurora-fbm",
+      "blend": "normal",
+      "params": {
+        "intensity": 0.9,
+        "scale": 1.2,
+        "speed": 0.045,
+        "seed": 11,
+        "stretch": 0.9
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "srgb",
+      "mask": {
+        "type": "linear",
+        "angle": 180,
+        "start": 0.1,
+        "end": 0.9
+      }
+    }
+  ]
+}
