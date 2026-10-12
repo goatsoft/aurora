@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<rect width="600" height="760" fill="#0c0c18"/><path d="M600 0H1200V760H600Z" fill="#faf9fd"/>
+<g font-family="Arial,sans-serif"><text x="48" y="56" fill="#9693aa" font-size="12" letter-spacing="2.5">AURORA / DARK</text></g>
+<svg x="156" y="89" width="288" height="288" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumdark" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#43f4dc"/><stop class="s1" offset="0.5" stop-color="#8c83ff"/><stop class="s2" offset="1" stop-color="#ee82ed"/></linearGradient><filter id="aurora-glowdark" x="-50%" y="-40%" width="200%" height="180%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3"/></filter></defs>
+  <g stroke="url(#aurora-spectrumdark)" stroke-linecap="round" stroke-linejoin="round"><g class="halo" opacity="0.28" filter="url(#aurora-glowdark)" stroke-width="16"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g stroke-width="12"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g class="core" stroke="#fff" stroke-width="2" opacity="0.8"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g></g>
+</svg>
+
+<text x="300" y="428" text-anchor="middle" fill="#f6f3ff" font-family="Arial,sans-serif" font-size="56" font-weight="500" letter-spacing="-2.5">aurora</text>
+<text x="300" y="464" text-anchor="middle" fill="#9693aa" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">LIGHT, COMPOSED.</text>
+<path d="M48 520H552" stroke="#9693aa" opacity=".22"/>
+<svg x="104.0" y="579.0" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumdark16" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#43f4dc"/><stop class="s1" offset="0.5" stop-color="#8c83ff"/><stop class="s2" offset="1" stop-color="#ee82ed"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumdark16)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="112" y="640" text-anchor="middle" fill="#9693aa" font-family="Arial,sans-serif" font-size="12">16 px</text>
+<svg x="224.0" y="575.0" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumdark24" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#43f4dc"/><stop class="s1" offset="0.5" stop-color="#8c83ff"/><stop class="s2" offset="1" stop-color="#ee82ed"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumdark24)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="236" y="640" text-anchor="middle" fill="#9693aa" font-family="Arial,sans-serif" font-size="12">24 px</text>
+<svg x="344.0" y="571.0" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumdark32" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#43f4dc"/><stop class="s1" offset="0.5" stop-color="#8c83ff"/><stop class="s2" offset="1" stop-color="#ee82ed"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumdark32)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="360" y="640" text-anchor="middle" fill="#9693aa" font-family="Arial,sans-serif" font-size="12">32 px</text>
+<svg x="460.0" y="563.0" width="48" height="48" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumdark48" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#43f4dc"/><stop class="s1" offset="0.5" stop-color="#8c83ff"/><stop class="s2" offset="1" stop-color="#ee82ed"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumdark48)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="484" y="640" text-anchor="middle" fill="#9693aa" font-family="Arial,sans-serif" font-size="12">48 px</text>
+<text x="48" y="714" fill="#9693aa" font-family="Arial,sans-serif" font-size="12">Rotated chevron + underscore. One luminous A.</text>
+<g font-family="Arial,sans-serif"><text x="648" y="56" fill="#6d697e" font-size="12" letter-spacing="2.5">AURORA / LIGHT</text></g>
+<svg x="756" y="89" width="288" height="288" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumlight" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient><filter id="aurora-glowlight" x="-50%" y="-40%" width="200%" height="180%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3"/></filter></defs>
+  <g stroke="url(#aurora-spectrumlight)" stroke-linecap="round" stroke-linejoin="round"><g class="halo" opacity="0.07" filter="url(#aurora-glowlight)" stroke-width="16"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g stroke-width="12"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g class="core" stroke="#fff" stroke-width="2" opacity="0.42"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g></g>
+</svg>
+
+<text x="900" y="428" text-anchor="middle" fill="#19172b" font-family="Arial,sans-serif" font-size="56" font-weight="500" letter-spacing="-2.5">aurora</text>
+<text x="900" y="464" text-anchor="middle" fill="#6d697e" font-family="Arial,sans-serif" font-size="13" letter-spacing="2">LIGHT, COMPOSED.</text>
+<path d="M648 520H1152" stroke="#6d697e" opacity=".22"/>
+<svg x="704.0" y="579.0" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumlight16" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumlight16)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="712" y="640" text-anchor="middle" fill="#6d697e" font-family="Arial,sans-serif" font-size="12">16 px</text>
+<svg x="824.0" y="575.0" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumlight24" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumlight24)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="836" y="640" text-anchor="middle" fill="#6d697e" font-family="Arial,sans-serif" font-size="12">24 px</text>
+<svg x="944.0" y="571.0" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumlight32" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumlight32)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="960" y="640" text-anchor="middle" fill="#6d697e" font-family="Arial,sans-serif" font-size="12">32 px</text>
+<svg x="1060.0" y="563.0" width="48" height="48" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrumlight48" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrumlight48)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+
+<text x="1084" y="640" text-anchor="middle" fill="#6d697e" font-family="Arial,sans-serif" font-size="12">48 px</text>
+<text x="648" y="714" fill="#6d697e" font-family="Arial,sans-serif" font-size="12">Rotated chevron + underscore. One luminous A.</text>
+</svg>
