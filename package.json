@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "pnpm -r --filter \"./packages/**\" build && pnpm --filter aurora-studio build",
+    "build": "pnpm -r --filter \"./packages/**\" build && pnpm --filter aurora-studio build && pnpm --filter aurora-site build",
     "typecheck": "vue-tsc -b && pnpm --filter \"./apps/**\" typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

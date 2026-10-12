@@ -1,0 +1,77 @@
+import { readdirSync, statSync } from 'node:fs'
+import { join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import aurora from '@goatsoft/aurora-unplugin/vite'
+import { gruff } from '@goatsoft/gruff'
+import tailwindcss from '@tailwindcss/vite'
+import vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import Icons from 'unplugin-icons/vite'
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig, searchForWorkspaceRoot } from 'vite'
+import { VueRouterAutoImports } from 'vue-router/unplugin'
+import VueRouter from 'vue-router/vite'
+
+const here = fileURLToPath(new URL('.', import.meta.url))
+const root = searchForWorkspaceRoot(here)
+const docs = join(root, 'docs')
+const REPO = 'https://github.com/goatsoft/aurora'
+
+/** `docs/guide/vue.md` → `/docs/guide/vue`; a folder's `index.md` or `README.md` is the folder. */
+function route(file: string): string | undefined {
+  if (!file.startsWith(`${docs}/`) || !file.endsWith('.md')) return undefined
+  const path = relative(docs, file).replace(/\.md$/, '').replace(/(^|\/)(index|README)$/, '')
+  return `/docs${path ? `/${path}` : ''}`
+}
+
+function pages(dir = docs): { file: string, route: string }[] {
+  return readdirSync(dir).flatMap((name) => {
+    const file = join(dir, name)
+    if (statSync(file).isDirectory()) return pages(file)
+    const path = route(file)
+    return path ? [{ file, route: path }] : []
+  })
+}
+
+export default defineConfig({
+  plugins: [
+    // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
+    VueRouter({
+      routesFolder: [{ src: `${here}src/pages` }, { src: docs, path: 'docs/' }],
+      extensions: ['.vue', '.md'],
+      dts: `${here}src/typed-router.d.ts`,
+      extendRoute(node) {
+        if (node.fullPath.endsWith('/README')) node.path = node.path.replace(/\/?README$/, '')
+      },
+    }),
+    ...gruff({
+      root,
+      route,
+      pages: () => pages(),
+      repoUrl: `${REPO}/blob/develop/`,
+      glossary: join(docs, 'glossary.md'),
+      // Docs pages get the docs layout; snippets in src/content render bare, for the landing page.
+      layout: (id) => (id.includes('/src/content/') ? null : 'DocPage'),
+    }),
+    vue({ include: [/\.vue$/, /\.md$/] }),
+    tailwindcss(),
+    AutoImport({
+      imports: ['vue', VueRouterAutoImports, { '@vueuse/core': ['useEventListener', 'useIntersectionObserver', 'useScroll', 'useWindowScroll', 'watchDebounced'] }],
+      dts: `${here}src/auto-imports.d.ts`,
+      vueTemplate: true,
+    }),
+    Components({ dirs: [`${here}src/components`], extensions: ['vue', 'md'], include: [/\.vue$/, /\.vue\?vue/, /\.md$/], dts: `${here}src/components.d.ts`, resolvers: [IconsResolver({ prefix: 'i', alias: { hg: 'hugeicons', si: 'simple-icons' } })] }),
+    Icons({ compiler: 'vue3', scale: 1 }),
+    aurora(),
+  ],
+  resolve: {
+    conditions: ['@goatsoft/source'],
+    alias: [
+      { find: '~', replacement: root },
+      { find: /^@\//, replacement: `${here}src/` },
+    ],
+  },
+  ssr: { resolve: { conditions: ['@goatsoft/source'] }, noExternal: [/^@goatsoft\//, 'reka-ui'] },
+  server: { fs: { allow: [root] } },
+})

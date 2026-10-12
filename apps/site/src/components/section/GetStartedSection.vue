@@ -1,0 +1,44 @@
+<script setup lang="ts">
+import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { SITE } from '@/head'
+import { northernLights } from '@/lib/scenes'
+</script>
+
+<template>
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div
+      v-reveal
+      class="relative isolate overflow-hidden rounded-3xl border border-white/10 px-6 py-20 text-center"
+    >
+      <div class="absolute inset-0 -z-10">
+        <AuroraBackground :src="northernLights" />
+      </div>
+      <div class="absolute inset-0 -z-10 bg-background/40" />
+      <h2 class="mx-auto max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+        Give your next page some light.
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-pretty text-white/80">
+        Free and open source. Design in the browser, ship to any framework or none.
+      </p>
+      <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <Button
+          size="lg"
+          as="a"
+          href="/studio/"
+        >
+          <IHgPaintBoard /> Open Aurora Studio
+        </Button>
+        <Button
+          size="lg"
+          variant="glass"
+          as="a"
+          :href="SITE.repo"
+          target="_blank"
+          rel="noopener"
+        >
+          <ISiGithub /> View on GitHub
+        </Button>
+      </div>
+    </div>
+  </section>
+</template>
