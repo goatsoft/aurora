@@ -228,6 +228,8 @@ Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API 
 
 **Auroras are the flagship.** `aurora-fbm` is the default generator, and the aurora presets are the default demo themes everywhere: Studio's starting document, docs examples and the site hero. The elements (Earth, Air, Fire, Water), the starfield and the gradients sit alongside them.
 
+**Phase 5 notes.** Studio edits documents as authored, so every GOAT preset rebuilt from scratch saves byte-identical (ADR-0007). Dev-tool mode is the unplugin's dev server or `npx aurora studio` (a bin in `@goatsoft/aurora-unplugin`), behind a per-session token. Posters and the fidelity score use `@goatsoft/aurora/poster`. Still to come with the site in Phase 6: the hosted `/studio` build and the GOATsoft mono pack.
+
 **Phase 3 notes.** `<aurora-bg>` ships as `@goatsoft/aurora/element` rather than its own package, and exposes its mode as `:state(webgpu|css)`. The Vue bindings are `<script setup>` SFCs (converted at the start of Phase 4). The unplugin reports every issue at `file:line:column` (ADR-0005).
 
 **Phase 2 notes.** Parity is stricter than planned: every GOAT preset renders bit-identically to GOAT's own shader (0 differing pixels). Headless SwiftShader can't present WebGPU canvases (the device is lost on first present), so CI checks rendering through texture-backed canvases and checks presentation only for truthful fallback; on-screen presentation needs real-device acceptance (ADR-0004).

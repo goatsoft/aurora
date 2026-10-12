@@ -18,7 +18,7 @@
       "blend": "normal",
       "params": {
         "intensity": 0.22,
-        "scale": 1.0,
+        "scale": 1,
         "speed": 0.04,
         "seed": 0,
         "stretch": 0.55

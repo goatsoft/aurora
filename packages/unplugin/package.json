@@ -4,7 +4,10 @@
   "description": "Import .aurora files in Vite, Rollup, Rolldown, esbuild, webpack and Rspack: validated at build time, typed, hot-reloaded.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/cli.ts",
+    "./dist/cli.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goatsoft/aurora.git",
@@ -52,6 +55,11 @@
     },
     "./client": {
       "types": "./client.d.ts"
+    },
+    "./cli": {
+      "@goatsoft/source": "./src/cli.ts",
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.js"
     }
   },
   "scripts": {
@@ -64,5 +72,8 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "bin": {
+    "aurora": "./dist/cli.js"
   }
 }

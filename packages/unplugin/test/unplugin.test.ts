@@ -91,6 +91,28 @@ describe('bundlers', () => {
     expect(code).not.toContain(here)
   })
 
+  it('leaves ?raw and ?url imports to Vite, so editors can read files as authored', async () => {
+    const server = await createServer({
+      root,
+      logLevel: 'silent',
+      configFile: false,
+      plugins: [aurora()],
+      resolve: { alias: { '@goatsoft/aurora': resolve(root, 'packages/core/src/index.ts') } },
+      server: { middlewareMode: true, hmr: false },
+    })
+    try {
+      const raw = await server.transformRequest('/presets/goat/hero.aurora?raw')
+      expect(raw?.code).toContain(JSON.stringify(readFileSync(resolve(root, 'presets/goat/hero.aurora'), 'utf8')))
+      const url = await server.transformRequest('/presets/goat/hero.aurora?url')
+      expect(url?.code).toContain('/presets/goat/hero.aurora')
+      expect(url?.code).not.toContain('GOAT hero')
+      const module = await server.transformRequest('/presets/goat/hero.aurora?import&v=1')
+      expect(module?.code).toContain('"id":"presets/goat/hero.aurora"')
+    } finally {
+      await server.close()
+    }
+  })
+
   it('fails the Vite build with the file, line and column', async () => {
     const entry = fixture('broken.aurora')
     await expect(build({

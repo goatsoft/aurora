@@ -56,6 +56,12 @@ The GOAT pack in [`presets/goat`](presets/goat) is the place to start, and [`app
 | `@goatsoft/aurora-format` | The `.aurora` format: schema, validation, migrations, JSON Schema |
 | `@goatsoft/color` | OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing |
 
+## Aurora Studio
+
+Studio is the builder: a live canvas with layers, an inspector generated from each generator's params, an OKLCH picker with gamut boundaries and contrast checks, side-by-side WebGPU and CSS previews with a fidelity score, presets, ⌘K for everything, undo, autosave and share links. Export a `.aurora` file, copy a Vue, HTML or CSS snippet, or save a poster PNG. Files stay on your machine: in Chromium browsers Studio opens a file or a whole folder and ⌘S saves in place; elsewhere it downloads.
+
+In a Vite project with the unplugin, the dev server prints an **Aurora Studio** link: Studio opens your project's `.aurora` files and saves edits back to disk, and HMR updates the page. Without Vite, run `npx aurora studio` in the project.
+
 ## Development
 
 Requires Node 24+ (see `.nvmrc`) and pnpm 10 (`corepack enable`).
