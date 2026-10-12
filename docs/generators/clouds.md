@@ -4,7 +4,7 @@ Air: soft, sunlit clouds drifting across an open sky.
 
 ![Clouds with its defaults](/packages/core/test/golden/clouds.png)
 
-Reads 3 palette colours, in order. Uses the noise library: `fbm`.
+Reads 3 palette colours, in order. Uses the noise library: `fbm`, `worley`.
 
 ## Parameters
 

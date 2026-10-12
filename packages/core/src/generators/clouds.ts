@@ -2,9 +2,11 @@ import { formatOklch } from '@goatsoft/color'
 import { defineGenerator } from './define'
 
 /**
- * Air: billowing clouds drifting across an open sky. Two depths of fbm cloud, each lit by a sun
- * above: a short march towards the sun darkens the thick bellies and leaves the tops and edges
- * bright, so the clouds read as volumes rather than blobs.
+ * Air: billowing clouds drifting across an open sky. Each cloud is built from round lobes of
+ * inverted cellular noise (Perlin-Worley), gathered by a broad fbm and eroded at the edge by a fine
+ * one. Two depths, each lit by a short march towards a sun above: where the cloud thins towards the
+ * sun its tops and edges glow, and the cloud stacked above darkens the bellies, so they read as
+ * volumes. Far clouds are smaller, slower and sink into the sky's haze.
  */
 export const clouds = defineGenerator({
   id: 'clouds',
@@ -12,7 +14,7 @@ export const clouds = defineGenerator({
   description: 'Air: soft, sunlit clouds drifting across an open sky.',
   colors: 3,
   palette: ['oklch(0.58 0.13 248)', 'oklch(0.7 0.05 255)', 'oklch(0.99 0.01 85)'],
-  requires: ['fbm'],
+  requires: ['fbm', 'worley'],
   params: {
     coverage: { default: 0.42, min: 0, max: 1, step: 0.01, label: 'Coverage', description: 'How much of the sky the clouds fill.' },
     softness: { default: 0.45, min: 0.05, max: 1, step: 0.01, label: 'Softness', description: 'Wispy, feathered edges or crisp, puffy ones.' },
@@ -24,19 +26,31 @@ export const clouds = defineGenerator({
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different sky.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `
-// Raw cloud field: broad billows from low octaves, gently warped, with finer octaves eroding the edges.
-fn field(p: vec2f, t: f32) -> f32 {
-  let warp = vec2f(noise_fbm(p * 0.35 + vec2f(t * 0.03, 1.7), 2), noise_fbm(p * 0.35 + vec2f(4.3, -t * 0.03), 2));
-  return noise_fbm(p + warp * 0.35, 6) * 0.5 + 0.5;
+fn billow(p: vec2f, t: f32) -> f32 {
+  var v = 0.0;
+  var a = 0.55;
+  var q = p;
+  for (var k = 0; k < 3; k++) {
+    v += a * (1.0 - noise_worley(q + vec2f(t * 0.04 * f32(k + 1), 0.0)).x);
+    q = q * 2.07 + 3.1;
+    a *= 0.45;
+  }
+  return v;
 }
-// One depth of cloud: coverage and how much sunlight reaches it, from a short march towards the sun.
+fn field(p: vec2f, t: f32) -> f32 {
+  let gather = noise_fbm(p * 0.32 + vec2f(t * 0.02, 0.0), 3) * 0.5 + 0.5;
+  return gather * 0.75 + billow(p * 1.5, t) * 0.6 - 0.22;
+}
 fn layer(p: vec2f, t: f32, absorb: f32, P: Params) -> vec2f {
   let edge = mix(0.68, 0.34, P.coverage);
   let n = field(p, t);
-  let d = smoothstep(edge, edge + mix(0.03, 0.4, P.softness * P.softness), n);
-  let sun = vec2f(0.012, -0.045);
+  let d = smoothstep(edge, edge + mix(0.03, 0.4, P.softness * P.softness), n + noise_fbm(p * 6.0, 2) * 0.05);
+  let sun = vec2f(0.015, -0.06);
   var depth = 0.0;
-  for (var i = 1; i <= 3; i++) { depth += max(field(p + sun * f32(i * i), t) - edge, 0.0); }
+  for (var i = 1; i <= 3; i++) {
+    let above = field(p + sun * f32(i), t);
+    depth += max(above - n, 0.0) / f32(i) + max(above - edge, 0.0) * 0.08;
+  }
   return vec2f(d, exp(-depth * absorb * P.light));
 }
 fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
@@ -44,16 +58,12 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let a = radians(P.angle);
   let drift = vec2f(sin(a), -cos(a)) * ctx.time * P.speed * 0.05;
   let base = vec2f(ctx.uv.x * aspect, ctx.uv.y * 1.25) * 1.3 * P.scale + P.seed * 3.1;
-  // Sky: deep overhead, paler towards the horizon.
   var col = mix(c[0], mix(c[0], c[2], 0.5), smoothstep(0.0, 1.1, ctx.uv.y));
   var alpha = P.sky;
-  // Far clouds are smaller, slower and hazier; near ones pass in front.
   for (var i = 0; i < 2; i++) {
     let k = f32(i);
-    let s = layer(base * (1.8 - k * 0.8) - drift * (0.5 + k * 0.5) + k * 9.0, ctx.time * P.speed, 3.5 + 3.5 * k, P);
-    // Shadowed bellies take the shadow colour; sunlit tops and thin edges glow.
+    let s = layer(base * (1.8 - k * 0.8) - drift * (0.5 + k * 0.5) + k * 9.0, ctx.time * P.speed, 6.0 + 6.0 * k, P);
     let lit = mix(c[1], c[2], 0.12 + 0.88 * s.y);
-    // Far clouds sink into the sky's haze.
     let cloud = mix(lit, col, 0.4 * (1.0 - k) * P.sky);
     let w = s.x * (0.85 + 0.15 * k);
     col = mix(col, cloud, w / max(alpha + w * (1.0 - alpha), 1e-4));
