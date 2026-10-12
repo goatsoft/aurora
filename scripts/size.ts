@@ -21,6 +21,8 @@ interface Budget {
 const budgets: Budget[] = [
   { name: '@goatsoft/aurora (main thread)', entry: 'packages/core/src/index.ts', limit: 10 * KB },
   { name: '@goatsoft/aurora worker', entry: 'packages/core/src/worker.ts', limit: 10 * KB },
+  // The element also validates files at runtime, so it carries the format's Valibot schema.
+  { name: '@goatsoft/aurora/element', entry: 'packages/core/src/element.ts', limit: 14 * KB },
   { name: 'generator: aurora-fbm', entry: 'packages/core/src/generators/aurora-fbm.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\.\/generator/ },
 ]
 

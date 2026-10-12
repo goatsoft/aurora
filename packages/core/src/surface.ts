@@ -1,5 +1,4 @@
 import type { RgbSpace } from '@goatsoft/color'
-import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { getConfig } from './config'
 import { DRIFT_KEYFRAMES, compileCss } from './css'
 import { createMainThreadBackend, createWorkerBackend } from './pool'
@@ -7,6 +6,8 @@ import type { Backend, Lease } from './pool'
 import type { SurfaceState } from './protocol'
 import { joinScene, sceneGeometry } from './scene'
 import type { SceneMember } from './scene'
+import { documentOf, isAuroraModule, watchModule } from './module'
+import type { AuroraSource } from './module'
 
 /** What a surface is showing right now. It only says "webgpu" once a real frame is on screen. */
 export type AuroraMode = 'css' | 'webgpu'
@@ -24,7 +25,7 @@ export interface AuroraSurface {
   /** The element Aurora added to the host. */
   readonly element: HTMLElement
   /** Swaps the document. Values update in place; a new layer stack compiles in the background. */
-  update: (doc: AuroraDocument) => void
+  update: (source: AuroraSource) => void
   dispose: () => void
 }
 
@@ -67,9 +68,12 @@ function installKeyframes() {
  * Mounts an Aurora background into `host`, filling it. The CSS fallback paints immediately; WebGPU
  * takes over with a crossfade once its first frame is on screen. Rendering pauses off-screen and
  * in hidden tabs, honours reduced motion, and falls back to CSS on any GPU failure.
+ *
+ * `source` is a validated document or an imported `.aurora` module; modules hot-update in place.
  */
-export function mountAurora(host: HTMLElement, initial: AuroraDocument, options: MountOptions = {}): AuroraSurface {
-  let doc = initial
+export function mountAurora(host: HTMLElement, source: AuroraSource, options: MountOptions = {}): AuroraSurface {
+  let doc = documentOf(source)
+  let unwatch = isAuroraModule(source) ? watchModule(source.id, (next) => update(next)) : undefined
   let mode: AuroraMode = 'css'
   let disposed = false
   let lease: Lease | undefined
@@ -217,7 +221,23 @@ export function mountAurora(host: HTMLElement, initial: AuroraDocument, options:
     lease?.release()
     lease = undefined
     scene?.leave()
+    unwatch?.()
     root.remove()
+  }
+
+  function update(next: AuroraSource) {
+    if (disposed) return
+    if (isAuroraModule(next)) {
+      unwatch?.()
+      unwatch = watchModule(next.id, (doc) => update(doc))
+    }
+    doc = documentOf(next)
+    paintFallback()
+    if (cssOnly()) toCss()
+    else {
+      push()
+      if (!lease && mode === 'css') void start()
+    }
   }
   options.signal?.addEventListener('abort', dispose, { once: true })
   if (options.signal?.aborted) dispose()
@@ -226,12 +246,7 @@ export function mountAurora(host: HTMLElement, initial: AuroraDocument, options:
   return {
     get mode() { return mode },
     element: root,
-    update(next) {
-      doc = next
-      paintFallback()
-      if (cssOnly()) toCss()
-      else push()
-    },
+    update,
     dispose,
   }
 }

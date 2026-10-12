@@ -4,7 +4,10 @@
   "description": "WebGPU animated backgrounds with a generated CSS fallback.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/element.ts",
+    "./dist/element.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goatsoft/aurora.git",
@@ -18,6 +21,11 @@
       "@goatsoft/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./element": {
+      "@goatsoft/source": "./src/element.ts",
+      "types": "./dist/element.d.ts",
+      "import": "./dist/element.js"
     }
   },
   "scripts": {
