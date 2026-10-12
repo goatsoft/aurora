@@ -1,6 +1,6 @@
 # Wind (`wind`)
 
-Wind: soft streaks flowing across the canvas, bent by gusts.
+Air in motion: silky streaks flowing across the canvas, bent by gusts.
 
 ![Wind with its defaults](/packages/core/test/golden/wind.png)
 

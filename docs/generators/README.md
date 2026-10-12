@@ -10,6 +10,8 @@ Generated from the generators' own definitions by `packages/core/test/docs.test.
 | [Conic](conic.md) | `conic` | Colours turning around a point. |
 | [Grain](grain.md) | `grain` | Fine animated film grain that takes the digital edge off gradients. |
 | [Strata](strata.md) | `strata` | Earth: flowing sandstone layers, folded and carved by wind. |
-| [Wind](wind.md) | `wind` | Wind: soft streaks flowing across the canvas, bent by gusts. |
+| [Clouds](clouds.md) | `clouds` | Air: soft, sunlit clouds drifting across an open sky. |
+| [Wind](wind.md) | `wind` | Air in motion: silky streaks flowing across the canvas, bent by gusts. |
 | [Fire](fire.md) | `fire` | Fire: flames licking up from the bottom edge, with rising embers. |
 | [Water](water.md) | `water` | Water: sunlight caustics rippling over deep, clear water. |
+| [Starfield](starfield.md) | `starfield` | A night sky: twinkling stars, a faint milky way and the odd shooting star. |

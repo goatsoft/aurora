@@ -5,7 +5,7 @@ import { defineGenerator } from './define'
 export const wind = defineGenerator({
   id: 'wind',
   label: 'Wind',
-  description: 'Wind: soft streaks flowing across the canvas, bent by gusts.',
+  description: 'Air in motion: silky streaks flowing across the canvas, bent by gusts.',
   colors: 3,
   palette: ['oklch(0.86 0.05 225)', 'oklch(0.68 0.1 240)', 'oklch(0.97 0.02 210)'],
   requires: ['curl', 'simplex'],

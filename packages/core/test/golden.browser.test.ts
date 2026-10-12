@@ -1,4 +1,4 @@
-import { assertAurora } from '@goatsoft/aurora-format'
+import { assertAurora, parseAurora } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { compose } from '@/shader'
 import { compileCss } from '@/css'
@@ -34,6 +34,19 @@ describe('generator golden images', () => {
       pixels[i + 3] = 255
     }
     await expectGolden(id, pixels, W, H)
+  })
+})
+
+const scenes = import.meta.glob<string>('~/presets/scenes/*.aurora', { query: '?raw', import: 'default', eager: true })
+
+describe('scene presets', () => {
+  it.each(Object.entries(scenes).map(([file, text]) => [file.replace(/^.*\/|\.aurora$/g, ''), text] as const))('%s', async (name, text) => {
+    const result = parseAurora(text)
+    if (!result.ok) throw new Error(result.issues.map((issue) => issue.message).join('\n'))
+    const shader = compose(result.doc)
+    const pixels = await render(gpu, shader.code, packUniforms(result.doc, shader, { width: W, height: H, time: TIME, scroll: 0 }), W, H)
+    for (let i = 3; i < pixels.length; i += 4) pixels[i] = 255
+    await expectGolden(`scene-${name}`, pixels, W, H)
   })
 })
 
