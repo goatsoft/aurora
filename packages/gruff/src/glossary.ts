@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, statSync } from 'node:fs'
 import type { MarkdownIt, StateCore, Token } from 'markdown-it'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { headingId } from './toc'
 
 export interface GlossaryEntry {

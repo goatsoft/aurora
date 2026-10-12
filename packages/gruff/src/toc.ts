@@ -1,5 +1,5 @@
-import anchor from 'markdown-it-anchor'
 import type { MarkdownIt } from 'markdown-it'
+import anchor from 'markdown-it-anchor'
 
 export interface TocEntry {
   id: string

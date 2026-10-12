@@ -1,5 +1,5 @@
-import { dirname, posix, relative, resolve } from 'node:path'
 import type { MarkdownIt } from 'markdown-it'
+import { dirname, posix, relative, resolve } from 'node:path'
 
 export interface LinkOptions {
   /** The repository root: `/packages/…` in a page means this folder. */

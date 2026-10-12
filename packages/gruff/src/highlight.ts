@@ -1,7 +1,7 @@
+import type { MarkdownIt } from 'markdown-it'
+import type { BundledLanguage, BundledTheme } from 'shiki'
 import { transformerNotationDiff, transformerNotationFocus, transformerNotationHighlight } from '@shikijs/transformers'
 import { createHighlighter } from 'shiki'
-import type { BundledLanguage, BundledTheme } from 'shiki'
-import type { MarkdownIt } from 'markdown-it'
 
 export interface HighlightOptions {
   themes?: { light: BundledTheme, dark: BundledTheme }

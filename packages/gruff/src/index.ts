@@ -1,13 +1,13 @@
-import Markdown from 'unplugin-vue-markdown/vite'
-import type { Plugin } from 'vite'
+import type { HighlightOptions } from './highlight'
+import type { LinkOptions } from './links'
 import type { MarkdownIt } from 'markdown-it'
+import type { Plugin } from 'vite'
+import Markdown from 'unplugin-vue-markdown/vite'
 import { containers } from './containers'
 import { glossaryLinks, parseGlossary } from './glossary'
 import { highlight } from './highlight'
-import type { HighlightOptions } from './highlight'
 import { links } from './links'
-import type { LinkOptions } from './links'
-import { buildSearchIndex } from './search'
+import { buildSearchIndex, pageInfo, SEARCH_FIELDS } from './search'
 import { toc } from './toc'
 import { wikilinks } from './wikilinks'
 
@@ -18,8 +18,8 @@ export interface GruffOptions extends LinkOptions {
   glossary?: string
   /** Route prefix for `[[Page]]` links. */
   wikiBase?: string
-  /** The Vue component every page renders inside; it receives `frontmatter`. */
-  layout?: string
+  /** The Vue component pages render inside (it receives `frontmatter`), or a function choosing one per file (null for none). */
+  layout?: string | ((id: string) => string | null)
   highlight?: HighlightOptions
 }
 
@@ -29,7 +29,8 @@ const VIRTUAL = 'virtual:gruff'
  * gruff: our rustic-and-ready static site generator. Markdown files become Vue components
  * (unplugin-vue-markdown) with heading anchors and an outline, Shiki code blocks, callouts and
  * code groups, live `aurora` demos, GitHub-style links that work in the repo and on the site,
- * wikilinks and glossary terms. `virtual:gruff` exports the search index and glossary; use
+ * wikilinks and glossary terms. `virtual:gruff` exports the search index, the pages (titles, for
+ * navigation) and the glossary; use
  * `prerender` after building to write static HTML for every route.
  */
 export function gruff(options: GruffOptions): Plugin[] {
@@ -38,6 +39,7 @@ export function gruff(options: GruffOptions): Plugin[] {
       headEnabled: false,
       wrapperClasses: 'prose',
       wrapperComponent: options.layout ?? 'DocPage',
+      wrapperDiv: true,
       markdownOptions: { html: true, linkify: true, typographer: true },
       async markdownSetup(engine) {
         const md = engine as unknown as MarkdownIt
@@ -56,7 +58,14 @@ export function gruff(options: GruffOptions): Plugin[] {
         if (id !== `\0${VIRTUAL}`) return undefined
         const { readFile } = await import('node:fs/promises')
         const glossary = options.glossary ? parseGlossary(await readFile(options.glossary, 'utf8')) : []
-        return `export const searchIndex = ${JSON.stringify(buildSearchIndex(options.pages()))}\nexport const glossary = ${JSON.stringify(glossary)}\n`
+        const pages = options.pages()
+        const nav = pages.map(({ file, route }) => pageInfo(file, route))
+        return [
+          `export const searchIndex = ${JSON.stringify(buildSearchIndex(pages))}`,
+          `export const searchFields = ${JSON.stringify(SEARCH_FIELDS)}`,
+          `export const pages = ${JSON.stringify(nav)}`,
+          `export const glossary = ${JSON.stringify(glossary)}`,
+        ].join('\n')
       },
     },
   ]
@@ -71,8 +80,8 @@ export { links } from './links'
 export type { LinkOptions } from './links'
 export { prerender } from './prerender'
 export type { PrerenderOptions, RenderResult } from './prerender'
-export { SEARCH_FIELDS, buildSearchIndex } from './search'
-export type { SearchDocument } from './search'
+export { buildSearchIndex, pageInfo, SEARCH_FIELDS } from './search'
+export type { PageInfo, SearchDocument } from './search'
 export { headingId, toc } from './toc'
 export type { TocEntry } from './toc'
 export { slugify, wikilinks } from './wikilinks'

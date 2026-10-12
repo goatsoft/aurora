@@ -1,11 +1,11 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import MarkdownIt from 'markdown-it'
 import vue from '@vitejs/plugin-vue'
+import MarkdownIt from 'markdown-it'
 import { createServer } from 'vite'
 import { describe, expect, inject, it } from 'vitest'
-import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, links, parseGlossary, parseInfo, prerender, toc } from '@/index'
+import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, links, parseGlossary, parseInfo, prerender, SEARCH_FIELDS, toc } from '@/index'
 
 const root = inject('root')
 const fixtures = resolve(root, 'packages/gruff/test/fixtures')
@@ -47,7 +47,7 @@ describe('markdown', () => {
     const { html } = await render('::: warning Careful\nHot.\n:::\n\n::: details More\nHidden.\n:::\n\n::: code-group\n```sh [pnpm]\npnpm i\n```\n:::\n')
     expect(html).toContain('<div class="callout callout-warning" role="note"><p class="callout-title">Careful</p>')
     expect(html).toContain('<details class="callout callout-details"><summary>More</summary>')
-    expect(html).toMatch(/<CodeGroup>\n<div class="code-block" data-lang="sh" data-title="pnpm">/)
+    expect(html).toMatch(/<CodeGroup :tabs='\[&quot;pnpm&quot;\]'>\n<div class="code-block" data-lang="sh" data-title="pnpm">/)
   })
 
   it('highlights code in both themes with notation, and renders aurora fences live', async () => {
@@ -114,7 +114,7 @@ describe('the Vite plugin', () => {
       root: fixtures,
       logLevel: 'silent',
       configFile: false,
-      plugins: [...gruff({ root, route, repoUrl: 'https://github.com/goatsoft/aurora/blob/main/', glossary: join(fixtures, 'glossary.md'), pages: () => [{ file: page, route: '/docs' }] }), vue({ include: [/\.vue$/, /\.md$/] })],
+      plugins: [...gruff({ root, route, repoUrl: 'https://github.com/goatsoft/aurora/blob/main/', glossary: join(fixtures, 'glossary.md'), pages: () => [{ file: page, route: '/docs' }], layout: (id) => (id.endsWith('setup.md') ? null : 'DocPage') }), vue({ include: [/\.vue$/, /\.md$/] })],
       server: { middlewareMode: true, hmr: false },
     })
     try {
@@ -122,8 +122,11 @@ describe('the Vite plugin', () => {
       expect(md?.code).toContain('DocPage')
       expect(md?.code).toContain('"description":"Start here."')
       expect(md?.code).toContain('"toc":[{"id":"install","text":"Install","level":2}]')
-      const virtual = await server.ssrLoadModule('virtual:gruff') as { searchIndex: string, glossary: unknown[] }
+      expect((await server.transformRequest('/docs/guide/setup.md'))?.code).not.toContain('DocPage')
+      const virtual = await server.ssrLoadModule('virtual:gruff') as { searchIndex: string, searchFields: unknown, pages: unknown[], glossary: unknown[] }
       expect(JSON.parse(virtual.searchIndex)).toMatchObject({ documentCount: 2 })
+      expect(virtual.searchFields).toEqual(SEARCH_FIELDS)
+      expect(virtual.pages).toEqual([{ route: '/docs', title: 'Aurora docs', description: 'Start here.' }])
       expect(virtual.glossary).toHaveLength(2)
     } finally {
       await server.close()

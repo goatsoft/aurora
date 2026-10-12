@@ -1,5 +1,6 @@
+import type { MarkdownIt, Token } from 'markdown-it'
 import container from 'markdown-it-container'
-import type { MarkdownIt } from 'markdown-it'
+import { parseInfo } from './highlight'
 
 const KINDS = { tip: 'Tip', note: 'Note', warning: 'Warning', danger: 'Danger' } as const
 
@@ -8,6 +9,8 @@ const KINDS = { tip: 'Tip', note: 'Note', warning: 'Warning', danger: 'Danger' }
  *   ::: tip Optional title      (also note, warning, danger)
  *   ::: details Summary text
  *   ::: code-group               (fences inside become tabs, labelled by their [title])
+ *
+ * A code group passes its tab labels to `<CodeGroup :tabs>`, so they are in the prerendered HTML.
  */
 export function containers(md: MarkdownIt): void {
   const use = container as unknown as (md: MarkdownIt, name: string, options: object) => void
@@ -30,8 +33,14 @@ export function containers(md: MarkdownIt): void {
     },
   })
   use(md, 'code-group', {
-    render(tokens: { nesting: number }[], idx: number) {
-      return tokens[idx]!.nesting === 1 ? '<CodeGroup>\n' : '</CodeGroup>\n'
+    render(tokens: Token[], idx: number) {
+      if (tokens[idx]!.nesting !== 1) return '</CodeGroup>\n'
+      const tabs: string[] = []
+      for (let i = idx + 1; i < tokens.length && tokens[i]!.type !== 'container_code-group_close'; i++) {
+        const token = tokens[i]!
+        if (token.type === 'fence') tabs.push(parseInfo(token.info).title ?? parseInfo(token.info).lang)
+      }
+      return `<CodeGroup :tabs='${md.utils.escapeHtml(JSON.stringify(tabs)).replace(/'/g, '&#39;')}'>\n`
     },
   })
 }
