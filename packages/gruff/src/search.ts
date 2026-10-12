@@ -33,11 +33,12 @@ export interface PageInfo {
   order: number | undefined
 }
 
-/** A page's title (frontmatter, else its first `#` heading, else its route) and description. */
+/** A page's title (frontmatter, else its first `#` heading as plain text, else its route) and description. */
 export function pageInfo(file: string, route: string): PageInfo {
   const { content, data } = matter(readFileSync(file, 'utf8'))
   const meta = data as { title?: string, description?: string, order?: number }
-  return { route, title: meta.title ?? /^#\s+(.+)$/m.exec(content)?.[1]?.trim() ?? route, description: meta.description, order: meta.order }
+  const heading = /^#\s+(.+)$/m.exec(content)?.[1]?.replace(/[`*_]/g, '').trim()
+  return { route, title: meta.title ?? heading ?? route, description: meta.description, order: meta.order }
 }
 
 /**

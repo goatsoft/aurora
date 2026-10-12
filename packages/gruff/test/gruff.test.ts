@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import MarkdownIt from 'markdown-it'
 import { createServer } from 'vite'
 import { describe, expect, inject, it } from 'vitest'
-import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, links, parseGlossary, parseInfo, prerender, SEARCH_FIELDS, toc } from '@/index'
+import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, links, pageInfo, parseGlossary, parseInfo, prerender, SEARCH_FIELDS, toc } from '@/index'
 
 const root = inject('root')
 const fixtures = resolve(root, 'packages/gruff/test/fixtures')
@@ -83,6 +83,14 @@ describe('search', () => {
     expect(index.documentCount).toBe(4)
     expect(Object.values(index.storedFields)).toContainEqual({ title: 'Setup', section: 'Install' })
     expect(JSON.stringify(index)).not.toContain('[!code')
+  })
+
+  it('titles pages from frontmatter, else the first heading as plain text', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'gruff-'))
+    writeFileSync(join(dir, 'a.md'), '# Aurora (`aurora-fbm`)\n')
+    writeFileSync(join(dir, 'b.md'), '---\ntitle: Bee\norder: 2\n---\n# Ignored\n')
+    expect(pageInfo(join(dir, 'a.md'), '/a')).toEqual({ route: '/a', title: 'Aurora (aurora-fbm)', description: undefined, order: undefined })
+    expect(pageInfo(join(dir, 'b.md'), '/b')).toMatchObject({ title: 'Bee', order: 2 })
   })
 })
 
