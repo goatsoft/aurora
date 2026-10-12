@@ -25,5 +25,8 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "valibot": "^1.5.0"
   }
 }

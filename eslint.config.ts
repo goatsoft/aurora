@@ -10,7 +10,7 @@ export default defineConfig(
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   // Formatting is enforced by ESLint Stylistic (`pnpm lint:fix` formats); there is no Prettier.
-  stylistic.configs.customize({ indent: 2, quotes: 'single', semi: false, braceStyle: '1tbs' }),
+  stylistic.configs.customize({ indent: 2, quotes: 'single', semi: false, braceStyle: '1tbs', arrowParens: true }),
   {
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
@@ -22,11 +22,8 @@ export default defineConfig(
     rules: {
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-import-type-side-effects': 'error',
-    },
-  },
-  {
-    files: ['**/test/**'],
-    rules: {
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // noUncheckedIndexedAccess makes `!` the honest way to say "this index exists".
       '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
