@@ -44,9 +44,9 @@ export default defineConfig({
           include: ['packages/*/test/**/*.browser.test.ts'],
           browser: {
             enabled: true,
-            headless: true,
+            headless: !process.env['AURORA_HEADED'],
             screenshotFailures: false,
-            provider: playwright({ launchOptions: { args: chromiumWebGPU } }),
+            provider: playwright({ launchOptions: { channel: 'chromium', args: chromiumWebGPU } }),
             instances: [{ browser: 'chromium' }],
           },
         },

@@ -47,8 +47,8 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
 }
 `,
   // GOAT's fallback: three soft radial clouds at 0.28 × intensity.
-  css: ({ colors, params, space }) => {
-    const alpha = 0.28 * params.intensity
+  css: ({ colors, params, space, opacity }) => {
+    const alpha = 0.28 * params.intensity * opacity
     const [a, b, c] = colors.map((color) => formatOklch({ ...color, alpha: Math.min(1, alpha) }))
     return [
       `radial-gradient(60% 40% at 20% 30% in ${space}, ${a!}, transparent 70%)`,

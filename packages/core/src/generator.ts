@@ -20,6 +20,8 @@ export interface CssContext<P extends string> {
   params: Readonly<Record<P, number>>
   /** CSS colour interpolation for this layer: "oklab" or "srgb". */
   space: 'oklab' | 'srgb'
+  /** Layer opacity, to fold into colour alphas. */
+  opacity: number
 }
 
 export interface Generator<P extends string = string> {

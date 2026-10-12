@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { hasWebGPU } from '../src/index.ts'
 
 // Guards the browser test harness itself: later phases rely on a real adapter here.
 describe('WebGPU in the browser test runner', () => {
   it('exposes navigator.gpu', () => {
-    expect(hasWebGPU()).toBe(true)
+    expect('gpu' in navigator).toBe(true)
   })
 
   it('acquires an adapter and device, and runs a compute pass', async () => {

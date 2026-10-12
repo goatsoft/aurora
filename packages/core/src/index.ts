@@ -1,6 +1,16 @@
-export { FORMAT_VERSION } from '@goatsoft/aurora-format'
-
-/** True when the current context exposes the WebGPU API. It does not guarantee an adapter. */
-export function hasWebGPU(): boolean {
-  return typeof navigator !== 'undefined' && 'gpu' in navigator
-}
+export { configureAurora } from './config'
+export type { AuroraConfig } from './config'
+export { mountAurora } from './surface'
+export type { AuroraMode, AuroraSurface, MountOptions } from './surface'
+export { compileCss, DRIFT_KEYFRAMES } from './css'
+export type { CssFallback } from './css'
+export { validateDocument } from './validate'
+export { defineGenerator } from './generator'
+export type { CssContext, Generator, ParamSpec } from './generator'
+export { GENERATORS, auroraFbm, registerGenerator } from './generators/index'
+export { compose, shaderKey } from './compose'
+export type { ComposedShader } from './compose'
+export { packUniforms } from './uniforms'
+export type { FrameState } from './uniforms'
+export type { RendererStats } from './protocol'
+export { auroraStats } from './stats'
