@@ -68,16 +68,15 @@ aurora/                          pnpm workspace · Vite 8 · Vue 3.5 · TS 5.9 �
 │  ├─ element/       @goatsoft/aurora/element  <aurora-bg> custom element (framework-free, any GOATsoft site)
 │  ├─ vue/           @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), scene provider
 │  ├─ unplugin/      @goatsoft/aurora-unplugin `import hero from './hero.aurora'` (Vite/Rollup/esbuild/webpack)
-│  └─ studio/        @goatsoft/aurora-studio   Aurora Studio – the builder (vue-router 5 file routes; `npx aurora studio`)
-├─ docs/             docs content (.md) – shipped in the package for the site to render
+│  ├─ studio/        @goatsoft/aurora-studio   Aurora Studio – the builder (vue-router 5 file routes; `npx aurora studio`)
+│  └─ docs-kit/      @goatsoft/docs-kit        markdown-it pipeline + Vite plugin (our "VitePress"; reusable by other GOATsoft sites)
+├─ apps/
+│  └─ site/          marketing + /docs + hosted /studio (prerendered SSG) → GitHub Pages at aurora.goatsoft.io
+├─ docs/             docs content (.md)
 └─ presets/          goat.aurora-pack, goatsoft-mono.aurora-pack, starter packs
-
-GOATsoft/ (existing monorepo, goatsoft/GOATsoft · pnpm + Turborepo)
-├─ packages/docs-kit/        @goatsoft/docs-kit   markdown-it pipeline + Vite plugin (our "VitePress"; reusable by every GOATsoft site)
-└─ apps/aurora.goatsoft.io/  marketing + /docs + hosted /studio (prerendered SSG) → published to goatsoft/aurora.goatsoft.io (ADR 0008 pattern)
 ```
 
-**Repo split.** `goatsoft/aurora` holds the library and Studio, everything published as `@goatsoft/*`. The website and the docs pipeline live in the GOATsoft monorepo beside `apps/goatsoft.io`, following the same source-here, publish-there pattern (GOATsoft ADR 0008). The site consumes the published Aurora packages, so it always runs the real library.
+**One repo.** `goatsoft/aurora` holds the library, Studio, docs and website, and publishes its own GitHub Pages site to `aurora.goatsoft.io`. The site uses the workspace packages directly, so every change ships the library, docs and site together. goatsoft.io simply links to it.
 
 ### 3.1 The `.aurora` format (v1)
 
@@ -192,16 +191,16 @@ This matches the GOAT web stack, so components can move between projects.
 - A Vite plugin turns `docs/**/*.md` into route components, which vue-router 5 file routes pick up.
 - Search is a build-time MiniSearch index.
 
-**`GOATsoft/apps/aurora.goatsoft.io`** contains:
+**`apps/site`** contains:
 - Landing: a hero that is itself an Aurora scene spanning several sections, a gallery, "made with Aurora", and a "try it" link that deep-links into Studio.
 - `/docs`: guide, format reference (generated from the schema), generator reference (generated from param schemas) and API reference.
 
 The whole site is prerendered to static HTML with our own small SSG script using `vue/server-renderer`. That gives SEO, instant first paint and CSS fallback in the HTML. Targets are Lighthouse 100/100/100/100 and zero CLS.
 
-**Hosting.** GitHub Pages at **`aurora.goatsoft.io`**, with no Cloudflare. The setup copies `apps/goatsoft.io`:
-- A second job in the GOATsoft `pages.yml` builds `apps/aurora.goatsoft.io`.
-- `peaceiris/actions-gh-pages` pushes the output to a publish-only repo, `goatsoft/aurora.goatsoft.io`, with `cname: aurora.goatsoft.io`.
+**Hosting.** This repo's own GitHub Pages site at **`aurora.goatsoft.io`**, with no Cloudflare.
+- `pages.yml` uses `actions/deploy-pages` on pushes to `main`.
 - The Porkbun CNAME to `goatsoft.github.io` is already live.
+- After the first deploy, set the custom domain in the repo's Pages settings and turn on HTTPS.
 
 One Pages site serves:
 - `/` is the marketing site.
@@ -209,7 +208,7 @@ One Pages site serves:
 - `/studio` is Studio.
 - `/schema/v1.json` is the format schema.
 
-Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's deep links. The deploy action writes `CNAME`. Studio's hosted build comes from the published `@goatsoft/aurora-studio` package.
+Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's deep links. `CNAME` sits in `apps/site/public/`. Studio's hosted build comes from the workspace `studio` package.
 
 ## 6. Phases
 
@@ -221,7 +220,7 @@ Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's 
 | 3 | **Bindings** | `<aurora-bg>`, `aurora-vue`, `aurora-unplugin` with HMR | A sample app imports `.aurora`, there is no flash, and the SSR fallback works |
 | 4 | **More generators** | mesh-gradient, waves, grain, conic, noise-field; layer blending and masks | Each generator has param schema, docs and a golden image |
 | 5 | **Studio** | Builder as in section 4, hosted and local dev-tool mode | It can recreate every GOAT preset from scratch and export a file identical to the pack |
-| 6 | **Docs + site** | In the GOATsoft monorepo: `packages/docs-kit`, `apps/aurora.goatsoft.io`, prerender, and a publish job to `goatsoft/aurora.goatsoft.io` | Lighthouse targets are met and all docs examples are live |
+| 6 | **Docs + site** | `packages/docs-kit`, `apps/site`, prerender, and Pages deploy to aurora.goatsoft.io | Lighthouse targets are met and all docs examples are live |
 | 7 | **Rollout** | Replace the aurora in GOAT/web, the GOAT docs theme and goatsoft.io. Delete their shader copies and GLSL paths. Supersede GOAT ADR-0079 and GOATsoft ADR-0005 with Aurora ADRs. | Every GOATsoft site runs on `@goatsoft/aurora` |
 
 Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API is stable after Phase 2.
@@ -249,7 +248,5 @@ Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API 
 4. **Package manager:** pnpm workspaces.
 5. **Touch devices:** use WebGPU on touch devices when it is available, with an opt-out to force CSS.
 6. **Repos:**
-   - `goatsoft/aurora` holds the library and Studio.
-   - The website and docs-kit live in the GOATsoft monorepo.
-   - The Pages output goes to `goatsoft/aurora.goatsoft.io`.
+   - `goatsoft/aurora` holds everything (library, Studio, docs-kit, site) and deploys its own Pages site to aurora.goatsoft.io.
    - The legacy checkpoint stays local only, in `~/Projects/aurora-legacy`.
