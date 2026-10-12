@@ -9,5 +9,5 @@
     "types": ["node", "vite/client", "@goatsoft/aurora-unplugin/client", "unplugin-icons/types/vue"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "src/**/*.vue", "test", "vite.config.ts"]
+  "include": ["src", "src/**/*.vue", "test", "vite.config.ts", "vitest.config.ts"]
 }

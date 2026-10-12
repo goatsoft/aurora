@@ -16,7 +16,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
 - **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
-- **Studio**: vue-router 5 file routes, unplugin-auto-import / -vue-components / -icons (Hugeicons), reka-ui styled shadcn-style with Tailwind 4, motion-v. Its components are tested in the `studio` Vitest project (browser), which extends Studio's Vite config.
+- **Studio**: vue-router 5 file routes, unplugin-auto-import / -vue-components / -icons (Hugeicons), reka-ui styled shadcn-style with Tailwind 4, motion-v. Its components are tested in the `studio` Vitest project (browser, in `pnpm test:apps`), which extends Studio's Vite config.
 - Phase 6 adds gruff on `unplugin-vue-markdown` (see PLAN.md §5).
 
 ## Layout
@@ -43,10 +43,10 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 ```sh
 pnpm install
 pnpm verify          # lint + typecheck + tests with coverage + build + app tests + size budgets. Must pass before every push.
-pnpm test:apps       # apps/* against the built packages (run after pnpm build)
+pnpm test:apps       # apps/* against the built packages, and Studio's component tests (run after pnpm build)
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
-pnpm test:browser    # WebGPU browser tests and Studio's component tests (needs `pnpm exec playwright install chromium` once)
+pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
 pnpm --filter aurora-studio dev   # Studio on localhost, with dev-tool mode on this repo's .aurora files
 pnpm coverage
 pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json

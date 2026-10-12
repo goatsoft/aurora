@@ -69,23 +69,6 @@ export default defineConfig({
           },
         },
       },
-      {
-        // Studio's components, with Studio's own Vite config (auto-imports, icons, routes).
-        extends: './apps/studio/vite.config.ts',
-        optimizeDeps: { include: ['vue', '@vue/test-utils', 'reka-ui', '@vueuse/core', 'motion-v'] },
-        test: {
-          name: 'studio',
-          root: 'apps/studio',
-          include: ['test/**/*.browser.test.ts'],
-          browser: {
-            enabled: true,
-            headless: true,
-            screenshotFailures: false,
-            provider: playwright({ launchOptions: { args: chromiumWebGPU } }),
-            instances: [{ browser: 'chromium' }],
-          },
-        },
-      },
     ],
   },
 })

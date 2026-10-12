@@ -12,13 +12,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run --project unit",
-    "test:browser": "vitest run --project browser --project studio",
-    "test:all": "vitest run --project unit --project browser --project studio",
+    "test:browser": "vitest run --project browser",
+    "test:all": "vitest run --project unit --project browser",
     "coverage": "vitest run --project unit --coverage",
     "changeset": "changeset",
     "verify": "pnpm lint && pnpm typecheck && pnpm test:all --coverage && pnpm build && pnpm test:apps && pnpm size",
     "size": "node scripts/size.ts",
-    "test:apps": "vitest run --project apps"
+    "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
