@@ -17,7 +17,8 @@ fn noise_pcg2(v0: vec2u) -> vec2u {
   v.x += v.y * 1664525u; v.y += v.x * 1664525u;
   return v ^ (v >> vec2u(16u));
 }
-fn noise_hash22(p: vec2f) -> vec2f { return vec2f(noise_pcg2(bitcast<vec2u>(vec2i(floor(p))))) * (1.0 / 4294967296.0); }
+// The top 24 bits convert to f32 exactly, so the result is uniform in [0, 1) and never rounds up to 1.
+fn noise_hash22(p: vec2f) -> vec2f { return vec2f(noise_pcg2(bitcast<vec2u>(vec2i(floor(p)))) >> vec2u(8u)) * (1.0 / 16777216.0); }
 fn noise_hash21(p: vec2f) -> f32 { return noise_hash22(p).x; }
 `,
   },

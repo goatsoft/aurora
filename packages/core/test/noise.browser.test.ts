@@ -67,6 +67,12 @@ describe('noise library on the GPU', () => {
     expect(s.max - s.min).toBeGreaterThan((hi - lo) * 0.4)
   })
 
+  it('hashes to exact multiples of 2⁻²⁴, so it never rounds up to 1', async () => {
+    const data = await sample(['hash'], 'noise_hash22(p * 1e5), noise_hash22(p * 1e5 + 0.5)')
+    const values = Array.from(data)
+    expect(values.every((v) => v >= 0 && v < 1 && Number.isInteger(v * 16777216))).toBe(true)
+  })
+
   it('makes ridged and turbulent fbm non-negative', async () => {
     const data = await sample(['fbm'], 'noise_fbm(p * 0.3, 5), noise_ridged(p * 0.3, 5), noise_turbulence(p * 0.3, 5), 0.0')
     for (const k of [1, 2]) {

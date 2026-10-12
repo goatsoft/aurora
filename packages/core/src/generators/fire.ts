@@ -43,11 +43,11 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let glow = exp(-height * 2.2) * 0.22 * (0.7 + 0.3 * n);
   var alpha = max(flame, glow);
   col = mix(c[0], col, flame / max(alpha, 1e-4));
-  // Embers: sparse sparks that rise, sway and flicker out, only above the flames.
+  // Embers: sparse sparks that rise, sway and flicker out, only above the flames. They stay over a pixel wide.
   let lift = vec2f(x * 7.0 + sin(up * 6.0 + t) * 0.4, up * 7.0 - t * 2.2) + P.seed;
   let cell = noise_worley(lift).x;
   let life = noise_hash21(floor(lift) + floor(t * 1.5));
-  let spark = (1.0 - smoothstep(0.015, 0.05, cell)) * step(1.0 - P.embers * 0.35, life) * smoothstep(0.1, 0.5, height) * (1.0 - smoothstep(0.9, 1.8, height)) * (1.0 - flame);
+  let spark = (1.0 - smoothstep(0.015, max(0.05, 8.4 / ctx.res.y), cell)) * step(1.0 - P.embers * 0.35, life) * smoothstep(0.1, 0.5, height) * (1.0 - smoothstep(0.9, 1.8, height)) * (1.0 - flame);
   col = mix(col, c[2], spark);
   alpha = max(alpha, spark);
   return vec4f(col, alpha);
