@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { VariantProps } from 'class-variance-authority'
-import type { PrimitiveProps } from 'reka-ui'
+import type { Component } from 'vue'
 import { cva } from 'class-variance-authority'
-import { Primitive } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const button = cva(
@@ -26,15 +25,15 @@ const button = cva(
 )
 type Variants = VariantProps<typeof button>
 
-const props = withDefaults(defineProps<PrimitiveProps & { variant?: Variants['variant'], size?: Variants['size'], class?: string | undefined }>(), { as: 'button' })
+// A plain dynamic element rather than reka-ui's Primitive, which would pull its shared chunk onto every page.
+const props = withDefaults(defineProps<{ as?: string | Component, variant?: Variants['variant'], size?: Variants['size'], class?: string | undefined }>(), { as: 'button' })
 </script>
 
 <template>
-  <Primitive
-    :as="props.as"
-    :as-child="props.asChild"
+  <component
+    :is="props.as"
     :class="cn(button({ variant: props.variant, size: props.size }), props.class)"
   >
     <slot />
-  </Primitive>
+  </component>
 </template>

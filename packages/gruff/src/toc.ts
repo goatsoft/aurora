@@ -20,7 +20,7 @@ export function headingId(text: string): string {
 export function toc(md: MarkdownIt): void {
   md.use(anchor, {
     slugify: headingId,
-    permalink: anchor.permalink.linkInsideHeader({ symbol: '#', placement: 'before', class: 'heading-anchor', ariaHidden: true }),
+    permalink: anchor.permalink.linkInsideHeader({ symbol: '#', placement: 'before', class: 'heading-anchor', ariaHidden: true, renderAttrs: () => ({ tabindex: '-1' }) }),
   })
   md.core.ruler.push('gruff_toc', (state) => {
     const env = state.env as { frontmatter?: Record<string, unknown> }

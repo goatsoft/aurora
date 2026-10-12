@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import Install from '@/content/install.md'
 
 const steps = [
@@ -41,11 +42,10 @@ const steps = [
         <Button
           class="mt-10"
           variant="glass"
-          as-child
+          :as="RouterLink"
+          to="/docs/guide/getting-started"
         >
-          <RouterLink to="/docs/guide/getting-started">
-            Read the guide <IHgArrowRight01 />
-          </RouterLink>
+          Read the guide <IHgArrowRight01 />
         </Button>
       </div>
       <div

@@ -25,7 +25,7 @@ async function render(markdown: string, env: Record<string, unknown> = { id: pag
 describe('markdown', () => {
   it('anchors headings like GitHub and exports the outline and title', async () => {
     const { html, env } = await render('# Hello\n\n## Get started\n\n### Vite & Vue\n')
-    expect(html).toContain('<h2 id="get-started" tabindex="-1"><a class="heading-anchor" href="#get-started" aria-hidden="true">#</a> Get started</h2>')
+    expect(html).toContain('<h2 id="get-started" tabindex="-1"><a class="heading-anchor" href="#get-started" aria-hidden="true" tabindex="-1">#</a> Get started</h2>')
     expect(env['frontmatter']).toEqual({ title: 'Hello', toc: [{ id: 'get-started', text: 'Get started', level: 2 }, { id: 'vite--vue', text: 'Vite & Vue', level: 3 }] })
   })
 

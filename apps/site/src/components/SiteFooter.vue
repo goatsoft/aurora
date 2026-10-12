@@ -112,7 +112,7 @@ const year = new Date().getFullYear()
         </ul>
       </div>
     </div>
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground/70 md:flex-row md:justify-between">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:justify-between">
       <span>© {{ year }} GOATsoft. <a
         :href="`${SITE.repo}/blob/develop/LICENSE`"
         class="hover:text-foreground"
