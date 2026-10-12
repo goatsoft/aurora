@@ -7,7 +7,8 @@
     "declaration": false,
     "declarationMap": false,
     "types": ["node", "vite/client", "@goatsoft/aurora-unplugin/client", "unplugin-icons/types/vue"],
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable", "WebWorker.ImportScripts"]
   },
-  "include": ["src", "src/**/*.vue", "test", "vite.config.ts", "vitest.config.ts"]
+  "include": ["types", "src", "src/**/*.vue", "test", "vite.config.ts", "vitest.config.ts"]
 }

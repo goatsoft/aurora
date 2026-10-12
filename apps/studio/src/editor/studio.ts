@@ -12,8 +12,9 @@ interface Entry {
 import { History } from './history'
 import { decodeShare, encodeShare } from './share'
 import { load, save } from './storage'
-import { forgetConnection, projectApi, takeConnection } from './project'
-import type { Connection } from './project'
+import { forgetConnection, takeConnection } from './project'
+import { apiWorkspace, canUseDisk, fileWorkspace, folderWorkspace, pickFile, pickFolder, pickSaveTarget } from './workspace'
+import type { Workspace } from './workspace'
 
 export type Viewport = 'hero' | 'panel' | 'tile' | 'phone' | 'page'
 export type Preview = 'webgpu' | 'css' | 'split'
@@ -29,6 +30,7 @@ export const VIEWPORTS: Record<Viewport, { label: string, width: number, height:
 }
 
 const AUTOSAVE = 'document'
+const WORKSPACE = 'workspace'
 
 /** What Studio is showing; none of it is saved in the document. */
 export interface UiState {
@@ -202,64 +204,142 @@ function createStudio() {
   const file = computed(() => serialize(doc.value))
   const fileName = computed(() => `${doc.value.name.trim().toLowerCase().replace(/[^a-z\d]+/g, '-').replace(/^-|-$/g, '') || 'aurora'}.aurora`)
 
-  // Dev-tool mode: a connected project's files, opened and saved in place.
+  // Where the open file lives, so ⌘S saves it in place: a dev-server project, a folder or one file
+  // picked on disk. With none, saving downloads.
   const project = reactive({
-    connection: undefined as Connection | undefined,
-    root: '',
+    workspace: undefined as Workspace | undefined,
+    label: '',
     files: [] as string[],
     current: undefined as string | undefined,
     /** The file as last read or written, to tell whether there are unsaved changes. */
     saved: '',
+    /** A folder remembered from last time, waiting for the browser to grant access again. */
+    locked: false,
   })
   const dirty = computed(() => project.current !== undefined && file.value !== project.saved)
+  const fail = (error: unknown) => notify(error instanceof Error ? error.message : String(error), 'error')
 
   async function refreshFiles() {
-    if (!project.connection) return
+    const ws = project.workspace
+    if (!ws) return
     try {
-      const listing = await projectApi.files(project.connection)
-      project.root = listing.root
-      project.files = listing.files
+      project.files = await ws.files()
+      project.label = ws.label
+      project.locked = false
     } catch (error) {
-      notify((error as Error).message, 'error')
+      fail(error)
     }
   }
 
+  function useWorkspace(ws: Workspace | undefined, handle?: FileSystemHandle) {
+    Object.assign(project, { workspace: ws, label: ws?.label ?? '', files: [], current: undefined, saved: '', locked: false })
+    // Folder and file handles survive reloads in IndexedDB (access is asked for again on first use).
+    void save(WORKSPACE, handle ?? null)
+  }
+
   async function openProjectFile(path: string) {
-    if (!project.connection) return
+    const ws = project.workspace
+    if (!ws) return
     try {
-      const text = await projectApi.read(project.connection, path)
+      const text = await ws.read(path)
       if (open(JSON.parse(text), path)) {
         project.current = path
         project.saved = serialize(history.present.doc)
         notify(`Opened ${path}`)
       }
     } catch (error) {
-      notify((error as Error).message, 'error')
+      fail(error instanceof SyntaxError ? new Error(`${path} isn't JSON. .aurora files are JSON documents.`) : error)
     }
   }
 
-  /** Saves to the open project file. Returns false when there is none, so callers download instead. */
+  /** Opens a file handle (picked or dropped), so ⌘S saves back to it. */
+  async function openHandle(handle: FileSystemFileHandle) {
+    const ws = fileWorkspace(handle)
+    useWorkspace(ws, handle)
+    project.files = [handle.name]
+    await openProjectFile(handle.name)
+  }
+
+  async function openFromDisk(): Promise<boolean> {
+    if (!canUseDisk()) return false
+    try {
+      const handle = await pickFile()
+      if (handle) await openHandle(handle)
+    } catch (error) {
+      fail(error)
+    }
+    return true
+  }
+
+  async function openFolder() {
+    try {
+      const handle = await pickFolder()
+      if (!handle) return
+      useWorkspace(folderWorkspace(handle), handle)
+      await refreshFiles()
+      notify(project.files.length ? `Opened ${handle.name}: ${project.files.length} .aurora file${project.files.length === 1 ? '' : 's'}` : `Opened ${handle.name}. It has no .aurora files yet; Save as puts one there.`)
+    } catch (error) {
+      fail(error)
+    }
+  }
+
+  async function write(ws: Workspace, path: string, text: string) {
+    // Never write a file that wouldn't load (the dev-server API checks this too).
+    const result = resolve(history.present.doc)
+    if (!result.ok) throw new Error(`Not saved: ${result.issues[0]!.path} ${result.issues[0]!.message}`)
+    await ws.write(path, text)
+    project.saved = text
+    notify(`Saved ${path}`)
+  }
+
+  /** Saves the open file in place. Returns false when there is nowhere to save, so callers fall back. */
   async function saveToProject(): Promise<boolean> {
-    if (!project.connection || project.current === undefined) return false
+    const ws = project.workspace
+    if (!ws || project.current === undefined) return false
     // Never rewrite a file you haven't changed (it may be formatted by hand).
     if (!dirty.value) {
       notify(`No changes to save in ${project.current}`)
       return true
     }
-    const text = file.value
     try {
-      await projectApi.write(project.connection, project.current, text)
-      project.saved = text
-      notify(`Saved ${project.current}`)
+      await write(ws, project.current, file.value)
     } catch (error) {
-      notify((error as Error).message, 'error')
+      fail(error)
+    }
+    return true
+  }
+
+  /**
+   * Saves to a new place: `path` inside the open folder or project, or (with no folder open)
+   * wherever the system picker says. Afterwards ⌘S saves there.
+   */
+  async function saveAs(path?: string): Promise<boolean> {
+    const ws = project.workspace
+    try {
+      if (path !== undefined && (ws?.kind === 'folder' || ws?.kind === 'api')) {
+        const target = path.endsWith('.aurora') ? path : `${path}.aurora`
+        await write(ws, target, file.value)
+        project.current = target
+        await refreshFiles()
+        return true
+      }
+      if (!canUseDisk()) return false
+      const handle = await pickSaveTarget(fileName.value)
+      if (!handle) return true
+      const next = fileWorkspace(handle)
+      useWorkspace(next, handle)
+      project.files = [handle.name]
+      project.current = handle.name
+      await write(next, handle.name, file.value)
+    } catch (error) {
+      fail(error)
     }
     return true
   }
 
   function disconnect() {
     forgetConnection()
-    Object.assign(project, { connection: undefined, files: [], current: undefined, saved: '' })
+    useWorkspace(undefined)
   }
 
   async function shareLink(): Promise<string> {
@@ -269,8 +349,18 @@ function createStudio() {
   }
 
   async function start() {
-    project.connection = takeConnection()
-    void refreshFiles()
+    const connection = takeConnection()
+    if (connection) {
+      project.workspace = apiWorkspace(connection)
+      void refreshFiles()
+    } else {
+      const handle = await load<FileSystemHandle | null>(WORKSPACE)
+      if (handle) {
+        project.workspace = handle.kind === 'directory' ? folderWorkspace(handle as FileSystemDirectoryHandle) : fileWorkspace(handle as FileSystemFileHandle)
+        project.label = handle.name
+        project.locked = true
+      }
+    }
     await loadGenerators()
     generators.value = Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-'))
     const shared = await decodeShare(location.hash)
@@ -320,8 +410,13 @@ function createStudio() {
     dirty,
     refreshFiles,
     openProjectFile,
+    openHandle,
+    openFromDisk,
+    openFolder,
     saveToProject,
+    saveAs,
     disconnect,
+    canUseDisk,
     notify,
     start,
     generator: (id: string) => generators.value.find((g) => g.id === id) ?? GENERATORS[id],

@@ -16,7 +16,7 @@ export interface Command {
 }
 
 /** ⌘K: every action in Studio, fuzzy-searchable, runnable from the keyboard. */
-const props = defineProps<{ actions: { save: () => void, share: () => void, openFile: () => void } }>()
+const props = defineProps<{ actions: { save: () => void, share: () => void, openFile: () => void, openFolder: () => void, saveAs: () => void } }>()
 const studio = useStudio()
 const { ui } = studio
 const query = ref('')
@@ -35,7 +35,9 @@ const commands = computed<Command[]>(() => [
   { id: 'delete', label: 'Delete layer', group: 'Layers', keys: '⌫', run: () => studio.layers.remove(ui.layer) },
   { id: 'gallery', label: 'Browse presets', group: 'Document', keys: 'G', run: () => (ui.gallery = true) },
   { id: 'open', label: 'Open .aurora file…', group: 'Document', keys: '⌘ O', run: props.actions.openFile },
-  { id: 'save', label: 'Save .aurora file', group: 'Document', keys: '⌘ S', run: props.actions.save },
+  ...(studio.canUseDisk() ? [{ id: 'folder', label: 'Open folder…', group: 'Document', run: props.actions.openFolder }] : []),
+  { id: 'save', label: 'Save', group: 'Document', keys: '⌘ S', run: props.actions.save },
+  ...(studio.canUseDisk() ? [{ id: 'save-as', label: 'Save as…', group: 'Document', keys: '⇧ ⌘ S', run: props.actions.saveAs }] : []),
   { id: 'share', label: 'Copy share link', group: 'Document', run: props.actions.share },
   { id: 'new', label: 'New document', group: 'Document', run: () => studio.open(starter()) },
   { id: 'undo', label: 'Undo', group: 'Edit', keys: '⌘ Z', run: studio.undo },

@@ -65,3 +65,56 @@ describe('Studio store', () => {
     expect(studio.fileName.value).toBe('northern-lights-v2.aurora')
   })
 })
+
+describe('saving in place', () => {
+  const disk = new Map<string, string>()
+  const writes: string[] = []
+  const workspace = {
+    kind: 'folder' as const,
+    label: 'site',
+    files: () => Promise.resolve([...disk.keys()].sort()),
+    read: (path: string) => Promise.resolve(disk.get(path)!),
+    write: (path: string, text: string) => {
+      writes.push(path)
+      disk.set(path, text)
+      return Promise.resolve()
+    },
+  }
+
+  it('opens a file, saves edits back to it, and never rewrites an unchanged one', async () => {
+    disk.set('hero.aurora', '{\n"format": "aurora", "version": 1, "name": "Hand formatted", "palette": ["#123456"], "layers": [{ "type": "aurora-fbm" }]\n}\n')
+    studio.project.workspace = workspace
+    await studio.refreshFiles()
+    expect(studio.project.files).toEqual(['hero.aurora'])
+    await studio.openProjectFile('hero.aurora')
+    expect(studio.project.current).toBe('hero.aurora')
+    expect(await studio.saveToProject()).toBe(true)
+    expect(writes).toEqual([])
+    expect(studio.ui.notices.at(-1)?.message).toBe('No changes to save in hero.aurora')
+    studio.apply(studio.ops.rename, 'Renamed')
+    expect(studio.dirty.value).toBe(true)
+    await studio.saveToProject()
+    expect(writes).toEqual(['hero.aurora'])
+    expect(JSON.parse(disk.get('hero.aurora')!)).toMatchObject({ name: 'Renamed' })
+    expect(studio.dirty.value).toBe(false)
+  })
+
+  it('saves as a new file in the folder, then saves there', async () => {
+    await studio.saveAs('scenes/dusk')
+    expect(studio.project.current).toBe('scenes/dusk.aurora')
+    expect(studio.project.files).toEqual(['hero.aurora', 'scenes/dusk.aurora'])
+  })
+
+  it('refuses to write a document that wouldn\'t load', async () => {
+    writes.length = 0
+    studio.commit(studio.ops.color(studio.doc.value, 0, 'nope'))
+    await studio.saveToProject()
+    expect(writes).toEqual([])
+    expect(studio.ui.notices.at(-1)).toMatchObject({ tone: 'error', message: 'Not saved: $.palette[0] "nope" is not a colour. Use oklch(L C H), oklab(L a b), color(srgb|display-p3 r g b) or #hex.' })
+  })
+
+  it('reports that there is nowhere to save once closed, so ⌘S falls back', async () => {
+    studio.disconnect()
+    expect(await studio.saveToProject()).toBe(false)
+  })
+})

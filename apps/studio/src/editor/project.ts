@@ -9,6 +9,15 @@ export interface Connection {
 
 const KEY = 'aurora-studio-connection'
 
+/** sessionStorage, where it exists and is allowed (it throws in some privacy modes). */
+function session(): Storage | undefined {
+  try {
+    return globalThis.sessionStorage
+  } catch {
+    return undefined
+  }
+}
+
 /** Reads a connection from the URL (then drops the token from the address bar) or from this tab's session. */
 export function takeConnection(): Connection | undefined {
   const url = new URL(location.href)
@@ -19,15 +28,15 @@ export function takeConnection(): Connection | undefined {
     url.searchParams.delete('token')
     history.replaceState(null, '', url)
     const connection = { api: api.endsWith('/') ? api : `${api}/`, token }
-    sessionStorage.setItem(KEY, JSON.stringify(connection))
+    session()?.setItem(KEY, JSON.stringify(connection))
     return connection
   }
-  const saved = sessionStorage.getItem(KEY)
+  const saved = session()?.getItem(KEY)
   return saved ? JSON.parse(saved) as Connection : undefined
 }
 
 export function forgetConnection(): void {
-  sessionStorage.removeItem(KEY)
+  session()?.removeItem(KEY)
 }
 
 async function request<T>(c: Connection, path: string, init: RequestInit = {}): Promise<T> {

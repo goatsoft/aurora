@@ -36,15 +36,41 @@ async function copy(id: string, text: string) {
   copied.value = id
   setTimeout(() => (copied.value = undefined), 1400)
 }
+/**
+ * ⌘S: save the open file in place; with nothing open, choose where (File System Access), or
+ * download where the browser can't save in place.
+ */
 async function save() {
   exporting.value = false
-  // Connected to a project with a file open: save it in place (HMR updates the site).
   if (await studio.saveToProject()) return
+  if (project.workspace && project.workspace.kind !== 'file') {
+    // A folder or project is open but no file in it yet: name the new file.
+    browsing.value = true
+    return
+  }
+  if (await studio.saveAs()) return
+  downloadFile()
+}
+function downloadFile() {
+  exporting.value = false
   download(studio.fileName.value, studio.file.value)
-  studio.notify(`Saved ${studio.fileName.value}`)
+  studio.notify(`Downloaded ${studio.fileName.value}`)
 }
 const project = studio.project
 const browsing = ref(false)
+const newName = ref('')
+watch(browsing, (open) => {
+  if (open) {
+    newName.value = project.current ?? studio.fileName.value
+    if (project.locked || !project.files.length) void studio.refreshFiles()
+  }
+})
+async function saveAsNamed() {
+  const name = newName.value.trim()
+  if (!name) return
+  browsing.value = false
+  await studio.saveAs(name)
+}
 const folders = computed(() => {
   const groups = new Map<string, string[]>()
   for (const path of project.files) {
@@ -53,6 +79,21 @@ const folders = computed(() => {
   }
   return [...groups.entries()]
 })
+const where = computed(() => ({
+  api: `Your project ${project.label}, through its dev server. ⌘S saves back to disk and the site hot-reloads.`,
+  folder: `The folder ${project.label} on this computer. ⌘S saves in place.`,
+  file: `${project.label} on this computer. ⌘S saves in place.`,
+})[project.workspace?.kind ?? 'file'])
+const opening = ref(false)
+async function openFolder() {
+  opening.value = false
+  browsing.value = false
+  await studio.openFolder()
+}
+async function openFromDisk() {
+  opening.value = false
+  await studio.openFromDisk()
+}
 async function openFile(path: string) {
   browsing.value = false
   await studio.openProjectFile(path)
@@ -71,7 +112,12 @@ async function share() {
   await navigator.clipboard.writeText(await studio.shareLink())
   studio.notify('Link copied: it holds the whole document, no account needed')
 }
-defineExpose({ save: () => void save(), share })
+/** ⇧⌘S: a new file in the open folder or project, or anywhere via the system picker. */
+function saveAs() {
+  if (project.workspace && project.workspace.kind !== 'file') browsing.value = true
+  else void studio.saveAs()
+}
+defineExpose({ save: () => void save(), share, saveAs })
 </script>
 
 <template>
@@ -87,38 +133,59 @@ defineExpose({ save: () => void save(), share })
         @change="(e) => { studio.apply(studio.ops.rename, (e.target as HTMLInputElement).value.trim() || 'Untitled'); studio.seal() }"
         @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
       >
-      <template v-if="project.connection">
-        <span class="h-4 w-px bg-panel-border" />
-        <Popover v-model:open="browsing" align="start" class="w-[300px] p-1.5" @update:open="(open) => open && studio.refreshFiles()">
-          <template #trigger>
-            <Button size="sm" class="max-w-52 gap-1.5" aria-label="Project files">
-              <IHgFolderOpen />
-              <span class="truncate">{{ project.current ?? project.root }}</span>
-              <span v-if="studio.dirty.value" class="size-1.5 shrink-0 rounded-full bg-amber-300" aria-label="Unsaved changes" />
-            </Button>
-          </template>
-          <p class="px-2 pt-1 pb-2 text-[11px] text-muted-foreground">Connected to <span class="text-foreground">{{ project.root }}</span>. ⌘S saves the open file back to disk.</p>
-          <div class="max-h-[50vh] overflow-y-auto">
-            <div v-for="[folder, files] in folders" :key="folder" class="mb-1">
-              <p v-if="folder" class="px-2 py-1 font-mono text-[10px] text-muted-foreground">{{ folder }}/</p>
-              <button
-                v-for="path in files"
-                :key="path"
-                class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent"
-                :class="path === project.current && 'bg-accent'"
-                @click="openFile(path)"
-              >
-                <IHgFile01 class="size-3.5 shrink-0 text-muted-foreground" />
-                <span class="truncate">{{ path.slice(folder ? folder.length + 1 : 0) }}</span>
-              </button>
-            </div>
-            <p v-if="!project.files.length" class="px-2 py-4 text-center text-xs text-muted-foreground">No .aurora files in this project yet.</p>
+      <span v-if="project.workspace || studio.canUseDisk()" class="h-4 w-px bg-panel-border" />
+      <Popover v-if="project.workspace" v-model:open="browsing" align="start" class="w-[320px] p-1.5">
+        <template #trigger>
+          <Button size="sm" class="max-w-56 gap-1.5" aria-label="Files">
+            <IHgFolderOpen v-if="project.workspace.kind !== 'file'" />
+            <IHgFile01 v-else />
+            <span class="truncate">{{ project.locked ? `Reopen ${project.label}` : project.current ?? project.label }}</span>
+            <span v-if="studio.dirty.value" class="size-1.5 shrink-0 rounded-full bg-amber-300" aria-label="Unsaved changes" />
+          </Button>
+        </template>
+        <p class="px-2 pt-1 pb-2 text-[11px] leading-snug text-muted-foreground">{{ where }}</p>
+        <div v-if="project.workspace.kind !== 'file'" class="max-h-[46vh] overflow-y-auto">
+          <div v-for="[folder, files] in folders" :key="folder" class="mb-1">
+            <p v-if="folder" class="px-2 py-1 font-mono text-[10px] text-muted-foreground">{{ folder }}/</p>
+            <button
+              v-for="path in files"
+              :key="path"
+              class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent"
+              :class="path === project.current && 'bg-accent'"
+              @click="openFile(path)"
+            >
+              <IHgFile01 class="size-3.5 shrink-0 text-muted-foreground" />
+              <span class="truncate">{{ path.slice(folder ? folder.length + 1 : 0) }}</span>
+              <span v-if="path === project.current && studio.dirty.value" class="ml-auto size-1.5 shrink-0 rounded-full bg-amber-300" />
+            </button>
           </div>
-          <div class="mt-1 flex justify-end border-t border-panel-border pt-1.5">
-            <Button size="sm" @click="() => { studio.disconnect(); browsing = false }">Disconnect</Button>
-          </div>
-        </Popover>
-      </template>
+          <p v-if="!project.files.length" class="px-2 py-3 text-center text-xs text-muted-foreground">{{ project.locked ? 'Allow access when your browser asks.' : 'No .aurora files here yet.' }}</p>
+          <form class="mt-1 flex gap-1 border-t border-panel-border px-1 pt-2" @submit.prevent="saveAsNamed">
+            <input v-model="newName" aria-label="Save as" placeholder="backgrounds/hero.aurora" class="h-7 min-w-0 flex-1 rounded-md bg-input px-2 font-mono text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Button size="sm" variant="subtle" type="submit">Save as</Button>
+          </form>
+        </div>
+        <div class="mt-1.5 flex justify-between border-t border-panel-border pt-1.5">
+          <Button v-if="studio.canUseDisk()" size="sm" @click="openFolder"><IHgFolderOpen />Open folder…</Button>
+          <span v-else />
+          <Button size="sm" @click="() => { studio.disconnect(); browsing = false }">Close</Button>
+        </div>
+      </Popover>
+      <Popover v-else-if="studio.canUseDisk()" v-model:open="opening" align="start" class="w-[260px] p-1.5">
+        <template #trigger>
+          <Button size="icon-sm" aria-label="Open from this computer"><IHgFolderOpen /></Button>
+        </template>
+        <button class="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-accent" @click="openFromDisk">
+          <IHgFile01 class="size-4 text-muted-foreground" />
+          <span class="flex-1">Open file…</span>
+          <span class="flex gap-0.5"><Kbd>⌘</Kbd><Kbd>O</Kbd></span>
+        </button>
+        <button class="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-accent" @click="openFolder">
+          <IHgFolderOpen class="size-4 text-muted-foreground" />
+          <span class="flex-1">Open folder…</span>
+        </button>
+        <p class="px-2 pt-1 pb-1.5 text-[10.5px] leading-snug text-muted-foreground">Files stay on this computer; ⌘S saves them in place.</p>
+      </Popover>
     </div>
 
     <div class="glass pointer-events-auto flex h-11 items-center gap-1.5 rounded-2xl px-1.5 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)]">
@@ -162,10 +229,17 @@ defineExpose({ save: () => void save(), share })
         <button class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent" @click="save">
           <div class="grid size-8 place-items-center rounded-lg bg-primary/15 text-primary"><IHgFile01 class="size-4" /></div>
           <div class="flex-1">
-            <p class="text-xs font-medium">{{ project.current ?? studio.fileName.value }}</p>
-            <p class="text-[11px] text-muted-foreground">{{ project.current ? 'Save to your project; the site hot-reloads' : 'The document, ready for the unplugin or <aurora-bg>' }}</p>
+            <p class="text-xs font-medium">Save {{ project.current ?? studio.fileName.value }}</p>
+            <p class="text-[11px] text-muted-foreground">{{ project.current ? (project.workspace?.kind === 'api' ? 'Back to your project; the site hot-reloads' : 'In place, on this computer') : studio.canUseDisk() ? 'Choose where; then ⌘S saves there' : 'Downloads the file' }}</p>
           </div>
           <span class="flex gap-0.5"><Kbd>⌘</Kbd><Kbd>S</Kbd></span>
+        </button>
+        <button v-if="studio.canUseDisk() || project.current" class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent" @click="downloadFile">
+          <div class="grid size-8 place-items-center rounded-lg bg-input"><IHgDownload04 class="size-4" /></div>
+          <div class="flex-1">
+            <p class="text-xs font-medium">Download a copy</p>
+            <p class="text-[11px] text-muted-foreground">{{ studio.fileName.value }}, ready for the unplugin or &lt;aurora-bg&gt;</p>
+          </div>
         </button>
         <button class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent" @click="poster">
           <div class="grid size-8 place-items-center rounded-lg bg-input"><IHgImage01 class="size-4" /></div>

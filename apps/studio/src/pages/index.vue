@@ -19,7 +19,10 @@ watchEffect(() => document.documentElement.classList.toggle('page-light', ui.pag
 const actions = {
   save: () => top.value?.save(),
   share: () => void top.value?.share(),
-  openFile: () => picker.value?.click(),
+  // The system picker keeps a handle, so ⌘S saves in place; elsewhere, a plain file input.
+  openFile: () => void studio.openFromDisk().then((handled) => handled || picker.value?.click()),
+  openFolder: () => void studio.openFolder(),
+  saveAs: () => top.value?.saveAs(),
 }
 
 const typing = (event: KeyboardEvent) => {
@@ -45,7 +48,8 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
     studio.redo()
   } else if (mod && k === 's') {
     event.preventDefault()
-    actions.save()
+    if (event.shiftKey) actions.saveAs()
+    else actions.save()
   } else if (mod && k === 'o') {
     event.preventDefault()
     actions.openFile()
@@ -104,8 +108,15 @@ useEventListener(window, 'drop', (e: DragEvent) => {
   e.preventDefault()
   depth = 0
   dropping.value = false
+  const item = e.dataTransfer?.items[0]
   const file = e.dataTransfer?.files[0]
-  if (file) void studio.openFile(file)
+  // Where the browser hands over a file handle, keep it, so ⌘S saves back to the dropped file.
+  const handle = item?.getAsFileSystemHandle?.()
+  if (handle) {
+    void handle.then((h) => (h?.kind === 'file' ? studio.openHandle(h as FileSystemFileHandle) : file && studio.openFile(file)))
+  } else if (file) {
+    void studio.openFile(file)
+  }
 })
 </script>
 
