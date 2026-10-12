@@ -2,7 +2,7 @@ import { assertAurora } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { compileCss, DRIFT_KEYFRAMES } from '@/css'
 
-const presets = import.meta.glob<string>('~/presets/classic/*.aurora', { query: '?raw', import: 'default', eager: true })
+const presets = import.meta.glob<string>('~/presets/{classic,mono}/*.aurora', { query: '?raw', import: 'default', eager: true })
 
 describe('CSS fallback in a real browser', () => {
   it.each(Object.entries(presets))('%s is valid CSS that the browser accepts', (_, text) => {

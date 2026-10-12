@@ -33,8 +33,8 @@ function recreate(target: Doc): Doc {
   return doc
 }
 
-describe('Phase 5: Studio recreates every classic preset from scratch', () => {
-  it.each(read('classic'))('%s', (_, text) => {
+describe('Studio recreates every classic and mono preset from scratch', () => {
+  it.each([...read('classic'), ...read('mono')])('%s', (_, text) => {
     const doc = recreate(JSON.parse(text) as Doc)
     expect(resolve(doc).ok).toBe(true)
     expect(serialize(doc)).toBe(text)
@@ -42,7 +42,7 @@ describe('Phase 5: Studio recreates every classic preset from scratch', () => {
 })
 
 describe('serialize', () => {
-  it.each([...read('classic'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
+  it.each([...read('classic'), ...read('mono'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
     expect(serialize(JSON.parse(text) as Doc)).toBe(text)
   })
 })

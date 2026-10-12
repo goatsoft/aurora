@@ -46,6 +46,23 @@ const USAGES: [string, ReturnType<typeof classic>, [number, number]][] = [
   ['docs-hero-light', classic({ colors: PALETTES['aurora']!, fade: true, intensity: 0.35, scale: 1.1, speed: 0.09, seed: 3, stretch: 0.45 }), [256, 144]],
 ]
 
+/** GOATsoft's monochrome auroras (its ADR-0010): one grayscale ramp per appearance, light at 0.55× intensity. */
+const mono = import.meta.glob<string>('~/presets/mono/*.aurora', { query: '?raw', import: 'default', eager: true })
+const monoByName = Object.fromEntries(Object.entries(mono).map(([path, text]) => [path.replace(/^.*\/|\.aurora$/g, ''), text]))
+const MONO: Record<'dark' | 'light', [Rgb, Rgb, Rgb]> = {
+  dark: [[0.86, 0.88, 0.93], [0.72, 0.75, 0.82], [0.96, 0.97, 1.0]],
+  light: [[0.17, 0.18, 0.23], [0.30, 0.32, 0.38], [0.10, 0.11, 0.15]],
+}
+const MONO_USAGES: [string, ReturnType<typeof classic>, [number, number]][] = [
+  ['hero-dark', classic({ colors: MONO.dark, fade: true, intensity: 0.36, scale: 1.1, speed: 0.09, seed: 3, stretch: 0.45 }), [256, 144]],
+  ['hero-light', classic({ colors: MONO.light, fade: true, intensity: 0.11, scale: 1.1, speed: 0.09, seed: 3, stretch: 0.45 }), [256, 144]],
+  ['hero-touch', classic({ colors: MONO.dark, fade: true, intensity: 0.5, scale: 1.1, speed: 0.09, seed: 3, stretch: 0.45 }), [256, 400]],
+  ['about-dark', classic({ colors: MONO.dark, fade: true, intensity: 0.22, scale: 0.9, speed: 0.05, seed: 11, stretch: 0.5 }), [256, 160]],
+  ['about-light', classic({ colors: MONO.light, fade: true, intensity: 0.12, scale: 0.9, speed: 0.05, seed: 11, stretch: 0.5 }), [256, 160]],
+  ['open-source-dark', classic({ colors: MONO.dark, intensity: 0.22, scale: 1.4, speed: 0.07, seed: 7, stretch: 0.6, sweep: 0.6 }), [256, 192]],
+  ['open-source-light', classic({ colors: MONO.light, intensity: 0.12, scale: 1.4, speed: 0.07, seed: 7, stretch: 0.6, sweep: 0.6 }), [256, 192]],
+]
+
 /** The original 80-byte uniform block (fillAuroraUniforms). */
 function classicUniforms(o: ReturnType<typeof classic>, width: number, height: number, time: number, scroll: number): Float32Array<ArrayBuffer> {
   return new Float32Array([
@@ -68,9 +85,13 @@ describe('classic parity (mix: "srgb")', () => {
     expect(Object.keys(byName).sort()).toEqual(USAGES.map(([n]) => n).sort())
   })
 
-  it.each(USAGES)('%s renders identically to the original shader', async (name, options, [width, height]) => {
+  it('covers every mono preset file', () => {
+    expect(Object.keys(monoByName).sort()).toEqual(MONO_USAGES.map(([n]) => n).sort())
+  })
+
+  it.each([...USAGES, ...MONO_USAGES.map(([n, o, size]) => [`mono/${n}`, o, size] as const)])('%s renders identically to the original shader', async (name, options, [width, height]) => {
     // The original applies the download cards' fade as a CSS mask on top of the canvas, so compare without it.
-    const doc = preset(name)
+    const doc = name.startsWith('mono/') ? assertAurora(monoByName[name.slice(5)]) : preset(name)
     const unmasked = { ...doc, layers: doc.layers.map(({ mask, ...layer }) => layer) }
     const shader = compose(unmasked)
     for (const [time, scroll] of [[0, 0], [12.5, 0], [97.25, 0.3]] as const) {
