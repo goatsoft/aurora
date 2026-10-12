@@ -38,7 +38,8 @@
   },
   "dependencies": {
     "@goatsoft/aurora-format": "workspace:^",
-    "@goatsoft/color": "workspace:^"
+    "@goatsoft/color": "workspace:^",
+    "@webgpu/types": "^0.1.74"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

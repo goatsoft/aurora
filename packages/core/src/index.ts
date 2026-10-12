@@ -1,3 +1,6 @@
+// Consumers see GPU types in our declarations, so they get them with the package.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference types="@webgpu/types" preserve="true" />
 export { configureAurora } from './config'
 export type { AuroraConfig } from './config'
 export { mountAurora, setBackends } from './surface'

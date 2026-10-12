@@ -15,14 +15,18 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, and **ESLint Stylistic for formatting**. There is no Prettier.
 - **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
-- Later phases add Vue 3.5, vue-router 5, Tailwind 4, shadcn-vue, and gruff on `unplugin-vue-markdown` (see PLAN.md §3–5).
+- **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
+- Later phases add vue-router 5, Tailwind 4, shadcn-vue, and gruff on `unplugin-vue-markdown` (see PLAN.md §3–5).
 
 ## Layout
 
 ```
 packages/color    @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps)
 packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations
-packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback
+packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback; /element is <aurora-bg>, /load is loadAurora
+packages/vue      @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), <AuroraScene> (written in TS with h(), no SFC build)
+packages/unplugin @goatsoft/aurora-unplugin .aurora imports: build-time validation, typed modules, HMR
+apps/sample       Vite + Vue SSR app using all of the above
 presets/goat/     The GOAT pack: the parity reference and default demo themes
 docs/adr/         Architecture decision records
 ```

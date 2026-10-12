@@ -8,20 +8,49 @@ Design a background in **Aurora Studio**, export a `.aurora` file and drop it in
 
 ## Use
 
-```ts
-import { assertAurora } from '@goatsoft/aurora-format'
-import { mountAurora } from '@goatsoft/aurora'
-import hero from './hero.aurora?raw'
+**Vue**, with the bundler plugin: files are validated at build time, the CSS fallback is server-rendered, and edits hot-reload in place.
 
-// Paints the CSS fallback at once, then crossfades to WebGPU after its first frame.
-const surface = mountAurora(document.querySelector('.hero')!, assertAurora(hero))
+```ts
+// vite.config.ts
+import aurora from '@goatsoft/aurora-unplugin/vite'
+export default defineConfig({ plugins: [vue(), aurora()] })
 ```
 
-`<aurora-bg>`, Vue bindings and a bundler plugin (`import hero from './hero.aurora'`) arrive in Phase 3. The GOAT pack in [`presets/goat`](presets/goat) is a good place to start.
+```vue
+<script setup lang="ts">
+import { AuroraBackground } from '@goatsoft/aurora-vue'
+import hero from './hero.aurora'
+</script>
+
+<template>
+  <section class="relative">
+    <AuroraBackground :src="hero" />
+  </section>
+</template>
+```
+
+Add `"@goatsoft/aurora-unplugin/client"` to `compilerOptions.types` for typed `.aurora` imports. Wrap panels in `<AuroraScene name="landing">` to make them one continuous background.
+
+**Any page**, no framework:
+
+```html
+<script type="module" src="https://…/@goatsoft/aurora/element"></script>
+<section style="position: relative">
+  <aurora-bg src="/hero.aurora"></aurora-bg>
+</section>
+```
+
+Style it with `aurora-bg:state(webgpu)` and `aurora-bg:state(css)`; listen for `aurora-mode` and `aurora-error`.
+
+**Plain TypeScript**: `mountAurora(element, doc)` from `@goatsoft/aurora`.
+
+The GOAT pack in [`presets/goat`](presets/goat) is the place to start, and [`apps/sample`](apps/sample) shows all of it together.
 
 | Package | What it is |
 |---|---|
-| `@goatsoft/aurora` | WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback |
+| `@goatsoft/aurora` | WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback. `/element` is `<aurora-bg>` |
+| `@goatsoft/aurora-vue` | `<AuroraBackground>`, `useAurora()`, `<AuroraScene>` |
+| `@goatsoft/aurora-unplugin` | `import hero from './hero.aurora'` for Vite, Rollup, Rolldown, esbuild, webpack, Rspack |
 | `@goatsoft/aurora-format` | The `.aurora` format: schema, validation, migrations, JSON Schema |
 | `@goatsoft/color` | OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing |
 
