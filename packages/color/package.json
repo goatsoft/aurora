@@ -1,0 +1,27 @@
+{
+  "name": "@goatsoft/color",
+  "version": "0.0.0",
+  "description": "OKLab and OKLCH colour maths: sRGB and Display P3, CSS Color 4 gamut mapping, ΔE-OK and CSS colour parsing. Zero dependencies.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goatsoft/aurora.git",
+    "directory": "packages/color"
+  },
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "@goatsoft/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

@@ -4,7 +4,7 @@ Status: accepted · 12 October 2026
 
 ## Context
 
-Aurora ships several packages (format, runtime, bindings, Studio, docs-kit) and a site from one repo. Every change should be checked against real WebGPU, not a mock, because the runtime's whole contract is "never claim WebGPU before a real frame".
+Aurora ships several packages (color, format, runtime, bindings, Studio, gruff) and a site from one repo. Every change should be checked against real WebGPU, not a mock, because the runtime's whole contract is "never claim WebGPU before a real frame".
 
 ## Decision
 

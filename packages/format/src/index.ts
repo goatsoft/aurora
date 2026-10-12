@@ -6,17 +6,3 @@ export { AuroraFormatError } from './issues'
 export type { FormatIssue } from './issues'
 export { MIGRATIONS, migrate } from './migrate'
 export type { Migration, MigrateResult } from './migrate'
-export {
-  deltaEOK,
-  gamutMap,
-  inGamut,
-  linearToSrgb,
-  oklabToOklch,
-  oklabToRgb,
-  oklchToOklab,
-  rgbToOklab,
-  srgbToLinear,
-} from './color'
-export type { Oklab, Oklch, Rgb, RgbSpace } from './color'
-export { COLOR_SYNTAX, formatOklch, parseColor } from './parse-color'
-export type { ColorParseResult } from './parse-color'

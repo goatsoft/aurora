@@ -60,6 +60,8 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@24.19.2)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(vite@8.3.4(@types/node@24.19.2)(jiti@2.7.0)(yaml@2.9.1))
 
+  packages/color: {}
+
   packages/core:
     dependencies:
       '@goatsoft/aurora-format':
@@ -68,6 +70,9 @@ importers:
 
   packages/format:
     dependencies:
+      '@goatsoft/color':
+        specifier: workspace:^
+        version: link:../color
       valibot:
         specifier: ^1.5.0
         version: 1.5.0(typescript@5.9.3)

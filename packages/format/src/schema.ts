@@ -1,5 +1,5 @@
 import * as v from 'valibot'
-import { COLOR_SYNTAX, parseColor } from './parse-color'
+import { COLOR_SYNTAX, parseColor } from '@goatsoft/color'
 
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
 export const FORMAT_VERSION = 1

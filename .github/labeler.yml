@@ -1,5 +1,8 @@
 # Path-based PR labels, applied by .github/workflows/labels.yml (actions/labeler).
 
+"pkg: color":
+  - changed-files:
+      - any-glob-to-any-file: packages/color/**
 "pkg: format":
   - changed-files:
       - any-glob-to-any-file: packages/format/**

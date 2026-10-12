@@ -9,7 +9,7 @@ Aurora is a **GOATsoft library for animated backgrounds that are WebGPU-only and
 - You design a background in **Aurora Studio** and export a `.aurora` file.
 - Any GOATsoft site drops that file in with one line. WebGPU renders it. Browsers without WebGPU get a generated CSS fallback, so there is no WebGL or GLSL path at all.
 - The first preset pack is the aurora from the GOAT website, reproduced exactly. The format and builder also allow other background types (mesh gradients, waves, grain and others). All of them are authored and blended in **OKLab/OKLCH**.
-- The project produces four things: the **library**, the **Studio** (a dev tool that we also host), a **marketing site** and a **docs site**. The docs run on our own markdown-it pipeline, which is what VitePress uses, without VitePress itself.
+- The project produces four things: the **library**, the **Studio** (a dev tool that we also host), a **marketing site** and a **docs site**. The docs and site run on **gruff**, our own rustic-and-ready static site generator built on `unplugin-vue-markdown` (markdown-it), without VitePress.
 
 ### Why this is a rewrite and not a refactor
 
@@ -62,14 +62,15 @@ These facts come from the GOAT source (`GOAT/web/src/lib/aurora-*`) and ADR-0041
 ```
 aurora/                          pnpm workspace · Vite 8 · Vue 3.5 · TS 5.9 · Node ≥24
 ├─ packages/
-│  ├─ format/        @goatsoft/aurora-format   .aurora schema, validation, migrations, OKLab math (pure TS, 0 deps)
+│  ├─ color/         @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps; shared across GOATsoft)
+│  ├─ format/        @goatsoft/aurora-format   .aurora schema, validation, migrations (deps: color, Valibot)
 │  ├─ core/          @goatsoft/aurora          WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback
 │  ├─ generators/    (inside core, tree-shaken) WGSL modules: aurora-fbm, mesh, waves, grain, conic, noise-field…
 │  ├─ element/       @goatsoft/aurora/element  <aurora-bg> custom element (framework-free, any GOATsoft site)
 │  ├─ vue/           @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), scene provider
 │  ├─ unplugin/      @goatsoft/aurora-unplugin `import hero from './hero.aurora'` (Vite/Rollup/esbuild/webpack)
 │  ├─ studio/        @goatsoft/aurora-studio   Aurora Studio – the builder (vue-router 5 file routes; `npx aurora studio`)
-│  └─ docs-kit/      @goatsoft/docs-kit        markdown-it pipeline + Vite plugin (our "VitePress"; reusable by other GOATsoft sites)
+│  └─ gruff/         @goatsoft/gruff           static site generator: unplugin-vue-markdown + plugins + prerender (reusable by other GOATsoft sites)
 ├─ apps/
 │  └─ site/          marketing + /docs + hosted /studio (prerendered SSG) → GitHub Pages at aurora.goatsoft.io
 ├─ docs/             docs content (.md)
@@ -101,7 +102,7 @@ The file is declarative JSON. It never contains arbitrary WGSL, because a file m
 
 - **Generator registry.** Each `type` maps to a generator with a typed param schema. The schema includes ranges, defaults, units and UI hints, so the Studio inspectors are generated from it rather than hand-built.
 - **Layers.** A file is a stack of layers with `normal | screen | add | multiply | overlay` blending and per-layer masks (linear or radial fade). This is what lets one format hold GOAT auroras and anything else.
-- **Colour.** Colours are stored as OKLCH strings, converted to OKLab on the CPU, mixed in OKLab in the shader, and gamut-mapped at output. The canvas uses `colorSpace: 'display-p3'` when the browser supports it. Björn Ottosson's matrices port directly from `OKLabColorPicker/OKLabColor.swift`.
+- **Colour.** Colours are stored as OKLCH strings, converted to OKLab on the CPU, mixed in OKLab in the shader, and gamut-mapped at output. The canvas uses `colorSpace: 'display-p3'` when the browser supports it. The maths lives in `@goatsoft/color` (Björn Ottosson's matrices, as in `OKLabColorPicker/OKLabColor.swift`), so every GOATsoft project shares one implementation.
 - **Versioning.** `version` is an integer with forward migrations in `format/migrations`. Validation uses Valibot (about 1 kB) and reports errors with JSON paths.
 - **Validation in tooling.** A JSON Schema is generated from the Valibot schema and published, so editors autocomplete `.aurora` files.
 
@@ -150,7 +151,7 @@ This matches the GOAT web stack, so components can move between projects.
 - **Left: Layers.** Add, reorder, duplicate, solo and mute layers. Each layer gets a generator picker with live thumbnails.
 - **Right: Inspector.**
   - Controls are generated from the param schema: scrubbable number fields, drag-to-adjust, and keyboard nudges with shift for ×10.
-  - **OKLCH colour picker.** A Lab plane plus hue strip, with a gamut boundary overlay for sRGB and P3, harmonies and a WCAG contrast check against page text. The math is ported from OKLabColorPicker.
+  - **OKLCH colour picker.** A Lab plane plus hue strip, with a gamut boundary overlay for sRGB and P3, harmonies and a WCAG contrast check against page text. The maths comes from `@goatsoft/color`.
 - **Bottom: Timeline / motion.** Speed, a seed shuffler, a reduced-motion preview and a scroll-parallax scrubber.
 - **Top bar.** Viewport presets (hero, panel, tile, phone, and a full page with scroll), plus a light/dark page context. The dark context shows the Caprine Midnight look and the light one shows multiply.
 
@@ -179,7 +180,7 @@ This matches the GOAT web stack, so components can move between projects.
 
 ## 5. Docs and marketing site
 
-**`@goatsoft/docs-kit`** is our own pipeline, built on markdown-it 14, the same parser VitePress uses.
+**`@goatsoft/gruff`** is our rustic-and-ready static site generator. It is built on [`unplugin-vue-markdown`](https://github.com/unplugin/unplugin-vue-markdown), which turns `.md` files into Vue components using markdown-it, the same parser VitePress uses. Gruff adds the plugins, routing and prerender.
 - Frontmatter comes from gray-matter.
 - Shiki handles highlighting, with dual light/dark themes and `// [!code highlight]` notation.
 - Plugins:
@@ -188,7 +189,7 @@ This matches the GOAT web stack, so components can move between projects.
   - Wikilinks and the glossary, both ported from GOAT's in-repo plugins.
   - Mermaid, bundled with no CDN.
 - **Live demos.** A ```` ```aurora ```` fence renders a live, editable background next to its source.
-- A Vite plugin turns `docs/**/*.md` into route components, which vue-router 5 file routes pick up.
+- `unplugin-vue-markdown` turns `docs/**/*.md` into Vue components, which vue-router 5 file routes pick up as pages.
 - Search is a build-time MiniSearch index.
 
 **`apps/site`** contains:
@@ -220,7 +221,7 @@ Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's 
 | 3 | **Bindings** | `<aurora-bg>`, `aurora-vue`, `aurora-unplugin` with HMR | A sample app imports `.aurora`, there is no flash, and the SSR fallback works |
 | 4 | **More generators** | mesh-gradient, waves, grain, conic, noise-field; layer blending and masks | Each generator has param schema, docs and a golden image |
 | 5 | **Studio** | Builder as in section 4, hosted and local dev-tool mode | It can recreate every GOAT preset from scratch and export a file identical to the pack |
-| 6 | **Docs + site** | `packages/docs-kit`, `apps/site`, prerender, and Pages deploy to aurora.goatsoft.io | Lighthouse targets are met and all docs examples are live |
+| 6 | **Docs + site** | `packages/gruff`, `apps/site`, prerender, and Pages deploy to aurora.goatsoft.io | Lighthouse targets are met and all docs examples are live |
 | 7 | **Rollout** | Replace the aurora in GOAT/web, the GOAT docs theme and goatsoft.io. Delete their shader copies and GLSL paths. Supersede GOAT ADR-0079 and GOATsoft ADR-0005 with Aurora ADRs. | Every GOATsoft site runs on `@goatsoft/aurora` |
 
 Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API is stable after Phase 2.
@@ -248,5 +249,5 @@ Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API 
 4. **Package manager:** pnpm workspaces.
 5. **Touch devices:** use WebGPU on touch devices when it is available, with an opt-out to force CSS.
 6. **Repos:**
-   - `goatsoft/aurora` holds everything (library, Studio, docs-kit, site) and deploys its own Pages site to aurora.goatsoft.io.
+   - `goatsoft/aurora` holds everything (library, colour maths, Studio, gruff, site) and deploys its own Pages site to aurora.goatsoft.io.
    - The legacy checkpoint stays local only, in `~/Projects/aurora-legacy`.
