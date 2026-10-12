@@ -82,6 +82,6 @@ pnpm verify                             # lint, typecheck, unit + WebGPU browser
 
 Tooling decisions live in [docs/adr](docs/adr). Agent and contributor rules are in [AGENTS.md](AGENTS.md).
 
-## License
+## Licence
 
-[MIT](LICENSE)
+Source code, documentation, presets and examples use the [MIT licence](LICENSE). Artwork and branding (the Aurora name, mark and everything in [`assets/`](assets)) have [separate terms](LICENSE-ART.md).

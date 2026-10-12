@@ -30,4 +30,8 @@ The adaptive files follow the colour scheme supplied by the browser. For a manua
 
 Use the compact variant below 48 px. Use the neon variant for larger placements. Preserve the viewBox padding so the glow is not cropped. If inlining more than one gradient mark into a document, give each copy unique gradient and filter IDs and update its `url(#…)` references. External `<img>` embeds isolate these IDs automatically. For a monochrome external image, replace `currentColor` with a fixed colour; parent text colour only inherits into inline SVG.
 
-These are standalone design assets; no application branding has been replaced.
+Studio and the site import these files from here (`~/assets/brand/…`); don't copy them into packages, which are published under MIT.
+
+## Licence
+
+The Aurora mark and every file in `assets/` are Brand Assets under the [Aurora artwork and brand licence](../../LICENSE-ART.md), not the MIT licence that covers the code.
