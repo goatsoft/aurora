@@ -8,7 +8,7 @@ Aurora ships several packages (format, runtime, bindings, Studio, docs-kit) and 
 
 ## Decision
 
-- **pnpm workspaces** (`packages/*`, `apps/*`), Node ≥ 22, ESM only.
+- **pnpm workspaces** (`packages/*`, `apps/*`), Node ≥ 24 (pinned in `.nvmrc`), ESM only.
 - **TypeScript 5.9** in strict mode with project references. `tsc -b` is the typecheck.
 - Workspace packages export a `@goatsoft/source` condition pointing at `src/index.ts`. TypeScript, Vite and Vitest resolve it, so packages consume each other's sources with no prior build. Published builds ignore it.
 - **Vite 8** library mode builds each package to `dist/` (ESM, dependencies external). `tsc` emits the declarations.

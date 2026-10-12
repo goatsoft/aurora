@@ -60,7 +60,7 @@ These facts come from the GOAT source (`GOAT/web/src/lib/aurora-*`) and ADR-0041
 ## 3. Architecture
 
 ```
-aurora/                          pnpm workspace · Vite 8 · Vue 3.5 · TS 5.9 · Node ≥22
+aurora/                          pnpm workspace · Vite 8 · Vue 3.5 · TS 5.9 · Node ≥24
 ├─ packages/
 │  ├─ format/        @goatsoft/aurora-format   .aurora schema, validation, migrations, OKLab math (pure TS, 0 deps)
 │  ├─ core/          @goatsoft/aurora          WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback

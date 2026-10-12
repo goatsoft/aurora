@@ -8,7 +8,7 @@ Design a background in **Aurora Studio**, export a `.aurora` file and drop it in
 
 ## Development
 
-Requires Node 22+ and pnpm 10 (`corepack enable`).
+Requires Node 24+ (see `.nvmrc`) and pnpm 10 (`corepack enable`).
 
 ```sh
 pnpm install
