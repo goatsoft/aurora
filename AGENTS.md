@@ -23,6 +23,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 packages/color    @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps)
 packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations
 packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback
+presets/goat/     The GOAT pack: the parity reference and default demo themes
 docs/adr/         Architecture decision records
 ```
 
@@ -32,12 +33,13 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
-pnpm verify          # lint + typecheck + all tests with coverage + build. Must pass before every push.
+pnpm verify          # lint + typecheck + all tests with coverage + build + size budgets. Must pass before every push.
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
 pnpm coverage
 pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json
+pnpm size            # gzip sizes against the PLAN.md §3.2 budgets
 pnpm changeset       # for any user-facing change to a @goatsoft/* package
 ```
 
@@ -73,6 +75,8 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 - `@goatsoft/color` and `@goatsoft/aurora-format` stay at 100% coverage (enforced by `pnpm verify`). Use fast-check for round-trip and fuzz properties.
 - Error messages are part of the API: assert their exact text.
 - Golden images are generated and compared under the same (SwiftShader) adapter.
+- Headless SwiftShader can't present WebGPU canvases: render through `TextureCanvas` (packages/core/test/gpu.ts) to check pixels. GOAT parity is bit-exact; keep it that way.
+- Auroras are the flagship: new defaults, docs and demos start from the aurora presets.
 
 ### Docs
 

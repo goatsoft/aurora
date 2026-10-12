@@ -16,7 +16,8 @@
     "test:all": "vitest run",
     "coverage": "vitest run --project unit --coverage",
     "changeset": "changeset",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test:all --coverage && pnpm build"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test:all --coverage && pnpm build && pnpm size",
+    "size": "node scripts/size.ts"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
