@@ -19,7 +19,7 @@ export default defineConfig({
   base: process.env['STUDIO_BASE'] ?? '/',
   plugins: [
     // File-based routes from src/pages (must run before the Vue plugin).
-    VueRouter({ routesFolder: `${here}src/pages`, dts: `${here}src/typed-router.d.ts` }),
+    VueRouter({ root: here, routesFolder: `${here}src/pages`, dts: `${here}src/typed-router.d.ts` }),
     vue(),
     tailwindcss(),
     // VueUse is listed by name (its preset resolves from the working directory, which breaks under the root Vitest).

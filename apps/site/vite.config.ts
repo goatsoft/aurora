@@ -38,6 +38,7 @@ export default defineConfig({
   plugins: [
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
     VueRouter({
+      root: here,
       routesFolder: [{ src: `${here}src/pages` }, { src: docs, path: 'docs/' }],
       extensions: ['.vue', '.md'],
       dts: `${here}src/typed-router.d.ts`,
