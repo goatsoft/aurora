@@ -27,10 +27,13 @@ export function generatorIds(): string[] {
 
 /** Loads the given built-in generators (all of them by default). Unknown ids are ignored. */
 export async function loadGenerators(ids: Iterable<string> = Object.keys(BUILTIN)): Promise<void> {
-  await Promise.all([...new Set(ids)].map(async (id) => {
-    const load = BUILTIN[id]
-    if (!registry[id] && load) registry[id] = await load()
-  }))
+  const wanted = new Set(ids)
+  const missing = Object.keys(BUILTIN).filter((id) => wanted.has(id) && !registry[id])
+  const loaded = await Promise.all(missing.map((id) => BUILTIN[id]!()))
+  // Register in catalogue order, whatever order the chunks arrived in, so listings are stable.
+  missing.forEach((id, i) => {
+    registry[id] ??= loaded[i]!
+  })
 }
 
 const ID = /^[a-z][a-z\d]*(?:-[a-z\d]+)*$/
