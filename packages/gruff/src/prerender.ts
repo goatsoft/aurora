@@ -16,6 +16,21 @@ export interface PrerenderOptions {
   render: (url: string) => Promise<RenderResult>
   /** Also write `404.html` from this route, for static hosts. */
   notFound?: string
+  /**
+   * Inline the build's own stylesheets as `<style>`, so first paint doesn't wait on another
+   * request. Worth it while the CSS is small; external and cross-site sheets stay links.
+   */
+  inlineCss?: boolean
+}
+
+/** Swaps `<link rel="stylesheet" href="/…">` for the file's contents. */
+async function inlineStyles(template: string, outDir: string): Promise<string> {
+  const links = [...template.matchAll(/<link rel="stylesheet"(?: crossorigin)? href="(\/[^"/][^"]*\.css)">/g)]
+  for (const [tag, href] of links) {
+    const css = await readFile(join(outDir, href!), 'utf8')
+    template = template.replace(tag, () => `<style>${css.trim().replaceAll('</style', '<\\/style')}</style>`)
+  }
+  return template
 }
 
 /**
@@ -23,11 +38,12 @@ export interface PrerenderOptions {
  * `docs/guide/index.html`. The template's `<!--app-->` and `<!--head-->` are replaced, and the
  * client hydrates the same markup.
  */
-export async function prerender({ outDir, routes, render, notFound }: PrerenderOptions): Promise<string[]> {
-  const template = await readFile(join(outDir, 'index.html'), 'utf8')
+export async function prerender({ outDir, routes, render, notFound, inlineCss = false }: PrerenderOptions): Promise<string[]> {
+  let template = await readFile(join(outDir, 'index.html'), 'utf8')
   if (!template.includes('<!--app-->') || !template.includes('<!--head-->')) {
     throw new Error(`prerender: ${join(outDir, 'index.html')} needs <!--head--> in <head> and <!--app--> inside the app element.`)
   }
+  if (inlineCss) template = await inlineStyles(template, outDir)
   const page = async (url: string) => {
     const { html, head, htmlAttrs } = await render(url)
     return template

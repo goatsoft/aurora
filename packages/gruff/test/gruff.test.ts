@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
@@ -106,6 +106,15 @@ describe('prerender', () => {
     })
     expect(files.map((f) => f.slice(out.length))).toEqual(['/index.html', '/docs/guide/index.html', '/404.html'])
     expect(readFileSync(join(out, 'docs/guide/index.html'), 'utf8')).toBe('<!doctype html><html lang="en"><head><title>/docs/guide</title></head><body><div id="app"><p>/docs/guide</p></div></body></html>')
+  })
+
+  it('inlines the build\'s stylesheets when asked, and leaves other links alone', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    mkdirSync(join(out, 'assets'))
+    writeFileSync(join(out, 'assets/index.css'), 'body{color:red}\n')
+    writeFileSync(join(out, 'index.html'), '<head><!--head--><link rel="stylesheet" crossorigin href="/assets/index.css"><link rel="stylesheet" href="//fonts.example/a.css"></head><div id="app"><!--app--></div>')
+    await prerender({ outDir: out, routes: ['/'], inlineCss: true, render: () => Promise.resolve({ html: '', head: '' }) })
+    expect(readFileSync(join(out, 'index.html'), 'utf8')).toBe('<head><style>body{color:red}</style><link rel="stylesheet" href="//fonts.example/a.css"></head><div id="app"></div>')
   })
 
   it('says what the template is missing', async () => {
