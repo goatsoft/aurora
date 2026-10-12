@@ -9,9 +9,10 @@ const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'linear-sweep': () => import('./linear-sweep').then((m) => m.linearSweep as Generator),
   'conic': () => import('./conic').then((m) => m.conic as Generator),
   'grain': () => import('./grain').then((m) => m.grain as Generator),
-  'terrain': () => import('./terrain').then((m) => m.terrain as Generator),
+  'strata': () => import('./strata').then((m) => m.strata as Generator),
   'wind': () => import('./wind').then((m) => m.wind as Generator),
   'fire': () => import('./fire').then((m) => m.fire as Generator),
+  'water': () => import('./water').then((m) => m.water as Generator),
 }
 
 const registry: Record<string, Generator> = { [auroraFbm.id]: auroraFbm }

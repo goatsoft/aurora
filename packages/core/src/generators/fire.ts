@@ -7,7 +7,7 @@ export const fire = defineGenerator({
   label: 'Fire',
   description: 'Fire: flames licking up from the bottom edge, with rising embers.',
   colors: 3,
-  palette: ['oklch(0.45 0.19 28)', 'oklch(0.68 0.21 45)', 'oklch(0.94 0.12 92)'],
+  palette: ['oklch(0.42 0.18 27)', 'oklch(0.66 0.22 42)', 'oklch(0.92 0.15 88)'],
   requires: ['fbm', 'worley', 'hash'],
   params: {
     height: { default: 0.6, min: 0.1, max: 1.2, step: 0.01, label: 'Height', description: 'How far up the canvas the flames reach.' },
@@ -18,22 +18,36 @@ export const fire = defineGenerator({
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different fire.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `
+fn ramp(c: array<vec3f, 3>, k: f32) -> vec3f {
+  return select(mix(c[1], c[2], k * 2.0 - 1.0), mix(c[0], c[1], k * 2.0), k < 0.5);
+}
 fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let aspect = ctx.res.x / ctx.res.y;
   let t = ctx.time * P.speed;
+  let x = ctx.uv.x * aspect;
   let up = 1.0 - ctx.uv.y;
-  let p = vec2f(ctx.uv.x * aspect * P.scale, up * P.scale * 0.8 - t) + P.seed * 1.9;
-  let warp = vec2f(noise_fbm(p * 0.7 + vec2f(0.0, -t * 0.4), 3), 0.0) * P.turbulence;
-  let n = noise_turbulence(p + warp, 5);
-  var heat = clamp((1.0 - up / P.height) * 1.15 + (n - 0.35) * P.turbulence * 1.4, 0.0, 1.0);
-  heat = heat * heat * (3.0 - 2.0 * heat);
-  var col = select(mix(c[1], c[2], heat * 2.0 - 1.0), mix(c[0], c[1], heat * 2.0), heat < 0.5);
-  var alpha = smoothstep(0.02, 0.35, heat);
-  // Embers: one spark per cell, rising and flickering.
-  let cells = vec2f(ctx.uv.x * aspect, up) * 9.0 - vec2f(0.0, t * 1.6) + P.seed;
-  let cell = noise_worley(cells).x;
-  let flicker = noise_hash21(floor(cells) + floor(t * 6.0)) ;
-  let spark = (1.0 - smoothstep(0.02, 0.07, cell)) * step(1.0 - P.embers * 0.6, flicker) * smoothstep(1.0, 0.2, up);
+  // Flame columns: how high the fire reaches varies slowly along the bottom edge.
+  let column = noise_fbm(vec2f(x * 0.8 * P.scale + P.seed, t * 0.12), 3) * 0.5 + 0.5;
+  let reach = P.height * (0.45 + column);
+  // Rising, vertically stretched turbulence, folded by a slower warp.
+  let q = vec2f(x * P.scale * 1.5, up * P.scale - t * 1.5) + P.seed * 1.7;
+  let warp = vec2f(noise_fbm(q * 0.45 + vec2f(0.0, t * 0.3), 3), noise_fbm(q * 0.45 + 3.7, 3)) * P.turbulence * 0.9;
+  let n = noise_fbm(q + warp, 5) * 0.5 + 0.5;
+  // Heat falls off with height, and the noise eats more of it towards the tips.
+  let height = up / reach;
+  let heat = clamp(1.0 - height + (n - 0.5) * P.turbulence * (0.5 + 1.8 * height), 0.0, 1.0);
+  let flame = smoothstep(0.02, 0.3, heat);
+  // Most of the fire is orange and red; it only turns white-hot deep in the base.
+  var col = ramp(c, pow(heat, 1.7));
+  // A faint ember-red glow above the flames, like light on smoke.
+  let glow = exp(-height * 2.2) * 0.22 * (0.7 + 0.3 * n);
+  var alpha = max(flame, glow);
+  col = mix(c[0], col, flame / max(alpha, 1e-4));
+  // Embers: sparse sparks that rise, sway and flicker out, only above the flames.
+  let lift = vec2f(x * 7.0 + sin(up * 6.0 + t) * 0.4, up * 7.0 - t * 2.2) + P.seed;
+  let cell = noise_worley(lift).x;
+  let life = noise_hash21(floor(lift) + floor(t * 1.5));
+  let spark = (1.0 - smoothstep(0.015, 0.05, cell)) * step(1.0 - P.embers * 0.35, life) * smoothstep(0.1, 0.5, height) * (1.0 - smoothstep(0.9, 1.8, height)) * (1.0 - flame);
   col = mix(col, c[2], spark);
   alpha = max(alpha, spark);
   return vec4f(col, alpha);

@@ -28,9 +28,10 @@ const budgets: Budget[] = [
   { name: 'generator: linear-sweep', entry: 'packages/core/src/generators/linear-sweep.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: conic', entry: 'packages/core/src/generators/conic.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: grain', entry: 'packages/core/src/generators/grain.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
-  { name: 'generator: terrain', entry: 'packages/core/src/generators/terrain.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: strata', entry: 'packages/core/src/generators/strata.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: wind', entry: 'packages/core/src/generators/wind.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: fire', entry: 'packages/core/src/generators/fire.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: water', entry: 'packages/core/src/generators/water.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   // The shared noise library ships once, however many generators use it.
   { name: 'noise library', entry: 'packages/core/src/generators/noise.ts', limit: 3 * KB },
 ]
