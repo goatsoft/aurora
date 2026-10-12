@@ -10,6 +10,7 @@ const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'conic': () => import('./conic').then((m) => m.conic as Generator),
   'grain': () => import('./grain').then((m) => m.grain as Generator),
   'strata': () => import('./strata').then((m) => m.strata as Generator),
+  'mountains': () => import('./mountains').then((m) => m.mountains as Generator),
   'clouds': () => import('./clouds').then((m) => m.clouds as Generator),
   'wind': () => import('./wind').then((m) => m.wind as Generator),
   'fire': () => import('./fire').then((m) => m.fire as Generator),

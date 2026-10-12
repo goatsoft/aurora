@@ -29,6 +29,7 @@ const budgets: Budget[] = [
   { name: 'generator: conic', entry: 'packages/core/src/generators/conic.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: grain', entry: 'packages/core/src/generators/grain.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: strata', entry: 'packages/core/src/generators/strata.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: mountains', entry: 'packages/core/src/generators/mountains.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: clouds', entry: 'packages/core/src/generators/clouds.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: wind', entry: 'packages/core/src/generators/wind.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: fire', entry: 'packages/core/src/generators/fire.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
