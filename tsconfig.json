@@ -5,6 +5,7 @@
     { "path": "./packages/color" },
     { "path": "./packages/format" },
     { "path": "./packages/core" },
-    { "path": "./packages/unplugin" }
+    { "path": "./packages/unplugin" },
+    { "path": "./packages/vue" }
   ]
 }

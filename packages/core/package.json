@@ -26,6 +26,11 @@
       "@goatsoft/source": "./src/element.ts",
       "types": "./dist/element.d.ts",
       "import": "./dist/element.js"
+    },
+    "./load": {
+      "@goatsoft/source": "./src/load.ts",
+      "types": "./dist/load.d.ts",
+      "import": "./dist/load.js"
     }
   },
   "scripts": {

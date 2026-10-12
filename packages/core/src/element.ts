@@ -1,10 +1,8 @@
-import { AuroraFormatError, parseAurora } from '@goatsoft/aurora-format'
-import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { loadAurora } from './load'
 import { documentOf } from './module'
 import type { AuroraSource } from './module'
 import { mountAurora } from './surface'
 import type { AuroraMode, AuroraSurface } from './surface'
-import { validateDocument } from './validate'
 
 export type AuroraModeEvent = CustomEvent<{ mode: AuroraMode }>
 export type AuroraErrorEvent = CustomEvent<{ error: Error }>
@@ -21,16 +19,6 @@ declare global {
 
 /** Fills its offset parent by default; any author style overrides it. */
 const DEFAULT_STYLE = ':where(aurora-bg){display:block;position:absolute;inset:0;pointer-events:none}'
-
-/** Loads and validates a `.aurora` file, with every problem named against its URL. */
-export async function loadAurora(url: string | URL, init?: RequestInit): Promise<AuroraDocument> {
-  const response = await fetch(url, init)
-  if (!response.ok) throw new Error(`Could not load ${String(url)}: ${response.status} ${response.statusText}`.trim())
-  const result = parseAurora(await response.text())
-  const issues = result.ok ? validateDocument(result.doc) : result.issues
-  if (issues.length || !result.ok) throw new AuroraFormatError(issues, String(url))
-  return result.doc
-}
 
 /**
  * `<aurora-bg src="/hero.aurora" scene="landing">`: an Aurora background for any page, no framework
@@ -150,3 +138,5 @@ if (typeof customElements !== 'undefined' && !customElements.get('aurora-bg')) {
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet]
   customElements.define('aurora-bg', AuroraBackgroundElement)
 }
+
+export { loadAurora }

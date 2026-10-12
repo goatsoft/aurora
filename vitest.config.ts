@@ -39,6 +39,8 @@ export default defineConfig({
       },
       {
         resolve,
+        // Declared up front so Vite never reloads a test run when it discovers them.
+        optimizeDeps: { include: ['vue', 'vue/server-renderer', '@vue/test-utils', 'fast-check'] },
         test: {
           name: 'browser',
           include: ['packages/*/test/**/*.browser.test.ts'],
