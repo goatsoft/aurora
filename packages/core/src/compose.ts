@@ -3,6 +3,8 @@ import type { RgbSpace } from '@goatsoft/color'
 import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { Generator } from './generators/define'
 import { GENERATORS } from './generators/index'
+import { noiseWgsl } from './generators/noise'
+import type { NoiseModule } from './generators/noise'
 import { STD_WGSL } from './wgsl-std'
 
 /** Where each layer's values live in the uniform array, in vec4 slots. */
@@ -88,6 +90,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace = 'srgb'): Compose
   if (cached) return cached
 
   const modules = new Map<string, string>()
+  const noise = new Set<NoiseModule>()
   const layers: LayerLayout[] = []
   const body: string[] = []
   let slot = FRAME_SLOTS
@@ -97,6 +100,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace = 'srgb'): Compose
     if (!generator) throw new Error(`Unknown generator "${layer.type}". Validate documents with validateDocument() first.`)
     const prefix = `${generator.id.replace(/-/g, '_')}_`
     if (!modules.has(generator.id)) modules.set(generator.id, `${paramsStruct(generator, prefix)}\n${namespaced(generator, prefix)}`)
+    for (const name of generator.requires ?? []) noise.add(name)
 
     const names = Object.keys(generator.params)
     const params = slot
@@ -122,7 +126,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace = 'srgb'): Compose
   const code = `${STD_WGSL}${COLOR_WGSL}
 struct Uniforms { v: array<vec4f, ${slot}> };
 @group(0) @binding(0) var<uniform> U: Uniforms;
-${[...modules.values()].join('\n')}
+${noiseWgsl(noise)}${[...modules.values()].join('\n')}
 @fragment fn fs(in: VOut) -> @location(0) vec4f {
   let suv = vec2f(in.uv.x, 1.0 - in.uv.y);
   let aspect = (U.v[0].x * U.v[1].z) / (U.v[0].y * U.v[1].w);

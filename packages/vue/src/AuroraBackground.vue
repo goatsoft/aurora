@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { compileCss, isAuroraModule } from '@goatsoft/aurora'
+import { FILL_STYLE, compileCss, isAuroraModule } from '@goatsoft/aurora'
 import type { AuroraMode, AuroraSource } from '@goatsoft/aurora'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAurora } from './use-aurora'
@@ -50,7 +50,7 @@ onMounted(() => {
     ref="host"
     class="aurora-background"
     aria-hidden="true"
-    style="position:absolute;inset:0;overflow:hidden;pointer-events:none"
+    :style="FILL_STYLE"
     :data-aurora-ssr="hydrated ? undefined : ''"
   >
     <div v-if="!hydrated && fallback" :style="fallback" />

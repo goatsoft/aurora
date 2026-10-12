@@ -1,4 +1,5 @@
 import type { Oklab } from '@goatsoft/color'
+import type { NoiseModule } from './noise'
 
 /** A numeric generator parameter. Studio builds its inspector controls from these. */
 export interface ParamSpec {
@@ -31,6 +32,10 @@ export interface Generator<P extends string = string> {
   description: string
   /** How many palette colours the generator reads, in order. */
   colors: number
+  /** A palette that shows the generator at its best: Studio's starting colours and the starter preset. */
+  palette: readonly string[]
+  /** Shared noise modules the WGSL calls (`noise_simplex`, `noise_fbm`, …). */
+  requires?: readonly NoiseModule[]
   /** Parameters, in uniform order. */
   params: Readonly<Record<P, ParamSpec>>
   /**

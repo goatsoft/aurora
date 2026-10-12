@@ -51,6 +51,12 @@ export function setBackends(next: { worker: Backend, main: Backend } | undefined
   backends = next
 }
 
+/**
+ * How a background fills its positioned parent. Bindings put it on their host element so server
+ * HTML and the mounted surface agree; it's the only layout CSS Aurora ships.
+ */
+export const FILL_STYLE = 'position:absolute;inset:0;overflow:hidden;pointer-events:none'
+
 const CROSSFADE_MS = 300
 const epochNow = () => performance.timeOrigin + performance.now()
 const media = (query: string) => typeof matchMedia === 'function' && matchMedia(query).matches
@@ -88,7 +94,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const root = document.createElement('div')
   root.setAttribute('aria-hidden', 'true')
   root.dataset['aurora'] = 'css'
-  root.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;contain:strict'
+  root.style.cssText = `${FILL_STYLE};contain:strict`
   const fallback = document.createElement('div')
   const canvas = document.createElement('canvas')
   canvas.style.cssText = `position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity ${CROSSFADE_MS}ms ease`

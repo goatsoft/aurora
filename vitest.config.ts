@@ -21,7 +21,7 @@ const chromiumWebGPU = [
 
 export default defineConfig({
   test: {
-    provide: { root: ROOT },
+    provide: { root: ROOT, updateGolden: process.env['UPDATE_GOLDEN'] === '1', ci: !!process.env['CI'] },
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**'],
