@@ -28,6 +28,7 @@ declare module 'vue' {
     IHgDownload04: typeof import('~icons/hugeicons/download04')['default']
     IHgEye: typeof import('~icons/hugeicons/eye')['default']
     IHgFile01: typeof import('~icons/hugeicons/file01')['default']
+    IHgFolderOpen: typeof import('~icons/hugeicons/folder-open')['default']
     IHgGridView: typeof import('~icons/hugeicons/grid-view')['default']
     IHgHeadphones: typeof import('~icons/hugeicons/headphones')['default']
     IHgImage01: typeof import('~icons/hugeicons/image01')['default']

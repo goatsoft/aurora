@@ -19,6 +19,15 @@ const previews: { value: Preview, label: string }[] = [
   { value: 'css', label: 'CSS' },
 ]
 
+// Fidelity: how close the CSS fallback is to WebGPU, shown while comparing them.
+const score = ref<number>()
+const comparing = computed(() => ui.preview !== 'webgpu')
+watchDebounced([() => studio.rendered.value, () => ui.page, comparing], async () => {
+  if (!comparing.value) return
+  const { fidelity } = await import('@/lib/fidelity')
+  score.value = await fidelity(studio.rendered.value, ui.page === 'dark' ? 'oklch(0.13 0.02 270)' : 'oklch(0.985 0.004 270)')
+}, { debounce: 350, immediate: true })
+
 const exporting = ref(false)
 const copied = ref<string>()
 const code = computed(() => snippets(studio.fileName.value, studio.rendered.value))
@@ -27,16 +36,42 @@ async function copy(id: string, text: string) {
   copied.value = id
   setTimeout(() => (copied.value = undefined), 1400)
 }
-function save() {
-  download(studio.fileName.value, studio.file.value)
+async function save() {
   exporting.value = false
+  // Connected to a project with a file open: save it in place (HMR updates the site).
+  if (await studio.saveToProject()) return
+  download(studio.fileName.value, studio.file.value)
   studio.notify(`Saved ${studio.fileName.value}`)
+}
+const project = studio.project
+const browsing = ref(false)
+const folders = computed(() => {
+  const groups = new Map<string, string[]>()
+  for (const path of project.files) {
+    const folder = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : ''
+    groups.set(folder, [...(groups.get(folder) ?? []), path])
+  }
+  return [...groups.entries()]
+})
+async function openFile(path: string) {
+  browsing.value = false
+  await studio.openProjectFile(path)
+}
+async function poster() {
+  exporting.value = false
+  try {
+    const { renderPoster } = await import('@goatsoft/aurora/poster')
+    download(studio.fileName.value.replace(/\.aurora$/, '-poster.png'), await renderPoster(studio.rendered.value, { width: 1200, height: 630, time: 4 }))
+    studio.notify('Saved a 1200 × 630 poster, sized for og:image')
+  } catch (error) {
+    studio.notify(error instanceof Error ? error.message : String(error), 'error')
+  }
 }
 async function share() {
   await navigator.clipboard.writeText(await studio.shareLink())
   studio.notify('Link copied: it holds the whole document, no account needed')
 }
-defineExpose({ save, share })
+defineExpose({ save: () => void save(), share })
 </script>
 
 <template>
@@ -52,6 +87,38 @@ defineExpose({ save, share })
         @change="(e) => { studio.apply(studio.ops.rename, (e.target as HTMLInputElement).value.trim() || 'Untitled'); studio.seal() }"
         @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
       >
+      <template v-if="project.connection">
+        <span class="h-4 w-px bg-panel-border" />
+        <Popover v-model:open="browsing" align="start" class="w-[300px] p-1.5" @update:open="(open) => open && studio.refreshFiles()">
+          <template #trigger>
+            <Button size="sm" class="max-w-52 gap-1.5" aria-label="Project files">
+              <IHgFolderOpen />
+              <span class="truncate">{{ project.current ?? project.root }}</span>
+              <span v-if="studio.dirty.value" class="size-1.5 shrink-0 rounded-full bg-amber-300" aria-label="Unsaved changes" />
+            </Button>
+          </template>
+          <p class="px-2 pt-1 pb-2 text-[11px] text-muted-foreground">Connected to <span class="text-foreground">{{ project.root }}</span>. ⌘S saves the open file back to disk.</p>
+          <div class="max-h-[50vh] overflow-y-auto">
+            <div v-for="[folder, files] in folders" :key="folder" class="mb-1">
+              <p v-if="folder" class="px-2 py-1 font-mono text-[10px] text-muted-foreground">{{ folder }}/</p>
+              <button
+                v-for="path in files"
+                :key="path"
+                class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent"
+                :class="path === project.current && 'bg-accent'"
+                @click="openFile(path)"
+              >
+                <IHgFile01 class="size-3.5 shrink-0 text-muted-foreground" />
+                <span class="truncate">{{ path.slice(folder ? folder.length + 1 : 0) }}</span>
+              </button>
+            </div>
+            <p v-if="!project.files.length" class="px-2 py-4 text-center text-xs text-muted-foreground">No .aurora files in this project yet.</p>
+          </div>
+          <div class="mt-1 flex justify-end border-t border-panel-border pt-1.5">
+            <Button size="sm" @click="() => { studio.disconnect(); browsing = false }">Disconnect</Button>
+          </div>
+        </Popover>
+      </template>
     </div>
 
     <div class="glass pointer-events-auto flex h-11 items-center gap-1.5 rounded-2xl px-1.5 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)]">
@@ -71,6 +138,14 @@ defineExpose({ save, share })
       </Tip>
       <span class="h-5 w-px bg-panel-border" />
       <Segmented v-model="ui.preview" :options="previews" size="sm" class="w-[200px]" />
+      <Transition enter-from-class="w-0 opacity-0" leave-to-class="w-0 opacity-0" enter-active-class="transition-all duration-300" leave-active-class="transition-all duration-200">
+        <Tip v-if="comparing && score !== undefined" label="How closely the CSS fallback matches WebGPU, by perceptual (ΔE-OK) difference">
+          <span class="flex h-7 items-center gap-1.5 overflow-hidden rounded-lg bg-input px-2 text-[11px] whitespace-nowrap text-muted-foreground">
+            Fidelity
+            <span class="font-mono font-medium tabular" :class="score >= 80 ? 'text-emerald-300' : score >= 60 ? 'text-amber-300' : 'text-[oklch(0.75_0.15_25)]'">{{ score }}%</span>
+          </span>
+        </Tip>
+      </Transition>
     </div>
 
     <div class="glass pointer-events-auto flex h-11 items-center gap-0.5 rounded-2xl px-1.5 animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)]">
@@ -87,10 +162,17 @@ defineExpose({ save, share })
         <button class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent" @click="save">
           <div class="grid size-8 place-items-center rounded-lg bg-primary/15 text-primary"><IHgFile01 class="size-4" /></div>
           <div class="flex-1">
-            <p class="text-xs font-medium">{{ studio.fileName.value }}</p>
-            <p class="text-[11px] text-muted-foreground">The document, ready for the unplugin or &lt;aurora-bg&gt;</p>
+            <p class="text-xs font-medium">{{ project.current ?? studio.fileName.value }}</p>
+            <p class="text-[11px] text-muted-foreground">{{ project.current ? 'Save to your project; the site hot-reloads' : 'The document, ready for the unplugin or <aurora-bg>' }}</p>
           </div>
           <span class="flex gap-0.5"><Kbd>⌘</Kbd><Kbd>S</Kbd></span>
+        </button>
+        <button class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent" @click="poster">
+          <div class="grid size-8 place-items-center rounded-lg bg-input"><IHgImage01 class="size-4" /></div>
+          <div class="flex-1">
+            <p class="text-xs font-medium">Poster PNG</p>
+            <p class="text-[11px] text-muted-foreground">One frame at 1200 × 630, for og:image and posters</p>
+          </div>
         </button>
         <div class="mt-1 flex flex-col gap-1.5 border-t border-panel-border p-1 pt-2">
           <div v-for="snippet in code" :key="snippet.id" class="overflow-hidden rounded-lg bg-[oklch(0.1_0.015_270/0.7)] ring-1 ring-panel-border">

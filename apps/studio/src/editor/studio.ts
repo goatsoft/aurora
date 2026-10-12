@@ -12,6 +12,8 @@ interface Entry {
 import { History } from './history'
 import { decodeShare, encodeShare } from './share'
 import { load, save } from './storage'
+import { forgetConnection, projectApi, takeConnection } from './project'
+import type { Connection } from './project'
 
 export type Viewport = 'hero' | 'panel' | 'tile' | 'phone' | 'page'
 export type Preview = 'webgpu' | 'css' | 'split'
@@ -170,6 +172,7 @@ function createStudio() {
       return false
     }
     history.seal()
+    project.current = undefined
     const next = structuredClone(input as Doc)
     commit(next, undefined, next.layers.map(() => ++nextId))
     ui.layer = 0
@@ -199,6 +202,66 @@ function createStudio() {
   const file = computed(() => serialize(doc.value))
   const fileName = computed(() => `${doc.value.name.trim().toLowerCase().replace(/[^a-z\d]+/g, '-').replace(/^-|-$/g, '') || 'aurora'}.aurora`)
 
+  // Dev-tool mode: a connected project's files, opened and saved in place.
+  const project = reactive({
+    connection: undefined as Connection | undefined,
+    root: '',
+    files: [] as string[],
+    current: undefined as string | undefined,
+    /** The file as last read or written, to tell whether there are unsaved changes. */
+    saved: '',
+  })
+  const dirty = computed(() => project.current !== undefined && file.value !== project.saved)
+
+  async function refreshFiles() {
+    if (!project.connection) return
+    try {
+      const listing = await projectApi.files(project.connection)
+      project.root = listing.root
+      project.files = listing.files
+    } catch (error) {
+      notify((error as Error).message, 'error')
+    }
+  }
+
+  async function openProjectFile(path: string) {
+    if (!project.connection) return
+    try {
+      const text = await projectApi.read(project.connection, path)
+      if (open(JSON.parse(text), path)) {
+        project.current = path
+        project.saved = serialize(history.present.doc)
+        notify(`Opened ${path}`)
+      }
+    } catch (error) {
+      notify((error as Error).message, 'error')
+    }
+  }
+
+  /** Saves to the open project file. Returns false when there is none, so callers download instead. */
+  async function saveToProject(): Promise<boolean> {
+    if (!project.connection || project.current === undefined) return false
+    // Never rewrite a file you haven't changed (it may be formatted by hand).
+    if (!dirty.value) {
+      notify(`No changes to save in ${project.current}`)
+      return true
+    }
+    const text = file.value
+    try {
+      await projectApi.write(project.connection, project.current, text)
+      project.saved = text
+      notify(`Saved ${project.current}`)
+    } catch (error) {
+      notify((error as Error).message, 'error')
+    }
+    return true
+  }
+
+  function disconnect() {
+    forgetConnection()
+    Object.assign(project, { connection: undefined, files: [], current: undefined, saved: '' })
+  }
+
   async function shareLink(): Promise<string> {
     const url = new URL(location.href)
     url.hash = await encodeShare(doc.value)
@@ -206,6 +269,8 @@ function createStudio() {
   }
 
   async function start() {
+    project.connection = takeConnection()
+    void refreshFiles()
     await loadGenerators()
     generators.value = Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-'))
     const shared = await decodeShare(location.hash)
@@ -251,6 +316,12 @@ function createStudio() {
     open,
     openFile,
     shareLink,
+    project,
+    dirty,
+    refreshFiles,
+    openProjectFile,
+    saveToProject,
+    disconnect,
     notify,
     start,
     generator: (id: string) => generators.value.find((g) => g.id === id) ?? GENERATORS[id],
