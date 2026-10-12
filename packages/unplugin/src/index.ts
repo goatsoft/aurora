@@ -9,7 +9,8 @@ export interface AuroraPluginOptions {
   root?: string
 }
 
-const AURORA = /\.aurora(?:\?.*)?$/
+/** `.aurora` imports, except `?raw` and `?url`, which the bundler handles as for any file. */
+const AURORA = /\.aurora(?:\?(?!(?:[^#]*&)?(?:raw|url)(?:[&=#]|$))[^#]*)?$/
 
 export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> = (options = {}) => {
   let root = options.root ?? workspaceRoot(process.cwd())
