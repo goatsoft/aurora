@@ -31,6 +31,11 @@
       "@goatsoft/source": "./src/load.ts",
       "types": "./dist/load.d.ts",
       "import": "./dist/load.js"
+    },
+    "./poster": {
+      "@goatsoft/source": "./src/poster.ts",
+      "types": "./dist/poster.d.ts",
+      "import": "./dist/poster.js"
     }
   },
   "scripts": {
