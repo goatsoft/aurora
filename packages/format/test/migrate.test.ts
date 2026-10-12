@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { FORMAT_VERSION, MIGRATIONS, migrate } from '@/index'
 import type { Migration } from '@/index'
+import { describe, expect, it } from 'vitest'
+import { FORMAT_VERSION, migrate, MIGRATIONS } from '@/index'
 
 const issue = (input: unknown) => {
   const result = migrate(input)

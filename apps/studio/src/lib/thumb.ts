@@ -1,7 +1,7 @@
-import { compileCss } from '@goatsoft/aurora'
 import type { Generator } from '@goatsoft/aurora'
-import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
+import { compileCss } from '@goatsoft/aurora'
+import { assertAurora } from '@goatsoft/aurora-format'
 
 /** A CSS-fallback thumbnail of one layer of a document: instant, and no GPU context per row. */
 export function layerThumb(doc: AuroraDocument, { mask: _, ...layer }: AuroraLayer): string {

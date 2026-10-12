@@ -1,5 +1,5 @@
-import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { shaderKey } from '@/compose'
 import { compose } from '@/shader'

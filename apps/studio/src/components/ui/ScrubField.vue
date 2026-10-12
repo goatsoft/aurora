@@ -79,7 +79,7 @@ function key(event: KeyboardEvent) {
 
 <template>
   <div
-    class="group relative flex h-7 cursor-ew-resize items-center overflow-hidden rounded-md bg-input px-2 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+    class="group relative flex h-7 cursor-ew-resize items-center overflow-hidden rounded-md bg-input px-2 transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
     :class="scrubbing && 'bg-accent'"
     tabindex="0"
     role="slider"
@@ -95,8 +95,14 @@ function key(event: KeyboardEvent) {
     @keydown="key"
     @keyup="(e) => e.key.startsWith('Arrow') && emit('end')"
   >
-    <div class="pointer-events-none absolute inset-y-0 left-0 bg-primary/18 transition-[width] duration-75" :style="{ width: `${fill * 100}%` }" />
-    <div class="pointer-events-none absolute inset-y-1.5 w-px bg-primary/70" :style="{ left: `${fill * 100}%` }" />
+    <div
+      class="pointer-events-none absolute inset-y-0 left-0 bg-primary/18 transition-[width] duration-75"
+      :style="{ width: `${fill * 100}%` }"
+    />
+    <div
+      class="pointer-events-none absolute inset-y-1.5 w-px bg-primary/70"
+      :style="{ left: `${fill * 100}%` }"
+    />
     <input
       v-if="editing"
       ref="input"
@@ -106,8 +112,15 @@ function key(event: KeyboardEvent) {
       @keydown.enter.prevent="commitEdit"
       @keydown.escape.prevent="editing = false"
     >
-    <span v-else class="relative z-10 ml-auto font-mono text-xs tabular" :class="set ? 'text-foreground' : 'text-muted-foreground'">
-      {{ display }}<span v-if="unit" class="ml-0.5 text-muted-foreground">{{ unit === 'deg' ? '°' : unit }}</span>
+    <span
+      v-else
+      class="relative z-10 ml-auto font-mono text-xs tabular"
+      :class="set ? 'text-foreground' : 'text-muted-foreground'"
+    >
+      {{ display }}<span
+        v-if="unit"
+        class="ml-0.5 text-muted-foreground"
+      >{{ unit === 'deg' ? '°' : unit }}</span>
     </span>
   </div>
 </template>

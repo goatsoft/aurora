@@ -12,7 +12,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **TypeScript 5.9**, strict (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`). Typecheck is `vue-tsc -b` over project references, so `.vue` files are checked too.
 - **Vite 8** library mode builds each package to `dist/`; `tsc` emits declarations.
 - **Vitest 4**: `unit` project (Node) and `browser` project (Playwright Chromium with real WebGPU via SwiftShader).
-- **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, and **ESLint Stylistic for formatting**. There is no Prettier.
+- **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, eslint-plugin-vue (recommended) for SFCs, perfectionist for import order, better-tailwindcss for classes, and **ESLint Stylistic for formatting**. There is no Prettier; `pnpm lint:fix` fixes order and formatting.
 - **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
 - **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
@@ -72,7 +72,8 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 ### Code
 
 - Formatting: 2 spaces, single quotes, no semicolons. Run `pnpm lint:fix`; don't hand-format.
-- `import type` for type-only imports (lint enforces it).
+- `import type` for type-only imports, and every type import comes first. Then `node:` built-ins, packages, `~/` and `@/`, relative paths, and side-effect imports such as CSS, each sorted (lint enforces it).
+- Tailwind classes in their canonical form (`min-h-svh`, not `min-h-[100svh]`) and in Tailwind's order, with no unknown, duplicate or conflicting classes. Lint checks them against each app's own `src/main.css`.
 - **No `<style>` blocks or hand-written inline styles in SFCs.** Style with Tailwind 4 (PostCSS) classes. Published components may only bind styles computed by core (`FILL_STYLE`, the compiled CSS fallback), since they can't rely on a consumer's Tailwind build.
 - No parent-relative paths (`../`; lint enforces it). In tests and apps, `@/x` is the current package's `src/x` and `~/x` is the repo root (`~/presets/goat/hero.aurora`); filesystem code uses `inject('root')` in tests or Vite's `searchForWorkspaceRoot()`. Package `src/` uses same-folder `./` imports only, because aliases would leak into published declarations.
 - WebGPU only. No WebGL or GLSL path, ever; the fallback is CSS.

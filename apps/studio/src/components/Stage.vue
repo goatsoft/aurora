@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { AuroraBackground } from '@goatsoft/aurora-vue'
-import { DRIFT_KEYFRAMES, compileCss } from '@goatsoft/aurora'
 import type { AuroraMode } from '@goatsoft/aurora'
-import { VIEWPORTS, useStudio } from '@/editor/studio'
+import { compileCss, DRIFT_KEYFRAMES } from '@goatsoft/aurora'
+import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { useStudio, VIEWPORTS } from '@/editor/studio'
 
 /**
  * The live canvas: the page context behind everything, and the document in a frame sized to the
@@ -51,24 +51,54 @@ const page = computed(() => (ui.page === 'dark'
 </script>
 
 <template>
-  <div class="absolute inset-0 transition-colors duration-500" :class="page">
+  <div
+    class="absolute inset-0 transition-colors duration-500"
+    :class="page"
+  >
     <!-- Full page: the document is the page's own background, with content scrolling over it. -->
-    <div v-if="!frame" class="absolute inset-0 overflow-y-auto" @scroll="(e) => (ui.scroll = (e.target as HTMLElement).scrollTop)">
+    <div
+      v-if="!frame"
+      class="absolute inset-0 overflow-y-auto"
+      @scroll="(e) => (ui.scroll = (e.target as HTMLElement).scrollTop)"
+    >
       <div class="relative min-h-[260vh]">
-        <AuroraBackground v-if="ui.preview !== 'css'" :src="studio.preview.value" @mode-change="(m) => (gpuMode = m)" />
-        <div v-else class="absolute inset-0 overflow-hidden"><div :style="cssStyle" /></div>
+        <AuroraBackground
+          v-if="ui.preview !== 'css'"
+          :src="studio.preview.value"
+          @mode-change="(m) => (gpuMode = m)"
+        />
+        <div
+          v-else
+          class="absolute inset-0 overflow-hidden"
+        >
+          <div :style="cssStyle" />
+        </div>
         <div class="relative mx-auto flex max-w-3xl flex-col gap-[40vh] px-8 pt-[28vh] pb-[30vh]">
-          <section v-for="n in 3" :key="n" class="flex flex-col gap-3">
-            <p class="text-xs font-medium tracking-widest uppercase opacity-60">Section {{ n }}</p>
-            <h2 class="text-5xl font-semibold tracking-tight text-balance">{{ ['Backgrounds that feel alive.', 'Fixed, parallax, or scrolling.', 'Every pixel, every device.'][n - 1] }}</h2>
-            <p class="max-w-xl text-base opacity-70">Scroll to see how the background behaves behind real content: fixed canvases stay put, parallax drifts, and the CSS fallback keeps up.</p>
+          <section
+            v-for="n in 3"
+            :key="n"
+            class="flex flex-col gap-3"
+          >
+            <p class="text-xs font-medium tracking-widest uppercase opacity-60">
+              Section {{ n }}
+            </p>
+            <h2 class="text-5xl font-semibold tracking-tight text-balance">
+              {{ ['Backgrounds that feel alive.', 'Fixed, parallax, or scrolling.', 'Every pixel, every device.'][n - 1] }}
+            </h2>
+            <p class="max-w-xl text-base opacity-70">
+              Scroll to see how the background behaves behind real content: fixed canvases stay put, parallax drifts, and the CSS fallback keeps up.
+            </p>
           </section>
         </div>
       </div>
     </div>
 
     <!-- Framed viewports, centred in the space between the panels. -->
-    <div v-else ref="area" class="absolute top-20 right-[340px] bottom-24 left-[300px] grid place-items-center">
+    <div
+      v-else
+      ref="area"
+      class="absolute top-20 right-[340px] bottom-24 left-[300px] grid place-items-center"
+    >
       <div
         class="relative shrink-0 overflow-hidden rounded-[18px] shadow-[0_0_0_1px_oklch(1_0_0/0.08),0_30px_80px_-20px_oklch(0_0_0/0.65)] transition-[width,height] duration-500 ease-[cubic-bezier(0.2,0.9,0.1,1)]"
         :class="page"
@@ -78,7 +108,11 @@ const page = computed(() => (ui.page === 'dark'
           class="absolute top-0 left-0 origin-top-left"
           :style="{ width: `${frame.width}px`, height: `${frame.height}px`, transform: `scale(${frame.scale})` }"
         >
-          <AuroraBackground v-if="ui.preview !== 'css'" :src="studio.preview.value" @mode-change="(m) => (gpuMode = m)" />
+          <AuroraBackground
+            v-if="ui.preview !== 'css'"
+            :src="studio.preview.value"
+            @mode-change="(m) => (gpuMode = m)"
+          />
           <div
             v-if="ui.preview !== 'webgpu'"
             class="absolute inset-0 overflow-hidden"
@@ -86,9 +120,19 @@ const page = computed(() => (ui.page === 'dark'
           >
             <div :style="cssStyle" />
           </div>
-          <div class="pointer-events-none relative flex h-full flex-col justify-center gap-4 px-[8%]" :class="ui.viewport === 'tile' && 'items-center text-center'">
-            <p class="text-sm font-medium tracking-widest uppercase opacity-60">Aurora</p>
-            <h1 class="max-w-[14ch] font-semibold tracking-tight text-balance" :class="ui.viewport === 'hero' ? 'text-7xl' : 'text-5xl'">Your headline, on the background</h1>
+          <div
+            class="pointer-events-none relative flex h-full flex-col justify-center gap-4 px-[8%]"
+            :class="ui.viewport === 'tile' && 'items-center text-center'"
+          >
+            <p class="text-sm font-medium tracking-widest uppercase opacity-60">
+              Aurora
+            </p>
+            <h1
+              class="max-w-[14ch] font-semibold tracking-tight text-balance"
+              :class="ui.viewport === 'hero' ? 'text-7xl' : 'text-5xl'"
+            >
+              Your headline, on the background
+            </h1>
           </div>
         </div>
 
@@ -101,16 +145,16 @@ const page = computed(() => (ui.page === 'dark'
             @pointerup="splitting = false"
           >
             <div class="mx-auto h-full w-px bg-white/80 shadow-[0_0_12px_oklch(0_0_0/0.5)]" />
-            <div class="glass absolute top-1/2 left-1/2 grid size-7 -translate-1/2 place-items-center rounded-full">
+            <div class="absolute top-1/2 left-1/2 grid size-7 -translate-1/2 place-items-center rounded-full glass">
               <IHgArrowLeftRight class="size-3.5" />
             </div>
           </div>
-          <span class="glass absolute top-3 left-3 z-10 rounded-md px-2 py-0.5 text-[11px] font-medium text-foreground">WebGPU</span>
-          <span class="glass absolute top-3 right-3 z-10 rounded-md px-2 py-0.5 text-[11px] font-medium text-foreground">CSS fallback</span>
+          <span class="absolute top-3 left-3 z-10 rounded-md glass px-2 py-0.5 text-[11px] font-medium text-foreground">WebGPU</span>
+          <span class="absolute top-3 right-3 z-10 rounded-md glass px-2 py-0.5 text-[11px] font-medium text-foreground">CSS fallback</span>
         </template>
         <span
           v-else-if="ui.preview === 'webgpu' && gpuMode === 'css' && settled === 'css'"
-          class="glass absolute right-3 bottom-3 z-10 flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-foreground"
+          class="absolute right-3 bottom-3 z-10 flex items-center gap-1.5 rounded-md glass px-2 py-1 text-[11px] text-foreground"
         >
           <span class="size-1.5 animate-pulse rounded-full bg-amber-300" />
           Showing the CSS fallback: this browser has no WebGPU

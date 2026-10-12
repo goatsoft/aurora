@@ -1,8 +1,8 @@
+import type { UserConfig } from 'vite'
 import { readFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import type { UserConfig } from 'vite'
 
 interface Manifest {
   dependencies?: Record<string, string>

@@ -1,5 +1,5 @@
-import { compileCss, setBackends } from '@goatsoft/aurora'
 import type { Backend, LeaseListener, SurfaceState } from '@goatsoft/aurora'
+import { compileCss, setBackends } from '@goatsoft/aurora'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

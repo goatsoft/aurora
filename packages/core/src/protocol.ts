@@ -1,6 +1,6 @@
-import type { RgbSpace } from '@goatsoft/color'
-import type { AuroraDocument } from '@goatsoft/aurora-format'
 import type { GeneratorSpec } from './generators/define'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
+import type { RgbSpace } from '@goatsoft/color'
 
 /** Everything a renderer needs to draw one surface. Sent on attach and on every change. */
 export interface SurfaceState {

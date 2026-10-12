@@ -1,5 +1,5 @@
-import { gamutMap, inGamut, oklchToOklab } from './oklab'
 import type { Oklab, RgbSpace } from './oklab'
+import { gamutMap, inGamut, oklchToOklab } from './oklab'
 import { srgbToLinear } from './oklab'
 
 /** WCAG 2 relative luminance of a colour as displayed in sRGB (gamut-mapped first). */

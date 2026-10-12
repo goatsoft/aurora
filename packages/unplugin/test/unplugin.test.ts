@@ -2,13 +2,13 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { build, createServer } from 'vite'
 import { describe, expect, inject, it } from 'vitest'
-import { AuroraBuildError, jsonLocations, locate, transformAurora } from '@/index'
-import aurora from '@/vite'
-import rollup from '@/rollup'
-import rolldown from '@/rolldown'
 import esbuild from '@/esbuild'
-import webpack from '@/webpack'
+import { AuroraBuildError, jsonLocations, locate, transformAurora } from '@/index'
+import rolldown from '@/rolldown'
+import rollup from '@/rollup'
 import rspack from '@/rspack'
+import aurora from '@/vite'
+import webpack from '@/webpack'
 
 const here = import.meta.dirname
 const root = inject('root')

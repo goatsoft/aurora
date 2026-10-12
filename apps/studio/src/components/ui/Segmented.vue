@@ -16,17 +16,36 @@ const item = computed(() => ['relative z-10 flex flex-1 items-center justify-cen
     @update:model-value="(v) => v && (model = v as T)"
   >
     <div
-      class="absolute top-0.5 bottom-0.5 left-0.5 rounded-md bg-[oklch(1_0_0/0.11)] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset] transition-transform duration-300 ease-[cubic-bezier(0.2,0.9,0.1,1)]"
+      class="absolute inset-y-0.5 left-0.5 rounded-md bg-[oklch(1_0_0/0.11)] shadow-[0_1px_0_oklch(1_0_0/0.08)_inset] transition-transform duration-300 ease-[cubic-bezier(0.2,0.9,0.1,1)]"
       :style="{ width: `calc((100% - 4px) / ${options.length})`, transform: `translateX(${index * 100}%)` }"
     />
-    <template v-for="option in options" :key="option.value">
+    <template
+      v-for="option in options"
+      :key="option.value"
+    >
       <!-- Text options say what they are; icon options and shortcuts get a tooltip. -->
-      <Tip v-if="$slots[option.value] || option.keys" :label="option.label" :keys="option.keys">
-        <ToggleGroupItem :value="option.value" :aria-label="option.label" :class="item">
-          <slot :name="option.value">{{ option.label }}</slot>
+      <Tip
+        v-if="$slots[option.value] || option.keys"
+        :label="option.label"
+        :keys="option.keys"
+      >
+        <ToggleGroupItem
+          :value="option.value"
+          :aria-label="option.label"
+          :class="item"
+        >
+          <slot :name="option.value">
+            {{ option.label }}
+          </slot>
         </ToggleGroupItem>
       </Tip>
-      <ToggleGroupItem v-else :value="option.value" :class="item">{{ option.label }}</ToggleGroupItem>
+      <ToggleGroupItem
+        v-else
+        :value="option.value"
+        :class="item"
+      >
+        {{ option.label }}
+      </ToggleGroupItem>
     </template>
   </ToggleGroupRoot>
 </template>

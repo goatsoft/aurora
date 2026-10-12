@@ -1,5 +1,5 @@
-import { MATRICES } from './oklab'
 import type { Mat3 } from './oklab'
+import { MATRICES } from './oklab'
 
 const literal = (n: number) => {
   const text = String(n)

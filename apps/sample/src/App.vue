@@ -15,7 +15,10 @@ const pillars = [
 <template>
   <main class="min-h-dvh bg-[#07060f] font-sans text-indigo-50">
     <section class="relative isolate grid min-h-[60vh] place-content-center text-center">
-      <AuroraBackground v-slot="{ mode }" :src="hero">
+      <AuroraBackground
+        v-slot="{ mode }"
+        :src="hero"
+      >
         <span class="absolute right-4 bottom-4 font-mono text-xs opacity-60">{{ mode }}</span>
       </AuroraBackground>
       <h1 class="text-[clamp(3rem,10vw,7rem)] font-semibold tracking-tight">
@@ -26,7 +29,11 @@ const pillars = [
 
     <AuroraScene name="pillars">
       <div class="grid grid-cols-3 gap-4 p-8">
-        <article v-for="pillar in pillars" :key="pillar.title" class="relative isolate flex h-64 flex-col justify-end overflow-hidden rounded-2xl p-6">
+        <article
+          v-for="pillar in pillars"
+          :key="pillar.title"
+          class="relative isolate flex h-64 flex-col justify-end overflow-hidden rounded-2xl p-6"
+        >
           <AuroraBackground :src="pillar.src" />
           <h2 class="text-xl font-medium">
             {{ pillar.title }}

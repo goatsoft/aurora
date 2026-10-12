@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { FILL_STYLE, compileCss, isAuroraModule } from '@goatsoft/aurora'
 import type { AuroraMode, AuroraSource } from '@goatsoft/aurora'
+import { compileCss, FILL_STYLE, isAuroraModule } from '@goatsoft/aurora'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAurora } from './use-aurora'
 
@@ -53,7 +53,10 @@ onMounted(() => {
     :style="FILL_STYLE"
     :data-aurora-ssr="hydrated ? undefined : ''"
   >
-    <div v-if="!hydrated && fallback" :style="fallback" />
+    <div
+      v-if="!hydrated && fallback"
+      :style="fallback"
+    />
     <slot :mode="mode" />
   </div>
 </template>

@@ -1,7 +1,7 @@
-import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { DRIFT_KEYFRAMES, compileCss } from '@/css'
+import { compileCss, DRIFT_KEYFRAMES } from '@/css'
 import { registerGenerator } from '@/generators/index'
 import { solid } from './solid'
 

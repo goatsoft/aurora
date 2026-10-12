@@ -1,9 +1,9 @@
+import type { Location } from './locate'
+import type { AuroraModule } from '@goatsoft/aurora'
 import { relative } from 'node:path'
 import { compileCss, validateDocument } from '@goatsoft/aurora'
-import type { AuroraModule } from '@goatsoft/aurora'
 import { parseAurora } from '@goatsoft/aurora-format'
 import { jsonLocations, locate, offsetToLocation } from './locate'
-import type { Location } from './locate'
 
 /** A build error that points at the exact place in the `.aurora` file. */
 export class AuroraBuildError extends Error {

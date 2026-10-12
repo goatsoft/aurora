@@ -1,7 +1,7 @@
+import type { Alias, Plugin } from 'vite'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { searchForWorkspaceRoot } from 'vite'
-import type { Alias, Plugin } from 'vite'
 
 /** The repository root, found from wherever this runs (no `../` counting). */
 export const ROOT = searchForWorkspaceRoot(process.cwd())

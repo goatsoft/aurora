@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type TopBar from '@/components/TopBar.vue'
+import type { Viewport } from '@/editor/studio'
 import { TooltipProvider } from 'reka-ui'
 import { useStudio } from '@/editor/studio'
-import type { Viewport } from '@/editor/studio'
-import type TopBar from '@/components/TopBar.vue'
 
 /**
  * The editor: a full-bleed live canvas with floating glass panels. Everything is reachable from
@@ -122,7 +122,10 @@ useEventListener(window, 'drop', (e: DragEvent) => {
 
 <template>
   <TooltipProvider>
-    <main class="relative h-full w-full overflow-hidden" aria-label="Aurora Studio">
+    <main
+      class="relative size-full overflow-hidden"
+      aria-label="Aurora Studio"
+    >
       <Stage />
       <TopBar ref="top" />
       <LayersPanel />
@@ -131,10 +134,24 @@ useEventListener(window, 'drop', (e: DragEvent) => {
       <Notices />
       <Gallery />
       <CommandPalette :actions="actions" />
-      <input ref="picker" type="file" accept=".aurora,application/json" class="hidden" @change="(e) => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) void studio.openFile(f); (e.target as HTMLInputElement).value = '' }">
-      <Transition enter-from-class="opacity-0" leave-to-class="opacity-0" enter-active-class="transition duration-200" leave-active-class="transition duration-200">
-        <div v-if="dropping" class="pointer-events-none absolute inset-3 z-50 grid place-items-center rounded-3xl border-2 border-dashed border-primary/70 bg-primary/10 backdrop-blur-sm">
-          <div class="glass flex items-center gap-3 rounded-2xl px-5 py-4">
+      <input
+        ref="picker"
+        type="file"
+        accept=".aurora,application/json"
+        class="hidden"
+        @change="(e) => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) void studio.openFile(f); (e.target as HTMLInputElement).value = '' }"
+      >
+      <Transition
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+        enter-active-class="transition duration-200"
+        leave-active-class="transition duration-200"
+      >
+        <div
+          v-if="dropping"
+          class="pointer-events-none absolute inset-3 z-50 grid place-items-center rounded-3xl border-2 border-dashed border-primary/70 bg-primary/10 backdrop-blur-sm"
+        >
+          <div class="flex items-center gap-3 rounded-2xl glass px-5 py-4">
             <IHgUpload04 class="size-5 text-primary" />
             <span class="text-sm font-medium">Drop to open the .aurora file</span>
           </div>

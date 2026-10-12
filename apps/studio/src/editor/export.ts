@@ -1,5 +1,5 @@
-import { compileCss } from '@goatsoft/aurora'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { compileCss } from '@goatsoft/aurora'
 
 /** Downloads text as a file. */
 export function download(name: string, text: string | Blob, type = 'application/json'): void {

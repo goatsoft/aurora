@@ -1,5 +1,5 @@
-import { auroraFbm } from './aurora-fbm'
 import type { Generator } from './define'
+import { auroraFbm } from './aurora-fbm'
 
 export { auroraFbm }
 

@@ -1,9 +1,9 @@
-import { COLOR_WGSL } from '@goatsoft/color'
-import type { RgbSpace } from '@goatsoft/color'
-import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { GeneratorLookup, GeneratorSpec } from './generators/define'
-import { noiseWgsl } from './generators/noise'
 import type { NoiseModule } from './generators/noise'
+import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
+import type { RgbSpace } from '@goatsoft/color'
+import { COLOR_WGSL } from '@goatsoft/color'
+import { noiseWgsl } from './generators/noise'
 import { STD_WGSL } from './wgsl-std'
 
 /** Where each layer's values live in the uniform array, in vec4 slots. */

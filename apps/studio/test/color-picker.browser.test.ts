@@ -1,6 +1,6 @@
+import type { SetupContext } from 'vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import type { SetupContext } from 'vue'
 import ColorPicker from '@/components/ColorPicker.vue'
 
 function picker(css: string) {

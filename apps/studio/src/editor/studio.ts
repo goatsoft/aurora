@@ -1,20 +1,20 @@
-import { GENERATORS, loadGenerators } from '@goatsoft/aurora'
+import type { Doc, LayerInput } from './document'
 import type { Generator } from '@goatsoft/aurora'
 import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
+import { GENERATORS, loadGenerators } from '@goatsoft/aurora'
 import { computed, reactive, shallowRef, watch } from 'vue'
 import { ops, resolve, serialize, starter } from './document'
-import type { Doc, LayerInput } from './document'
 
 interface Entry {
   doc: Doc
   ids: number[]
 }
+import type { Workspace } from './workspace'
 import { History } from './history'
+import { forgetConnection, takeConnection } from './project'
 import { decodeShare, encodeShare } from './share'
 import { load, save } from './storage'
-import { forgetConnection, takeConnection } from './project'
 import { apiWorkspace, canUseDisk, fileWorkspace, folderWorkspace, pickFile, pickFolder, pickSaveTarget } from './workspace'
-import type { Workspace } from './workspace'
 
 export type Viewport = 'hero' | 'panel' | 'tile' | 'phone' | 'page'
 export type Preview = 'webgpu' | 'css' | 'split'

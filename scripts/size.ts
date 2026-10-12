@@ -1,11 +1,11 @@
+import type { Rolldown } from 'vite'
+import { resolve } from 'node:path'
 /**
  * Size budgets (PLAN.md §3.2), measured the way a site ships them: minified, dependencies bundled,
  * gzipped. `pnpm size` prints them; `pnpm verify` fails when one is exceeded.
  */
 import { gzipSync } from 'node:zlib'
-import { resolve } from 'node:path'
 import { build, searchForWorkspaceRoot } from 'vite'
-import type { Rolldown } from 'vite'
 
 const root = searchForWorkspaceRoot(import.meta.dirname)
 const KB = 1024

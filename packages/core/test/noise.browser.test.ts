@@ -1,6 +1,6 @@
+import type { NoiseModule } from '@/generators/noise'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { noiseWgsl } from '@/generators/noise'
-import type { NoiseModule } from '@/generators/noise'
 import { device } from './gpu'
 
 let gpu: GPUDevice

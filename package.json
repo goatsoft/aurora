@@ -32,6 +32,9 @@
     "@vue/test-utils": "^2.5.1",
     "@webgpu/types": "^0.1.74",
     "eslint": "^10.12.0",
+    "eslint-plugin-better-tailwindcss": "^4.9.0",
+    "eslint-plugin-perfectionist": "^5.12.1",
+    "eslint-plugin-vue": "^10.11.1",
     "fast-check": "^4.10.2",
     "globals": "^17.13.0",
     "jiti": "^2.7.0",
@@ -41,6 +44,7 @@
     "vite": "^8.3.4",
     "vitest": "^4.1.11",
     "vue": "^3.5.43",
+    "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^3.3.13"
   }
 }

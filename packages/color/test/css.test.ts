@@ -1,7 +1,7 @@
+import type { Oklab } from '@/index'
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { deltaEOK, formatOklch, oklabToOklch, parseColor, rgbToOklab } from '@/index'
-import type { Oklab } from '@/index'
 
 function parsed(input: string): Oklab {
   const result = parseColor(input)

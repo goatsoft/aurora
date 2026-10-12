@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { contrastRatio, gamutMap, inGamut, maxChroma, oklabToOklch, oklchToOklab, parseColor } from '@goatsoft/color'
 import type { Oklch } from '@goatsoft/color'
+import { contrastRatio, gamutMap, inGamut, maxChroma, oklabToOklch, oklchToOklab, parseColor } from '@goatsoft/color'
 import { snap } from '@/editor/document'
 
 /**
@@ -130,10 +130,34 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
       @pointermove="(e) => e.buttons && pick(e, 'plane')"
       @pointerup="emit('end')"
     >
-      <canvas ref="plane" :width="W" :height="H" class="block size-full" />
-      <svg class="pointer-events-none absolute inset-0 size-full" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none">
-        <path :d="boundary.p3" fill="none" stroke="white" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" />
-        <path :d="boundary.srgb" fill="none" stroke="white" stroke-opacity="0.8" stroke-width="1.25" vector-effect="non-scaling-stroke" />
+      <canvas
+        ref="plane"
+        :width="W"
+        :height="H"
+        class="block size-full"
+      />
+      <svg
+        class="pointer-events-none absolute inset-0 size-full"
+        :viewBox="`0 0 ${W} ${H}`"
+        preserveAspectRatio="none"
+      >
+        <path
+          :d="boundary.p3"
+          fill="none"
+          stroke="white"
+          stroke-opacity="0.45"
+          stroke-width="1"
+          stroke-dasharray="3 3"
+          vector-effect="non-scaling-stroke"
+        />
+        <path
+          :d="boundary.srgb"
+          fill="none"
+          stroke="white"
+          stroke-opacity="0.8"
+          stroke-width="1.25"
+          vector-effect="non-scaling-stroke"
+        />
       </svg>
       <div
         class="pointer-events-none absolute size-3.5 -translate-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_oklch(0_0_0/0.4),0_2px_8px_oklch(0_0_0/0.5)]"
@@ -148,13 +172,47 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
       @pointermove="(e) => e.buttons && pick(e, 'hue')"
       @pointerup="emit('end')"
     >
-      <div class="pointer-events-none absolute top-1/2 size-3.5 -translate-1/2 rounded-full border-2 border-white shadow" :style="{ left: `${(lch.h / 360) * 100}%`, background: `oklch(0.72 0.15 ${lch.h})` }" />
+      <div
+        class="pointer-events-none absolute top-1/2 size-3.5 -translate-1/2 rounded-full border-2 border-white shadow-sm"
+        :style="{ left: `${(lch.h / 360) * 100}%`, background: `oklch(0.72 0.15 ${lch.h})` }"
+      />
     </div>
 
     <div class="grid grid-cols-3 gap-1">
-      <ScrubField label="Lightness" :model-value="lch.l" :min="0" :max="1" :step="0.001" :default="lch.l" set @update:model-value="(l) => update({ l })" @end="emit('end')" />
-      <ScrubField label="Chroma" :model-value="lch.c" :min="0" :max="0.4" :step="0.001" :default="lch.c" set @update:model-value="(c) => update({ c })" @end="emit('end')" />
-      <ScrubField label="Hue" :model-value="lch.h" :min="0" :max="360" :step="0.1" :default="lch.h" unit="deg" set @update:model-value="(h) => update({ h })" @end="emit('end')" />
+      <ScrubField
+        label="Lightness"
+        :model-value="lch.l"
+        :min="0"
+        :max="1"
+        :step="0.001"
+        :default="lch.l"
+        set
+        @update:model-value="(l) => update({ l })"
+        @end="emit('end')"
+      />
+      <ScrubField
+        label="Chroma"
+        :model-value="lch.c"
+        :min="0"
+        :max="0.4"
+        :step="0.001"
+        :default="lch.c"
+        set
+        @update:model-value="(c) => update({ c })"
+        @end="emit('end')"
+      />
+      <ScrubField
+        label="Hue"
+        :model-value="lch.h"
+        :min="0"
+        :max="360"
+        :step="0.1"
+        :default="lch.h"
+        unit="deg"
+        set
+        @update:model-value="(h) => update({ h })"
+        @end="emit('end')"
+      />
     </div>
 
     <div>
@@ -167,14 +225,25 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
         @keydown.enter.prevent="typed"
         @blur="typed"
       >
-      <p v-if="textError" class="mt-1 text-[11px] leading-snug text-destructive">{{ textError }}</p>
+      <p
+        v-if="textError"
+        class="mt-1 text-[11px] leading-snug text-destructive"
+      >
+        {{ textError }}
+      </p>
     </div>
 
     <div class="flex items-center justify-between text-[11px]">
-      <span class="rounded bg-input px-1.5 py-0.5 text-muted-foreground" :class="gamut === 'sRGB' ? '' : 'text-amber-300'">{{ gamut }}</span>
+      <span
+        class="rounded-sm bg-input px-1.5 py-0.5 text-muted-foreground"
+        :class="gamut === 'sRGB' ? '' : 'text-amber-300'"
+      >{{ gamut }}</span>
       <span class="flex items-center gap-1.5 text-muted-foreground">
         <span class="tabular">{{ contrast.toFixed(2) }}:1</span>
-        <span class="rounded px-1 py-0.5 font-medium" :class="contrast >= 4.5 ? 'bg-emerald-400/15 text-emerald-300' : contrast >= 3 ? 'bg-amber-400/15 text-amber-300' : 'bg-input text-muted-foreground'">
+        <span
+          class="rounded-sm px-1 py-0.5 font-medium"
+          :class="contrast >= 4.5 ? 'bg-emerald-400/15 text-emerald-300' : contrast >= 3 ? 'bg-amber-400/15 text-amber-300' : 'bg-input text-muted-foreground'"
+        >
           {{ contrast >= 7 ? 'AAA' : contrast >= 4.5 ? 'AA' : contrast >= 3 ? 'AA large' : 'Low' }}
         </span>
         <span>vs text</span>
@@ -184,8 +253,17 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
     <div class="flex items-center justify-between">
       <span class="text-[11px] text-muted-foreground">Harmonies</span>
       <div class="flex gap-1">
-        <Tip v-for="(harmony, i) in harmonies" :key="i" :label="`Add ${harmony.label.toLowerCase()} to palette`">
-          <button class="size-5 rounded-full ring-1 ring-panel-border transition-transform hover:scale-115" :style="{ background: harmony.css }" :aria-label="`Add ${harmony.label}`" @click="emit('add', harmony.css)" />
+        <Tip
+          v-for="(harmony, i) in harmonies"
+          :key="i"
+          :label="`Add ${harmony.label.toLowerCase()} to palette`"
+        >
+          <button
+            class="size-5 rounded-full ring-1 ring-panel-border transition-transform hover:scale-115"
+            :style="{ background: harmony.css }"
+            :aria-label="`Add ${harmony.label}`"
+            @click="emit('add', harmony.css)"
+          />
         </Tip>
       </div>
     </div>

@@ -1,8 +1,8 @@
-import { assertAurora, stringifyAurora } from '@goatsoft/aurora-format'
+import type { Generator } from '@/generators/define'
 import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora, stringifyAurora } from '@goatsoft/aurora-format'
 import { describe, expect, inject, it } from 'vitest'
 import { GENERATORS, loadGenerators } from '@/generators/index'
-import type { Generator } from '@/generators/define'
 import { validateDocument } from '@/validate'
 
 /**

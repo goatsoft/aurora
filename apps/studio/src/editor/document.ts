@@ -1,5 +1,5 @@
-import { FORMAT_ID, FORMAT_VERSION, parseAurora, stringifyAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument, AuroraInput, FormatIssue } from '@goatsoft/aurora-format'
+import { FORMAT_ID, FORMAT_VERSION, parseAurora, stringifyAurora } from '@goatsoft/aurora-format'
 
 /**
  * Studio edits the document as authored, not with defaults filled in, so opening a file and saving

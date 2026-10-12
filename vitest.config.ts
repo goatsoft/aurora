@@ -1,8 +1,8 @@
-import { playwright } from '@vitest/browser-playwright'
 import vue from '@vitejs/plugin-vue'
+import { playwright } from '@vitest/browser-playwright'
 import { defaultClientConditions, defaultServerConditions } from 'vite'
 import { defineConfig } from 'vitest/config'
-import { ROOT, packageSrcAlias, rootAlias } from './aliases.ts'
+import { packageSrcAlias, ROOT, rootAlias } from './aliases.ts'
 
 // Workspace packages resolve to their TypeScript sources, so tests never need a build.
 const source = '@goatsoft/source'

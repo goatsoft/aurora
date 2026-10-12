@@ -1,6 +1,6 @@
-import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
-import type { Oklab } from '@goatsoft/color'
 import type { AuroraDocument, BlendMode } from '@goatsoft/aurora-format'
+import type { Oklab } from '@goatsoft/color'
+import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 import { GENERATORS } from './generators/index'
 import { colorIndices, paramValue } from './uniforms'
 

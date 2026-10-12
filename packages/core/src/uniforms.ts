@@ -1,8 +1,8 @@
-import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
-import type { Oklab, RgbSpace } from '@goatsoft/color'
-import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { ComposedShader } from './compose'
 import type { GeneratorSpec } from './generators/define'
+import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
+import type { Oklab, RgbSpace } from '@goatsoft/color'
+import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 
 /** Per-frame inputs. Sizes are in device pixels of the whole scene (just the surface when alone). */
 export interface FrameState {

@@ -1,5 +1,5 @@
-import { projectApi } from './project'
 import type { Connection } from './project'
+import { projectApi } from './project'
 
 /**
  * Where Studio's open file lives, so ⌘S saves it in place:

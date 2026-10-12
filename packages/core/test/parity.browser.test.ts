@@ -1,5 +1,5 @@
-import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { assertAurora } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { compose } from '@/shader'
 import { packUniforms } from '@/uniforms'

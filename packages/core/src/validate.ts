@@ -1,6 +1,6 @@
-import { jsonPath, suggest } from '@goatsoft/aurora-format'
 import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
-import { GENERATORS, generatorIds, loadGenerators } from './generators/index'
+import { jsonPath, suggest } from '@goatsoft/aurora-format'
+import { generatorIds, GENERATORS, loadGenerators } from './generators/index'
 
 /**
  * Checks what the format can't: that every layer's generator exists and its params are known

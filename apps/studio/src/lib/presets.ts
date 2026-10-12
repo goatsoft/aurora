@@ -1,6 +1,6 @@
-import { parseAurora } from '@goatsoft/aurora-format'
-import type { AuroraDocument } from '@goatsoft/aurora-format'
 import type { Doc } from '@/editor/document'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { parseAurora } from '@goatsoft/aurora-format'
 
 // Read as text, so presets open exactly as authored (and export byte-identical).
 const scenes = import.meta.glob<string>('~/presets/scenes/*.aurora', { query: '?raw', import: 'default', eager: true })

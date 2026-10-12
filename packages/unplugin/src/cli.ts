@@ -2,7 +2,7 @@
 import { createServer } from 'node:http'
 import { resolve } from 'node:path'
 import { parseArgs } from 'node:util'
-import { STUDIO_URL, createStudioApi, studioLink } from './studio'
+import { createStudioApi, STUDIO_URL, studioLink } from './studio'
 
 const USAGE = `Usage: aurora studio [options]
 
