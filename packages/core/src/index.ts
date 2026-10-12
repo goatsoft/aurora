@@ -1,5 +1,5 @@
 // Consumers see GPU types in our declarations, so they get them with the package.
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+
 /// <reference types="@webgpu/types" preserve="true" />
 export { configureAurora } from './config'
 export type { AuroraConfig } from './config'
@@ -11,8 +11,8 @@ export type { AuroraMode, AuroraSurface, MountOptions } from './surface'
 export { compileCss, DRIFT_KEYFRAMES } from './css'
 export type { CssFallback } from './css'
 export { validateDocument } from './validate'
-export { defineGenerator } from './generator'
-export type { CssContext, Generator, ParamSpec } from './generator'
+export { defineGenerator } from './generators/define'
+export type { CssContext, Generator, ParamSpec } from './generators/define'
 export { GENERATORS, auroraFbm, registerGenerator } from './generators/index'
 export { compose, shaderKey } from './compose'
 export type { ComposedShader } from './compose'

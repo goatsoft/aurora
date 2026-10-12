@@ -1,7 +1,7 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { validateDocument } from '../src/validate'
+import { validateDocument } from '@/validate'
 
 const doc = (layers: AuroraInput['layers']) => assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['#fff'], layers })
 
@@ -25,7 +25,7 @@ describe('validateDocument', () => {
 
 describe('registerGenerator', () => {
   it('rejects bad ids, clashes and generators without render()', async () => {
-    const { registerGenerator, GENERATORS } = await import('../src/generators/index')
+    const { registerGenerator, GENERATORS } = await import('@/generators/index')
     const { solid } = await import('./solid')
     registerGenerator(solid)
     registerGenerator(solid)

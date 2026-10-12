@@ -1,6 +1,6 @@
 import { toJsonSchema } from '@valibot/to-json-schema'
-import { describe, expect, it } from 'vitest'
-import { AuroraSchema, SCHEMA_URL } from '../src/index'
+import { describe, expect, inject, it } from 'vitest'
+import { AuroraSchema, SCHEMA_URL } from '@/index'
 
 /** The published JSON Schema. Regenerate with `pnpm test -u` after changing the Valibot schema. */
 function buildJsonSchema() {
@@ -16,7 +16,7 @@ type JsonObject = Record<string, unknown>
 
 describe('JSON Schema', () => {
   it('matches the published schema/v1.json', async () => {
-    await expect(`${JSON.stringify(buildJsonSchema(), null, 2)}\n`).toMatchFileSnapshot('../schema/v1.json')
+    await expect(`${JSON.stringify(buildJsonSchema(), null, 2)}\n`).toMatchFileSnapshot(`${inject('root')}/packages/format/schema/v1.json`)
   })
 
   it('documents fields for editor hovers and lists the options', () => {

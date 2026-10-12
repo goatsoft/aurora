@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "customConditions": ["@goatsoft/source"],
+    "paths": { "~/*": ["./*"] },
     "moduleDetection": "force",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
@@ -21,5 +22,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true
-  }
+  },
+  "files": ["./types/vitest.d.ts"]
 }

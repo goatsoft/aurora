@@ -55,7 +55,7 @@
     }
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@goatsoft/aurora": "workspace:^",

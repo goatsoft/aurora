@@ -4,10 +4,10 @@
  */
 import { gzipSync } from 'node:zlib'
 import { resolve } from 'node:path'
-import { build } from 'vite'
+import { build, searchForWorkspaceRoot } from 'vite'
 import type { Rolldown } from 'vite'
 
-const root = resolve(import.meta.dirname, '..')
+const root = searchForWorkspaceRoot(import.meta.dirname)
 const KB = 1024
 
 interface Budget {
@@ -23,7 +23,7 @@ const budgets: Budget[] = [
   { name: '@goatsoft/aurora worker', entry: 'packages/core/src/worker.ts', limit: 10 * KB },
   // The element also validates files at runtime, so it carries the format's Valibot schema.
   { name: '@goatsoft/aurora/element', entry: 'packages/core/src/element.ts', limit: 14 * KB },
-  { name: 'generator: aurora-fbm', entry: 'packages/core/src/generators/aurora-fbm.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\.\/generator/ },
+  { name: 'generator: aurora-fbm', entry: 'packages/core/src/generators/aurora-fbm.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
 ]
 
 async function measure({ entry, external }: Budget) {

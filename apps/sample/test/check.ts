@@ -1,7 +1,8 @@
 // Runs the sample the way a real app does, outside Vitest: SSR via Vite, then a client build.
-import { build, createServer } from 'vite'
+import { resolve } from 'node:path'
+import { build, createServer, searchForWorkspaceRoot } from 'vite'
 
-const root = new URL('..', import.meta.url).pathname
+const root = resolve(searchForWorkspaceRoot(import.meta.dirname), 'apps/sample')
 type Output = Awaited<ReturnType<typeof build>>
 const server = await createServer({ root, configLoader: 'runner', logLevel: 'error', server: { middlewareMode: true, hmr: false }, appType: 'custom' })
 const { render } = await server.ssrLoadModule('/src/entry-server.ts') as { render: () => Promise<string> }

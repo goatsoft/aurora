@@ -1,16 +1,17 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { build, createServer } from 'vite'
-import { describe, expect, it } from 'vitest'
-import { AuroraBuildError, jsonLocations, locate, transformAurora } from '../src/index'
-import aurora from '../src/vite'
-import rollup from '../src/rollup'
-import rolldown from '../src/rolldown'
-import esbuild from '../src/esbuild'
-import webpack from '../src/webpack'
-import rspack from '../src/rspack'
+import { describe, expect, inject, it } from 'vitest'
+import { AuroraBuildError, jsonLocations, locate, transformAurora } from '@/index'
+import aurora from '@/vite'
+import rollup from '@/rollup'
+import rolldown from '@/rolldown'
+import esbuild from '@/esbuild'
+import webpack from '@/webpack'
+import rspack from '@/rspack'
 
 const here = import.meta.dirname
+const root = inject('root')
 const fixture = (name: string) => resolve(here, 'fixtures', name)
 const read = (file: string) => readFileSync(file, 'utf8')
 
@@ -37,10 +38,10 @@ describe('locate', () => {
 })
 
 describe('transformAurora', () => {
-  const hero = resolve(here, '../../../presets/goat/hero.aurora')
+  const hero = resolve(root, 'presets/goat/hero.aurora')
 
   it('exports { id, doc, css } with a root-relative id and accepts hot updates', async () => {
-    const code = transformAurora(read(hero), hero, resolve(here, '../../..'))
+    const code = transformAurora(read(hero), hero, root)
     expect(code).toContain('import.meta.hot.accept')
     const module = (await import(`data:text/javascript,${encodeURIComponent(code)}`) as { default: { id: string, doc: { name: string }, css: { backgroundImage: string } } }).default
     expect(module.id).toBe('presets/goat/hero.aurora')
@@ -81,7 +82,7 @@ describe('bundlers', () => {
       logLevel: 'silent',
       configFile: false,
       plugins: [aurora()],
-      resolve: { conditions: ['@goatsoft/source', 'module', 'browser', 'default'] },
+      resolve: { conditions: ['@goatsoft/source', 'module', 'browser', 'default'], alias: [{ find: /^~\//, replacement: `${root}/` }] },
       build: { write: false, lib: { entry: fixture('app.ts'), formats: ['es'], fileName: 'app' }, minify: false },
     })
     const code = (Array.isArray(output) ? output : [output]).flatMap((o) => 'output' in o ? o.output : []).map((o) => ('code' in o ? o.code : '')).join('\n')
@@ -102,7 +103,14 @@ describe('bundlers', () => {
   })
 
   it('serves hot-updatable modules from the Vite dev server', async () => {
-    const server = await createServer({ root: resolve(here, '../../..'), logLevel: 'silent', configFile: false, plugins: [aurora()], resolve: { alias: { '@goatsoft/aurora': resolve(here, '../../core/src/index.ts') } }, server: { middlewareMode: true, hmr: false } })
+    const server = await createServer({
+      root,
+      logLevel: 'silent',
+      configFile: false,
+      plugins: [aurora()],
+      resolve: { alias: { '@goatsoft/aurora': resolve(root, 'packages/core/src/index.ts') } },
+      server: { middlewareMode: true, hmr: false },
+    })
     try {
       const result = await server.transformRequest('/presets/goat/hero.aurora')
       expect(result?.code).toContain('"id":"presets/goat/hero.aurora"')
@@ -110,5 +118,20 @@ describe('bundlers', () => {
     } finally {
       await server.close()
     }
+  })
+})
+
+describe('workspaceRoot', () => {
+  it('finds the monorepo root, or keeps the directory outside one', async () => {
+    const { workspaceRoot } = await import('@/root')
+    const { mkdtempSync, mkdirSync, writeFileSync } = await import('node:fs')
+    const { tmpdir } = await import('node:os')
+    expect(workspaceRoot(resolve(root, 'apps/sample/src'))).toBe(root)
+    const outside = mkdtempSync(resolve(tmpdir(), 'aurora-'))
+    expect(workspaceRoot(outside)).toBe(outside)
+    mkdirSync(resolve(outside, 'app'))
+    writeFileSync(resolve(outside, 'package.json'), '{ "workspaces": ["app"] }')
+    writeFileSync(resolve(outside, 'app/package.json'), '{}')
+    expect(workspaceRoot(resolve(outside, 'app'))).toBe(outside)
   })
 })

@@ -1,17 +1,18 @@
 import { readFile } from 'node:fs/promises'
+import { workspaceRoot } from './root'
 import { createUnplugin } from 'unplugin'
 import type { UnpluginFactory } from 'unplugin'
 import { AuroraBuildError, transformAurora } from './transform'
 
 export interface AuroraPluginOptions {
-  /** Project root for module ids. Defaults to Vite's root, or the working directory. */
+  /** Root that module ids are relative to. Defaults to the workspace root (or the project root). */
   root?: string
 }
 
 const AURORA = /\.aurora(?:\?.*)?$/
 
 export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> = (options = {}) => {
-  let root = options.root ?? process.cwd()
+  let root = options.root ?? workspaceRoot(process.cwd())
   return {
     name: 'aurora',
     enforce: 'pre',
@@ -31,7 +32,7 @@ export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> =
     },
     vite: {
       configResolved(config) {
-        root = options.root ?? config.root
+        root = options.root ?? workspaceRoot(config.root)
       },
     },
   }

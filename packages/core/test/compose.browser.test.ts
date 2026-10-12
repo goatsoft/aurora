@@ -1,9 +1,9 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput, BlendMode } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { compose } from '../src/compose'
-import { registerGenerator } from '../src/generators/index'
-import { packUniforms } from '../src/uniforms'
+import { compose } from '@/compose'
+import { registerGenerator } from '@/generators/index'
+import { packUniforms } from '@/uniforms'
 import { device, render } from './gpu'
 import { solid } from './solid'
 

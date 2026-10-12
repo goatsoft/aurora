@@ -1,11 +1,14 @@
 import { playwright } from '@vitest/browser-playwright'
 import { defaultClientConditions, defaultServerConditions } from 'vite'
 import { defineConfig } from 'vitest/config'
+import { ROOT, packageSrcAlias, rootAlias } from './aliases.ts'
 
 // Workspace packages resolve to their TypeScript sources, so tests never need a build.
 const source = '@goatsoft/source'
-const resolve = { conditions: [source, ...defaultClientConditions] }
+const resolve = { conditions: [source, ...defaultClientConditions], alias: [rootAlias] }
 const ssr = { resolve: { conditions: [source, ...defaultServerConditions] } }
+// `@/x` is the importing package's src/x; `~/x` is the repo root (see aliases.ts and each tsconfig's paths).
+const plugins = [packageSrcAlias()]
 
 // Headless Chromium has no GPU on CI runners: SwiftShader gives it a real, spec-conformant WebGPU adapter.
 const chromiumWebGPU = [
@@ -17,6 +20,7 @@ const chromiumWebGPU = [
 
 export default defineConfig({
   test: {
+    provide: { root: ROOT },
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**'],
@@ -38,6 +42,8 @@ export default defineConfig({
       },
       {
         ssr,
+        resolve: { alias: [rootAlias] },
+        plugins,
         test: {
           name: 'unit',
           environment: 'node',
@@ -47,6 +53,7 @@ export default defineConfig({
       },
       {
         resolve,
+        plugins,
         // Declared up front so Vite never reloads a test run when it discovers them.
         optimizeDeps: { include: ['vue', 'vue/server-renderer', '@vue/test-utils', 'fast-check'] },
         test: {

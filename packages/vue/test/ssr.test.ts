@@ -4,7 +4,7 @@ import { assertAurora } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { AuroraBackground, AuroraScene } from '../src/index'
+import { AuroraBackground, AuroraScene } from '@/index'
 
 const doc = assertAurora({ format: 'aurora', version: 1, name: 'T', canvas: { fade: 'y' }, palette: ['oklch(0.68 0.16 245)', 'oklch(0.56 0.22 285)', 'oklch(0.58 0.25 310)'], layers: [{ type: 'aurora-fbm' }] })
 const module = { id: 'hero.aurora', doc, css: compileCss(doc) }

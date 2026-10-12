@@ -23,7 +23,7 @@
     "./schema/v1.json": "./schema/v1.json"
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

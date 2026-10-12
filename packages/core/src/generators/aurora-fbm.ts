@@ -1,5 +1,5 @@
 import { formatOklch } from '@goatsoft/color'
-import { defineGenerator } from '../generator'
+import { defineGenerator } from './define'
 
 /**
  * Domain-warped fbm on value noise: the GOAT aurora, bit-for-bit (GOAT web/src/lib/aurora-shaders.ts).

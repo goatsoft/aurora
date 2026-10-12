@@ -5,10 +5,10 @@ import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createSSRApp, defineComponent, h, nextTick, ref } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { AuroraBackground, AuroraScene, useAurora } from '../src/index'
+import { AuroraBackground, AuroraScene, useAurora } from '@/index'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('../../../presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
-const tile = assertAurora(Object.values(import.meta.glob<string>('../../../presets/goat/stack-tile.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const tile = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/stack-tile.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const heroModule = { id: 'presets/goat/hero.aurora', doc: hero, css: compileCss(hero) }
 
 const leases: { listener: LeaseListener, states: SurfaceState[], released: boolean }[] = []

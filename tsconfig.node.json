@@ -8,5 +8,5 @@
     "noEmit": false,
     "emitDeclarationOnly": true
   },
-  "include": ["*.config.ts", "vite.library.ts", "packages/*/vite.config.ts", "scripts/*.ts"]
+  "include": ["*.config.ts", "*.ts", "scripts/*.ts"]
 }

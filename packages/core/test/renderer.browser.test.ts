@@ -1,12 +1,12 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { compose } from '../src/compose'
-import type { SurfaceState } from '../src/protocol'
-import { Renderer } from '../src/renderer'
-import { packUniforms } from '../src/uniforms'
+import { compose } from '@/compose'
+import type { SurfaceState } from '@/protocol'
+import { Renderer } from '@/renderer'
+import { packUniforms } from '@/uniforms'
 import { TextureCanvas, device, diff, render } from './gpu'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('../../../presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const W = 256
 const H = 144
 const state = (overrides: Partial<SurfaceState> = {}): SurfaceState => ({

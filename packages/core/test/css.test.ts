@@ -1,8 +1,8 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { DRIFT_KEYFRAMES, compileCss } from '../src/css'
-import { registerGenerator } from '../src/generators/index'
+import { DRIFT_KEYFRAMES, compileCss } from '@/css'
+import { registerGenerator } from '@/generators/index'
 import { solid } from './solid'
 
 const doc = (extra: Partial<AuroraInput>) =>

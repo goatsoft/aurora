@@ -66,6 +66,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - Formatting: 2 spaces, single quotes, no semicolons. Run `pnpm lint:fix`; don't hand-format.
 - `import type` for type-only imports (lint enforces it).
+- No parent-relative paths (`../`; lint enforces it). In tests and apps, `@/x` is the current package's `src/x` and `~/x` is the repo root (`~/presets/goat/hero.aurora`); filesystem code uses `inject('root')` in tests or Vite's `searchForWorkspaceRoot()`. Package `src/` uses same-folder `./` imports only, because aliases would leak into published declarations.
 - WebGPU only. No WebGL or GLSL path, ever; the fallback is CSS.
 - `.aurora` files are declarative JSON and must never carry executable code or WGSL.
 - Colours are authored and mixed in OKLab/OKLCH; `mix: "srgb"` exists only for GOAT parity. All colour maths goes in `@goatsoft/color`; never reimplement it elsewhere.

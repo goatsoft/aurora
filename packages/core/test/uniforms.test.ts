@@ -2,9 +2,9 @@ import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
-import { compose } from '../src/compose'
-import { auroraFbm } from '../src/generators/index'
-import { colorIndices, packUniforms, paramValue, shaderColor } from '../src/uniforms'
+import { compose } from '@/compose'
+import { auroraFbm } from '@/generators/index'
+import { colorIndices, packUniforms, paramValue, shaderColor } from '@/uniforms'
 
 const doc = (layers: AuroraInput['layers'], extra: Partial<AuroraInput> = {}) =>
   assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['color(srgb 0.23 0.63 1)', '#7a5cff', 'oklch(0.7 0.3 150)'], layers, ...extra })
