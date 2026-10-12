@@ -24,7 +24,7 @@ export function libraryConfig(root: string): UserConfig {
         fileName: 'index',
       },
       rolldownOptions: {
-        external: id => external.some(dep => id === dep || id.startsWith(`${dep}/`)),
+        external: (id) => external.some((dep) => id === dep || id.startsWith(`${dep}/`)),
       },
     },
   }

@@ -1,5 +1,8 @@
-/** Current `.aurora` format version. Files with a lower version are migrated forward. */
-export const FORMAT_VERSION = 1
-
-/** Magic value of the `format` field in every `.aurora` file. */
-export const FORMAT_ID = 'aurora'
+export { BLEND_MODES, FADES, FORMAT_ID, FORMAT_VERSION, MIX_SPACES, REDUCED_MOTION, SCHEMA_URL, AuroraSchema } from './schema'
+export type { AuroraDocument, AuroraInput, AuroraLayer, BlendMode, MixSpace } from './schema'
+export { assertAurora, defineAurora, parseAurora, stringifyAurora } from './document'
+export type { ParseResult } from './document'
+export { AuroraFormatError } from './issues'
+export type { FormatIssue } from './issues'
+export { MIGRATIONS, migrate } from './migrate'
+export type { Migration, MigrateResult } from './migrate'

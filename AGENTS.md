@@ -4,7 +4,7 @@ Instructions for AI agents and humans working in this repo. [PLAN.md](PLAN.md) i
 
 ## What this is
 
-Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated CSS fallback, plus Aurora Studio (builder), docs-kit and the aurora.goatsoft.io site. One repo holds all of it.
+Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated CSS fallback, plus Aurora Studio (builder), `@goatsoft/color` (shared OKLab maths), gruff (our static site generator) and the aurora.goatsoft.io site. One repo holds all of it.
 
 ## Stack
 
@@ -14,12 +14,14 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **Vitest 4**: `unit` project (Node) and `browser` project (Playwright Chromium with real WebGPU via SwiftShader).
 - **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, and **ESLint Stylistic for formatting**. There is no Prettier.
 - **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
-- Later phases add Vue 3.5, vue-router 5, Tailwind 4, shadcn-vue, markdown-it (see PLAN.md §3–5).
+- **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
+- Later phases add Vue 3.5, vue-router 5, Tailwind 4, shadcn-vue, and gruff on `unplugin-vue-markdown` (see PLAN.md §3–5).
 
 ## Layout
 
 ```
-packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations, OKLab maths (0 deps)
+packages/color    @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps)
+packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations
 packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback
 docs/adr/         Architecture decision records
 ```
@@ -30,13 +32,18 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
-pnpm verify          # lint + typecheck + all tests + build. Must pass before every push.
+pnpm verify          # lint + typecheck + all tests with coverage + build. Must pass before every push.
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
 pnpm coverage
+pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json
 pnpm changeset       # for any user-facing change to a @goatsoft/* package
 ```
+
+## North star
+
+Aurora must be very, very slick. It should blow people away visually and in its DX. Every change is judged against that: no visual glitches, beautiful defaults, errors that say exactly what is wrong and how to fix it, types that autocomplete everything.
 
 ## Rules
 
@@ -54,7 +61,7 @@ pnpm changeset       # for any user-facing change to a @goatsoft/* package
 - `import type` for type-only imports (lint enforces it).
 - WebGPU only. No WebGL or GLSL path, ever; the fallback is CSS.
 - `.aurora` files are declarative JSON and must never carry executable code or WGSL.
-- Colours are authored and mixed in OKLab/OKLCH; `mix: "srgb"` exists only for GOAT parity.
+- Colours are authored and mixed in OKLab/OKLCH; `mix: "srgb"` exists only for GOAT parity. All colour maths goes in `@goatsoft/color`; never reimplement it elsewhere.
 - Never report WebGPU (`data-aurora="webgpu"`) before a real frame has rendered.
 - Respect the budgets in PLAN.md §3.2 (core < 10 kB gzip, each generator < 2 kB).
 - Backgrounds are always `aria-hidden` and honour `prefers-reduced-motion`.
@@ -63,6 +70,8 @@ pnpm changeset       # for any user-facing change to a @goatsoft/* package
 
 - New behaviour gets a test. Anything touching the GPU gets a `*.browser.test.ts`.
 - Never skip, disable or loosen a test to get green; fix the cause.
+- `@goatsoft/color` and `@goatsoft/aurora-format` stay at 100% coverage (enforced by `pnpm verify`). Use fast-check for round-trip and fuzz properties.
+- Error messages are part of the API: assert their exact text.
 - Golden images are generated and compared under the same (SwiftShader) adapter.
 
 ### Docs

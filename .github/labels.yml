@@ -27,6 +27,9 @@
   description: "Security issue or hardening"
 
 # pkg: also added to PRs from changed paths (.github/labeler.yml)
+- name: "pkg: color"
+  color: "1d76db"
+  description: "@goatsoft/color"
 - name: "pkg: format"
   color: "1d76db"
   description: "@goatsoft/aurora-format"

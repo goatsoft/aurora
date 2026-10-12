@@ -6,5 +6,6 @@
     "outDir": "../../node_modules/.cache/tsc/format",
     "emitDeclarationOnly": true
   },
-  "include": ["src", "test"]
+  "include": ["src", "test"],
+  "references": [{ "path": "../color" }]
 }
