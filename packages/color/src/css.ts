@@ -26,12 +26,14 @@ export function parseColor(input: string): ColorParseResult {
   const parts = fn[2]!.trim().split(/\s+/)
 
   let space: RgbSpace | undefined
+  let label = `${name}()`
   if (name === 'color') {
-    const id = parts.shift()?.toLowerCase()
+    const id = parts.shift()!.toLowerCase()
     if (id !== 'srgb' && id !== 'display-p3') {
-      return fail(`color() supports srgb and display-p3, not "${id ?? ''}".`)
+      return fail(`color() supports srgb and display-p3, not "${id}".`)
     }
     space = id
+    label = `color(${id})`
   } else if (name !== 'oklch' && name !== 'oklab') {
     return fail(`${name}() is not supported. Use ${COLOR_SYNTAX}.`)
   }
@@ -39,7 +41,6 @@ export function parseColor(input: string): ColorParseResult {
   const slash = parts.indexOf('/')
   const channels = slash === -1 ? parts : parts.slice(0, slash)
   const alphaParts = slash === -1 ? [] : parts.slice(slash + 1)
-  const label = name === 'color' ? `color(${space ?? ''})` : `${name}()`
   if (channels.length !== 3 || (slash !== -1 && alphaParts.length !== 1)) {
     return fail(`${label} expects 3 space-separated values and an optional "/ alpha", got "${fn[2]!.trim()}".`)
   }

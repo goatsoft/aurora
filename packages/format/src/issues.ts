@@ -52,7 +52,7 @@ export function suggest(input: string, candidates: readonly string[]): string | 
       bestDistance = d
     }
   }
-  return bestDistance <= Math.max(1, Math.floor(input.length / 3)) ? best : undefined
+  return bestDistance <= Math.max(1, Math.floor(input.length / 3)) && bestDistance < input.length ? best : undefined
 }
 
 /** The structural parts of a Valibot schema that `keysAt` walks. */
@@ -73,7 +73,7 @@ export function keysAt(schema: v.GenericSchema, input: unknown, keys: readonly (
   let value = input
   for (let i = 0; ;) {
     if (!node) return []
-    if (node.pipe && node.pipe[0] !== node) node = node.pipe[0]
+    if (node.pipe) node = node.pipe[0]
     else if (node.wrapped) node = node.wrapped
     else if (node.options && node.key) {
       const discriminator = (value as Record<string, unknown>)[node.key]
@@ -103,8 +103,8 @@ export function toFormatIssue(issue: v.BaseIssue<unknown>, schema: v.GenericSche
   if (issue.received === 'undefined' && issue.kind === 'schema') {
     return { path, message: 'is required.' }
   }
-  // Picklist and literal mismatches: list the options and suggest the nearest.
-  if (issue.type === 'picklist' || issue.type === 'literal' || issue.type === 'variant') {
+  // Picklist and variant-discriminator mismatches: list the options and suggest the nearest.
+  if (issue.type === 'picklist' || issue.type === 'variant') {
     const options = [...issue.expected!.matchAll(/"([^"]*)"/g)].map((m) => m[1]!)
     const hint = typeof issue.input === 'string' ? suggest(issue.input, options) : undefined
     return {
@@ -113,7 +113,7 @@ export function toFormatIssue(issue: v.BaseIssue<unknown>, schema: v.GenericSche
     }
   }
   if (issue.kind === 'schema') return { path, message: `must be ${article(issue.expected!)}, got ${issue.received}.` }
-  return { path, message: `${issue.message}.` }
+  return { path, message: /[.?!]$/.test(issue.message) ? issue.message : `${issue.message}.` }
 }
 
 const article = (expected: string) => (/^(Object|Array)$/.test(expected) ? `an ${expected.toLowerCase()}` : `a ${expected}`)

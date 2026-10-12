@@ -6,12 +6,13 @@ import { AuroraSchema, SCHEMA_URL } from './schema'
 import type { AuroraDocument, AuroraInput } from './schema'
 
 export type ParseResult
-  = | { ok: true, doc: AuroraDocument, migratedFrom?: number }
+  = | { ok: true, doc: AuroraDocument, sourceVersion: number }
     | { ok: false, issues: FormatIssue[] }
 
 /**
  * Validates an `.aurora` document (a JSON string or parsed value), migrating older versions first.
- * Never throws: every problem comes back as an issue with a JSONPath.
+ * Never throws: every problem comes back as an issue with a JSONPath. On success, `sourceVersion`
+ * is the version the file was written in, so tools can offer to save it upgraded.
  */
 export function parseAurora(input: unknown): ParseResult {
   let value = input
@@ -33,8 +34,7 @@ export function parseAurora(input: unknown): ParseResult {
 
   const issues = checkReferences(result.output)
   if (issues.length) return { ok: false, issues }
-  const doc = result.output
-  return migrated.from === doc.version ? { ok: true, doc } : { ok: true, doc, migratedFrom: migrated.from }
+  return { ok: true, doc: result.output, sourceVersion: migrated.from }
 }
 
 /** Like `parseAurora`, but throws an `AuroraFormatError` listing every issue. */
@@ -53,7 +53,7 @@ function checkReferences(doc: AuroraDocument): FormatIssue[] {
       if (index >= size) {
         issues.push({
           path: jsonPath(['layers', i, 'colors', j]),
-          message: `is ${index}, but the palette only has ${size} colour${size === 1 ? '' : 's'} (0–${size - 1}).`,
+          message: `is ${index}, but the palette only has ${size === 1 ? '1 colour (index 0)' : `${size} colours (0–${size - 1})`}.`,
         })
       }
     })

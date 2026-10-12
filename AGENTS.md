@@ -32,11 +32,12 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
-pnpm verify          # lint + typecheck + all tests + build. Must pass before every push.
+pnpm verify          # lint + typecheck + all tests with coverage + build. Must pass before every push.
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
 pnpm coverage
+pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json
 pnpm changeset       # for any user-facing change to a @goatsoft/* package
 ```
 
@@ -69,6 +70,8 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - New behaviour gets a test. Anything touching the GPU gets a `*.browser.test.ts`.
 - Never skip, disable or loosen a test to get green; fix the cause.
+- `@goatsoft/color` and `@goatsoft/aurora-format` stay at 100% coverage (enforced by `pnpm verify`). Use fast-check for round-trip and fuzz properties.
+- Error messages are part of the API: assert their exact text.
 - Golden images are generated and compared under the same (SwiftShader) adapter.
 
 ### Docs

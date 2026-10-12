@@ -26,7 +26,6 @@ const unit = (description: string) => range(0, 1, description)
 
 const Color = v.pipe(
   v.string(),
-  v.regex(/^\s*(?:#|oklch\(|oklab\(|color\()/i, `must be a colour: ${COLOR_SYNTAX}`),
   v.rawCheck(({ dataset, addIssue }) => {
     if (!dataset.typed) return
     const result = parseColor(dataset.value)

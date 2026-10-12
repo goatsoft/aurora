@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.aurora": "json"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": ["*.aurora"],
+      "url": "./packages/format/schema/v1.json"
+    }
+  ],
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "typescript", "vue"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "prettier.enable": false
+}

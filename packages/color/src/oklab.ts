@@ -38,6 +38,21 @@ const mul = (m: Mat3, [x, y, z]: Vec3): Vec3 => [
   m[2][0] * x + m[2][1] * y + m[2][2] * z,
 ]
 
+/** Inverse of a 3×3 matrix, so every conversion round-trips to floating-point precision. */
+function invert([[a, b, c], [d, e, f], [g, h, i]]: Mat3): Mat3 {
+  const A = e * i - f * h
+  const B = f * g - d * i
+  const C = d * h - e * g
+  const det = a * A + b * B + c * C
+  return [
+    [A / det, (c * h - b * i) / det, (b * f - c * e) / det],
+    [B / det, (a * i - c * g) / det, (c * d - a * f) / det],
+    [C / det, (b * g - a * h) / det, (a * e - b * d) / det],
+  ]
+}
+
+// Forward matrices as published by Ottosson (OKLab) and CSS Color 4 (Display P3).
+// Inverses are derived rather than copied, because the published ones are rounded.
 const LINEAR_SRGB_TO_LMS: Mat3 = [
   [0.4122214708, 0.5363325363, 0.0514459929],
   [0.2119034982, 0.6806995451, 0.1073969566],
@@ -48,26 +63,14 @@ const LMS_TO_OKLAB: Mat3 = [
   [1.9779984951, -2.428592205, 0.4505937099],
   [0.0259040371, 0.7827717662, -0.808675766],
 ]
-const OKLAB_TO_LMS: Mat3 = [
-  [1, 0.3963377774, 0.2158037573],
-  [1, -0.1055613458, -0.0638541728],
-  [1, -0.0894841775, -1.291485548],
-]
-const LMS_TO_LINEAR_SRGB: Mat3 = [
-  [4.0767416621, -3.3077115913, 0.2309699292],
-  [-1.2684380046, 2.6097574011, -0.3413193965],
-  [-0.0041960863, -0.7034186147, 1.707614701],
-]
 const LINEAR_P3_TO_LINEAR_SRGB: Mat3 = [
   [1.2249401762805598, -0.22494017628055996, 0],
   [-0.04205695470968816, 1.0420569547096881, 0],
   [-0.019637554590334432, -0.07863604555063188, 1.0982736001409663],
 ]
-const LINEAR_SRGB_TO_LINEAR_P3: Mat3 = [
-  [0.8224619687143623, 0.17753803128563775, 0],
-  [0.033194198850968, 0.9668058011490319, 0],
-  [0.01708263023566388, 0.0723974405834286, 0.9105199291809074],
-]
+const LMS_TO_LINEAR_SRGB = invert(LINEAR_SRGB_TO_LMS)
+const OKLAB_TO_LMS = invert(LMS_TO_OKLAB)
+const LINEAR_SRGB_TO_LINEAR_P3 = invert(LINEAR_P3_TO_LINEAR_SRGB)
 
 /** sRGB (and Display P3) transfer function, decode. Sign-preserving so out-of-gamut values survive. */
 export function srgbToLinear(c: number): number {

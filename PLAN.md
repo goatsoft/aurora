@@ -103,7 +103,7 @@ The file is declarative JSON. It never contains arbitrary WGSL, because a file m
 - **Generator registry.** Each `type` maps to a generator with a typed param schema. The schema includes ranges, defaults, units and UI hints, so the Studio inspectors are generated from it rather than hand-built.
 - **Layers.** A file is a stack of layers with `normal | screen | add | multiply | overlay` blending and per-layer masks (linear or radial fade). This is what lets one format hold GOAT auroras and anything else.
 - **Colour.** Colours are stored as OKLCH strings, converted to OKLab on the CPU, mixed in OKLab in the shader, and gamut-mapped at output. The canvas uses `colorSpace: 'display-p3'` when the browser supports it. The maths lives in `@goatsoft/color` (Björn Ottosson's matrices, as in `OKLabColorPicker/OKLabColor.swift`), so every GOATsoft project shares one implementation.
-- **Versioning.** `version` is an integer with forward migrations in `format/migrations`. Validation uses Valibot (about 1 kB) and reports errors with JSON paths.
+- **Versioning.** `version` is an integer with forward migrations in `format/migrations`. Validation uses Valibot (about 1 kB) and reports errors with JSON paths and "did you mean" suggestions (ADR-0002).
 - **Validation in tooling.** A JSON Schema is generated from the Valibot schema and published, so editors autocomplete `.aurora` files.
 
 ### 3.2 Runtime (`@goatsoft/aurora`)
