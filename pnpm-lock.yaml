@@ -67,6 +67,9 @@ importers:
       '@goatsoft/aurora-format':
         specifier: workspace:^
         version: link:../format
+      '@goatsoft/color':
+        specifier: workspace:^
+        version: link:../color
 
   packages/format:
     dependencies:

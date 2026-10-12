@@ -7,5 +7,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["src", "test"],
-  "references": [{ "path": "../format" }]
+  "references": [{ "path": "../color" }, { "path": "../format" }]
 }

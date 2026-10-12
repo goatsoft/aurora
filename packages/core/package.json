@@ -24,7 +24,8 @@
     "build": "vite build && tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@goatsoft/aurora-format": "workspace:^"
+    "@goatsoft/aurora-format": "workspace:^",
+    "@goatsoft/color": "workspace:^"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

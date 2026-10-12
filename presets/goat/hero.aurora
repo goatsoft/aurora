@@ -1,0 +1,33 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "GOAT hero",
+  "canvas": {
+    "fade": "y"
+  },
+  "palette": [
+    "color(srgb 0.23 0.63 1)",
+    "color(srgb 0.48 0.36 1)",
+    "color(srgb 0.71 0.29 1)"
+  ],
+  "layers": [
+    {
+      "type": "aurora-fbm",
+      "blend": "normal",
+      "params": {
+        "intensity": 0.38,
+        "scale": 1.1,
+        "speed": 0.09,
+        "seed": 3,
+        "stretch": 0.45
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "srgb"
+    }
+  ]
+}

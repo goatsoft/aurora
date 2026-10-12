@@ -23,8 +23,20 @@ export default defineConfig(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+      // `() => update()` reads better than `() => { update() }` for callbacks.
+      '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
       // noUncheckedIndexedAccess makes `!` the honest way to say "this index exists".
       '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  {
+    // Test fakes are full of no-op methods and one-line stubs.
+    files: ['**/test/**'],
+    rules: {
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@stylistic/max-statements-per-line': 'off',
     },
   },
 )

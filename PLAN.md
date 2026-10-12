@@ -219,12 +219,16 @@ Every route is prerendered. A `404.html` copy of the SPA shell handles Studio's 
 | 1 | **Format + colour** | `aurora-format`: schema, validation, migrations, OKLab/OKLCH/P3 maths, gamut mapping, JSON Schema emit | 100% unit coverage. Round-trip and fuzz tests pass. |
 | 2 | **Runtime** | Composer, `aurora-fbm` generator, worker pool, scenes, CSS compiler | **GOAT parity:** all 8 GOAT usages render pixel-identical in `mix:"srgb"` (screenshot diff ≤ 1%). Lifecycle and fallback tests pass. Size budgets are met. |
 | 3 | **Bindings** | `<aurora-bg>`, `aurora-vue`, `aurora-unplugin` with HMR | A sample app imports `.aurora`, there is no flash, and the SSR fallback works |
-| 4 | **More generators** | mesh-gradient, waves, grain, conic, noise-field; layer blending and masks | Each generator has param schema, docs and a golden image |
+| 4 | **More generators** | A shared WGSL noise library (value, gradient/Perlin, simplex, cellular/Worley, curl, ridged and turbulent fbm). Themed generators on top of it: **Earth** (terrain, strata), **Wind** (flowing streaks, curl-noise flow) and **Fire** (flame, embers). Classic animated gradients: mesh, linear and conic sweeps. Grain. Each ships with tuned defaults that look good untouched. (Layer blending and masks landed in Phase 2.) | Each generator has param schema, docs and a golden image |
 | 5 | **Studio** | Builder as in section 4, hosted and local dev-tool mode | It can recreate every GOAT preset from scratch and export a file identical to the pack |
 | 6 | **Docs + site** | `packages/gruff`, `apps/site`, prerender, and Pages deploy to aurora.goatsoft.io | Lighthouse targets are met and all docs examples are live |
 | 7 | **Rollout** | Replace the aurora in GOAT/web, the GOAT docs theme and goatsoft.io. Delete their shader copies and GLSL paths. Supersede GOAT ADR-0079 and GOATsoft ADR-0005 with Aurora ADRs. | Every GOATsoft site runs on `@goatsoft/aurora` |
 
 Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API is stable after Phase 2.
+
+**Auroras are the flagship.** `aurora-fbm` is the default generator, and the aurora presets are the default demo themes everywhere: Studio's starting document, docs examples and the site hero. Earth, Wind & Fire and the gradients sit alongside them.
+
+**Phase 2 notes.** Parity is stricter than planned: every GOAT preset renders bit-identically to GOAT's own shader (0 differing pixels). Headless SwiftShader can't present WebGPU canvases (the device is lost on first present), so CI checks rendering through texture-backed canvases and checks presentation only for truthful fallback; on-screen presentation needs real-device acceptance (ADR-0004).
 
 ## 7. Engineering bars ("really, really slick")
 

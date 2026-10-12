@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client"],
+    "types": ["@webgpu/types", "vite/client"],
     "allowImportingTsExtensions": true,
     "outDir": "../../node_modules/.cache/tsc/color",
     "emitDeclarationOnly": true
