@@ -1,14 +1,15 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { auroraStats, configureAurora, mountAurora } from '../src/index'
-import type { AuroraMode } from '../src/index'
-import { createMainThreadBackend, createWorkerBackend } from '../src/pool'
-import type { Backend, LeaseListener } from '../src/pool'
-import type { SurfaceState } from '../src/protocol'
-import { setBackends } from '../src/surface'
+import { auroraStats, configureAurora, mountAurora } from '@/index'
+import type { AuroraMode } from '@/index'
+import { createMainThreadBackend, createWorkerBackend } from '@/pool'
+import type { Backend, LeaseListener } from '@/pool'
+import type { SurfaceState } from '@/protocol'
+import { setBackends } from '@/surface'
+import AuroraWorker from '@/worker?worker'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('../../../presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const doc = (extra: Partial<AuroraInput> = {}) => assertAurora({ ...hero, ...extra })
 
 let host: HTMLDivElement
@@ -73,7 +74,7 @@ describe('mountAurora with the real renderer', () => {
     configureAurora({ worker })
     const events: string[] = []
     setBackends({
-      worker: observed(createWorkerBackend(() => new Worker(new URL('../src/worker.ts', import.meta.url), { type: 'module' }), () => 30), events),
+      worker: observed(createWorkerBackend(() => new AuroraWorker(), () => 30), events),
       main: observed(createMainThreadBackend(() => navigator.gpu, () => 30), events),
     })
     const modes: AuroraMode[] = []

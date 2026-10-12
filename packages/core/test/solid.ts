@@ -1,4 +1,4 @@
-import { defineGenerator } from '../src/generator'
+import { defineGenerator } from '@/generators/define'
 
 /** Test generator: one flat colour at a given alpha, so blend results can be checked exactly. */
 export const solid = defineGenerator({

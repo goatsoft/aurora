@@ -26,6 +26,10 @@ export default defineConfig(
       '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
       // `() => update()` reads better than `() => { update() }` for callbacks.
       '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
+      // Say where code comes from: `@/x` is this package's src/x, `~/x` is the repo root.
+      'no-restricted-imports': ['error', {
+        patterns: [{ regex: '^\\.\\./', message: 'Use @/ (this package\'s src) or ~/ (the repo root) instead of a parent-relative path.' }],
+      }],
       // noUncheckedIndexedAccess makes `!` the honest way to say "this index exists".
       '@typescript-eslint/no-non-null-assertion': 'off',
     },

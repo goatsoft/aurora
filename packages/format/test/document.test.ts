@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { AuroraFormatError, SCHEMA_URL, assertAurora, defineAurora, parseAurora, stringifyAurora } from '../src/index'
-import type { AuroraDocument, FormatIssue } from '../src/index'
+import { AuroraFormatError, SCHEMA_URL, assertAurora, defineAurora, parseAurora, stringifyAurora } from '@/index'
+import type { AuroraDocument, FormatIssue } from '@/index'
 import goatHero from './fixtures/goat-hero.aurora?raw'
 
 const minimal = { format: 'aurora', version: 1, name: 'Minimal', palette: ['#4f8cff'], layers: [{ type: 'aurora-fbm' }] }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COLOR_WGSL } from '../src/index'
+import { COLOR_WGSL } from '@/index'
 
 describe('COLOR_WGSL', () => {
   it('declares every function and writes valid float literals', () => {

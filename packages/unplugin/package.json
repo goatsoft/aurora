@@ -1,0 +1,68 @@
+{
+  "name": "@goatsoft/aurora-unplugin",
+  "version": "0.0.0",
+  "description": "Import .aurora files in Vite, Rollup, Rolldown, esbuild, webpack and Rspack: validated at build time, typed, hot-reloaded.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goatsoft/aurora.git",
+    "directory": "packages/unplugin"
+  },
+  "files": [
+    "dist",
+    "client.d.ts"
+  ],
+  "exports": {
+    ".": {
+      "@goatsoft/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "@goatsoft/source": "./src/vite.ts",
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    },
+    "./rollup": {
+      "@goatsoft/source": "./src/rollup.ts",
+      "types": "./dist/rollup.d.ts",
+      "import": "./dist/rollup.js"
+    },
+    "./rolldown": {
+      "@goatsoft/source": "./src/rolldown.ts",
+      "types": "./dist/rolldown.d.ts",
+      "import": "./dist/rolldown.js"
+    },
+    "./esbuild": {
+      "@goatsoft/source": "./src/esbuild.ts",
+      "types": "./dist/esbuild.d.ts",
+      "import": "./dist/esbuild.js"
+    },
+    "./webpack": {
+      "@goatsoft/source": "./src/webpack.ts",
+      "types": "./dist/webpack.d.ts",
+      "import": "./dist/webpack.js"
+    },
+    "./rspack": {
+      "@goatsoft/source": "./src/rspack.ts",
+      "types": "./dist/rspack.d.ts",
+      "import": "./dist/rspack.js"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@goatsoft/aurora": "workspace:^",
+    "@goatsoft/aurora-format": "workspace:^",
+    "unplugin": "^3.4.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

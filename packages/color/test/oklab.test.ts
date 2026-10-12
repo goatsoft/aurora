@@ -10,8 +10,8 @@ import {
   oklchToOklab,
   rgbToOklab,
   srgbToLinear,
-} from '../src/index'
-import type { Oklab, RgbSpace } from '../src/index'
+} from '@/index'
+import type { Oklab, RgbSpace } from '@/index'
 
 const unit = fc.double({ min: 0, max: 1, noNaN: true })
 const rgb = fc.record({ r: unit, g: unit, b: unit, alpha: unit })

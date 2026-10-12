@@ -1,7 +1,7 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { PROBE_TIMEOUT, createMainThreadBackend, createWorkerBackend } from '../src/pool'
-import type { SurfaceState, WorkerRequest, WorkerResponse } from '../src/protocol'
+import { PROBE_TIMEOUT, createMainThreadBackend, createWorkerBackend } from '@/pool'
+import type { SurfaceState, WorkerRequest, WorkerResponse } from '@/protocol'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 
 installGpuGlobals()

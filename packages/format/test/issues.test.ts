@@ -1,7 +1,7 @@
 import * as v from 'valibot'
 import { describe, expect, it } from 'vitest'
-import { distance, jsonPath, keysAt, suggest, toFormatIssue } from '../src/issues'
-import { AuroraSchema } from '../src/schema'
+import { distance, jsonPath, keysAt, suggest, toFormatIssue } from '@/issues'
+import { AuroraSchema } from '@/schema'
 
 describe('jsonPath', () => {
   it('uses dot, index and quoted notation', () => {

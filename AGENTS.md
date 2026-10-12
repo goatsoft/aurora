@@ -15,14 +15,18 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, and **ESLint Stylistic for formatting**. There is no Prettier.
 - **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
-- Later phases add Vue 3.5, vue-router 5, Tailwind 4, shadcn-vue, and gruff on `unplugin-vue-markdown` (see PLAN.md §3–5).
+- **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
+- Later phases add vue-router 5, Tailwind 4, shadcn-vue, and gruff on `unplugin-vue-markdown` (see PLAN.md §3–5).
 
 ## Layout
 
 ```
 packages/color    @goatsoft/color           OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing (0 deps)
 packages/format   @goatsoft/aurora-format   .aurora schema, validation, migrations
-packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback
+packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback; /element is <aurora-bg>, /load is loadAurora
+packages/vue      @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), <AuroraScene> (written in TS with h(), no SFC build)
+packages/unplugin @goatsoft/aurora-unplugin .aurora imports: build-time validation, typed modules, HMR
+apps/sample       Vite + Vue SSR app using all of the above
 presets/goat/     The GOAT pack: the parity reference and default demo themes
 docs/adr/         Architecture decision records
 ```
@@ -33,7 +37,8 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
-pnpm verify          # lint + typecheck + all tests with coverage + build + size budgets. Must pass before every push.
+pnpm verify          # lint + typecheck + tests with coverage + build + app tests + size budgets. Must pass before every push.
+pnpm test:apps       # apps/* against the built packages (run after pnpm build)
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
@@ -61,6 +66,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - Formatting: 2 spaces, single quotes, no semicolons. Run `pnpm lint:fix`; don't hand-format.
 - `import type` for type-only imports (lint enforces it).
+- No parent-relative paths (`../`; lint enforces it). In tests and apps, `@/x` is the current package's `src/x` and `~/x` is the repo root (`~/presets/goat/hero.aurora`); filesystem code uses `inject('root')` in tests or Vite's `searchForWorkspaceRoot()`. Package `src/` uses same-folder `./` imports only, because aliases would leak into published declarations.
 - WebGPU only. No WebGL or GLSL path, ever; the fallback is CSS.
 - `.aurora` files are declarative JSON and must never carry executable code or WGSL.
 - Colours are authored and mixed in OKLab/OKLCH; `mix: "srgb"` exists only for GOAT parity. All colour maths goes in `@goatsoft/color`; never reimplement it elsewhere.

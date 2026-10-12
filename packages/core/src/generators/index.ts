@@ -1,4 +1,4 @@
-import type { Generator } from '../generator'
+import type { Generator } from './define'
 import { auroraFbm } from './aurora-fbm'
 
 export { auroraFbm }

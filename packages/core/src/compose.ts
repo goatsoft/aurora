@@ -1,7 +1,7 @@
 import { COLOR_WGSL } from '@goatsoft/color'
 import type { RgbSpace } from '@goatsoft/color'
 import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
-import type { Generator } from './generator'
+import type { Generator } from './generators/define'
 import { GENERATORS } from './generators/index'
 import { STD_WGSL } from './wgsl-std'
 

@@ -1,8 +1,8 @@
 import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { compose } from '../src/compose'
-import { packUniforms } from '../src/uniforms'
+import { compose } from '@/compose'
+import { packUniforms } from '@/uniforms'
 import { GOAT_WGSL } from './fixtures/goat-aurora'
 import { device, diff, render } from './gpu'
 
@@ -11,8 +11,9 @@ import { device, diff, render } from './gpu'
  * (PLAN allows 1%; we hold ourselves to zero differing pixels).
  * The reference options are restated from GOAT's components, not derived from our presets.
  */
-const presets = import.meta.glob<string>('../../../presets/goat/*.aurora', { query: '?raw', import: 'default', eager: true })
-const preset = (name: string): AuroraDocument => assertAurora(presets[`../../../presets/goat/${name}.aurora`])
+const presets = import.meta.glob<string>('~/presets/goat/*.aurora', { query: '?raw', import: 'default', eager: true })
+const byName = Object.fromEntries(Object.entries(presets).map(([path, text]) => [path.replace(/^.*\/|\.aurora$/g, ''), text]))
+const preset = (name: string): AuroraDocument => assertAurora(byName[name])
 
 type Rgb = [number, number, number]
 const PALETTES: Record<string, [Rgb, Rgb, Rgb]> = {
@@ -64,7 +65,7 @@ afterAll(() => {
 
 describe('GOAT parity (mix: "srgb")', () => {
   it('covers every GOAT preset file', () => {
-    expect(Object.keys(presets).map((p) => p.replace(/^.*\/|\.aurora$/g, '')).sort()).toEqual(USAGES.map(([n]) => n).sort())
+    expect(Object.keys(byName).sort()).toEqual(USAGES.map(([n]) => n).sort())
   })
 
   it.each(USAGES)('%s renders identically to the GOAT shader', async (name, options, [width, height]) => {

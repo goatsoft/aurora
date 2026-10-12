@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { Mock } from 'vitest'
-import { joinScene, sceneGeometry } from '../src/scene'
-import type { SceneMember } from '../src/scene'
+import { joinScene, sceneGeometry } from '@/scene'
+import type { SceneMember } from '@/scene'
 
 const member = (left: number, top: number, width: number, height: number): SceneMember & { changed: Mock<() => void> } => ({
   rect: () => ({ left, top, width, height }),
