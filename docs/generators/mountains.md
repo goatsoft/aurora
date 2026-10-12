@@ -2,9 +2,26 @@
 
 Earth: a few peaks on layered ridges, fading into haze, with valley mist and lit crests.
 
-![Mountains with its defaults](/packages/core/test/golden/mountains.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Mountains starter",
+  "palette": [
+    "oklch(0.09 0.02 270)",
+    "oklch(0.36 0.06 268)",
+    "oklch(0.86 0.11 190)"
+  ],
+  "layers": [
+    {
+      "type": "mountains"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
+The starter above is [`presets/starters/mountains.aurora`](/presets/starters/mountains.aurora). It reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 
 ## Parameters
 
@@ -26,26 +43,3 @@ Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 - `oklch(0.09 0.02 270)`
 - `oklch(0.36 0.06 268)`
 - `oklch(0.86 0.11 190)`
-
-## Starter
-
-[`presets/starters/mountains.aurora`](/presets/starters/mountains.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Mountains starter",
-  "palette": [
-    "oklch(0.09 0.02 270)",
-    "oklch(0.36 0.06 268)",
-    "oklch(0.86 0.11 190)"
-  ],
-  "layers": [
-    {
-      "type": "mountains"
-    }
-  ]
-}
-```

@@ -2,9 +2,26 @@
 
 Earth: flowing sandstone layers, folded and carved by wind.
 
-![Strata with its defaults](/packages/core/test/golden/strata.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Strata starter",
+  "palette": [
+    "oklch(0.46 0.11 34)",
+    "oklch(0.67 0.13 50)",
+    "oklch(0.9 0.05 78)"
+  ],
+  "layers": [
+    {
+      "type": "strata"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
+The starter above is [`presets/starters/strata.aurora`](/presets/starters/strata.aurora). It reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 
 ## Parameters
 
@@ -23,26 +40,3 @@ Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 - `oklch(0.46 0.11 34)`
 - `oklch(0.67 0.13 50)`
 - `oklch(0.9 0.05 78)`
-
-## Starter
-
-[`presets/starters/strata.aurora`](/presets/starters/strata.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Strata starter",
-  "palette": [
-    "oklch(0.46 0.11 34)",
-    "oklch(0.67 0.13 50)",
-    "oklch(0.9 0.05 78)"
-  ],
-  "layers": [
-    {
-      "type": "strata"
-    }
-  ]
-}
-```

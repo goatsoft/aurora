@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import type { GeneratorSpec } from './generators/define'
 import type { WorkerRequest, WorkerResponse } from './protocol'
 import { Renderer } from './renderer'
 
@@ -13,6 +14,8 @@ const post = (message: WorkerResponse) => {
 
 let renderer: Renderer | undefined
 let failed = false
+/** Generators sent while the probe is still running: the page registers as soon as a surface updates. */
+const pending: GeneratorSpec[] = []
 
 scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
   switch (data.type) {
@@ -29,6 +32,7 @@ scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
         // A worker canvas must be able to get a context, or attaching would strand it.
         if (!new OffscreenCanvas(1, 1).getContext('webgpu')) throw new Error('No OffscreenCanvas WebGPU.')
         renderer = created
+        for (const generator of pending.splice(0)) created.register(generator)
         post({ type: 'ready', available: true })
       }).catch(() => {
         failed = true
@@ -36,7 +40,8 @@ scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
       })
       return
     case 'register':
-      renderer?.register(data.generator)
+      if (renderer) renderer.register(data.generator)
+      else pending.push(data.generator)
       return
     case 'attach':
       if (failed || !renderer) post({ type: 'fail' })

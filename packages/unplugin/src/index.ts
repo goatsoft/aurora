@@ -1,5 +1,6 @@
 import type { UnpluginFactory } from 'unplugin'
 import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { workspaceRoot } from './root'
 import { createStudioApi, STUDIO_URL, studioLink } from './studio'
@@ -20,6 +21,7 @@ const AURORA = /\.aurora(?:\?(?!(?:[^#]*&)?(?:raw|url)(?:[&=#]|$))[^#]*)?$/
 
 export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> = (options = {}) => {
   let root = options.root ?? workspaceRoot(process.cwd())
+  let project = process.cwd()
   return {
     name: 'aurora',
     enforce: 'pre',
@@ -40,6 +42,16 @@ export const unpluginFactory: UnpluginFactory<AuroraPluginOptions | undefined> =
     vite: {
       configResolved(config) {
         root = options.root ?? workspaceRoot(config.root)
+        project = config.root
+      },
+      // The hot-update import in a `.aurora` module resolves from the project, not the file: a
+      // shared file outside the app (a monorepo's presets) has no node_modules of its own.
+      resolveId: {
+        filter: { id: /^@goatsoft\/aurora$/ },
+        handler(id, importer, opts) {
+          if (!importer || !AURORA.test(importer)) return null
+          return this.resolve(id, join(project, 'index.html'), { ...opts, skipSelf: true })
+        },
       },
       configureServer(server) {
         if (options.studio === false) return

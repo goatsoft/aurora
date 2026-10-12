@@ -2,9 +2,26 @@
 
 Air in motion: silky streaks flowing across the canvas, bent by gusts.
 
-![Wind with its defaults](/packages/core/test/golden/wind.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Wind starter",
+  "palette": [
+    "oklch(0.86 0.05 225)",
+    "oklch(0.68 0.1 240)",
+    "oklch(0.97 0.02 210)"
+  ],
+  "layers": [
+    {
+      "type": "wind"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `curl`, `simplex`.
+The starter above is [`presets/starters/wind.aurora`](/presets/starters/wind.aurora). It reads 3 palette colours, in order. Uses the noise library: `curl`, `simplex`.
 
 ## Parameters
 
@@ -23,26 +40,3 @@ Reads 3 palette colours, in order. Uses the noise library: `curl`, `simplex`.
 - `oklch(0.86 0.05 225)`
 - `oklch(0.68 0.1 240)`
 - `oklch(0.97 0.02 210)`
-
-## Starter
-
-[`presets/starters/wind.aurora`](/presets/starters/wind.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Wind starter",
-  "palette": [
-    "oklch(0.86 0.05 225)",
-    "oklch(0.68 0.1 240)",
-    "oklch(0.97 0.02 210)"
-  ],
-  "layers": [
-    {
-      "type": "wind"
-    }
-  ]
-}
-```

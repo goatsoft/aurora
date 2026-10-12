@@ -141,6 +141,24 @@ describe('bundlers', () => {
       await server.close()
     }
   })
+
+  it('resolves the hot-update import from the project for .aurora files outside it', async () => {
+    const project = resolve(root, 'apps/sample')
+    const server = await createServer({
+      root: project,
+      logLevel: 'silent',
+      configFile: false,
+      plugins: [aurora()],
+      resolve: { conditions: ['@goatsoft/source'] },
+      server: { middlewareMode: true, hmr: false, fs: { allow: [root] } },
+    })
+    try {
+      const result = await server.transformRequest(`/@fs${resolve(root, 'presets/scenes/polar-night.aurora')}`)
+      expect(result?.code).toContain('packages/core/src/index.ts')
+    } finally {
+      await server.close()
+    }
+  })
 })
 
 describe('workspaceRoot', () => {
