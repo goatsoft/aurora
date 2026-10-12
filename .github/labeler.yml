@@ -1,0 +1,50 @@
+# Path-based PR labels, applied by .github/workflows/labels.yml (actions/labeler).
+# Packages that don't exist yet are listed so their PRs get labelled from day one.
+
+"pkg: format":
+  - changed-files:
+      - any-glob-to-any-file: packages/format/**
+"pkg: core":
+  - changed-files:
+      - any-glob-to-any-file: packages/core/**
+"pkg: generators":
+  - changed-files:
+      - any-glob-to-any-file: [packages/generators/**, packages/core/src/generators/**]
+"pkg: element":
+  - changed-files:
+      - any-glob-to-any-file: packages/element/**
+"pkg: vue":
+  - changed-files:
+      - any-glob-to-any-file: packages/vue/**
+"pkg: unplugin":
+  - changed-files:
+      - any-glob-to-any-file: packages/unplugin/**
+"pkg: studio":
+  - changed-files:
+      - any-glob-to-any-file: packages/studio/**
+"pkg: docs-kit":
+  - changed-files:
+      - any-glob-to-any-file: packages/docs-kit/**
+"pkg: site":
+  - changed-files:
+      - any-glob-to-any-file: apps/site/**
+"pkg: presets":
+  - changed-files:
+      - any-glob-to-any-file: presets/**
+"pkg: workspace":
+  - changed-files:
+      - any-glob-to-any-file:
+          - package.json
+          - pnpm-lock.yaml
+          - pnpm-workspace.yaml
+          - tsconfig*.json
+          - "*.config.ts"
+          - vite.library.ts
+          - .nvmrc
+
+"type: docs":
+  - changed-files:
+      - any-glob-to-any-file: [docs/**, README.md, PLAN.md, "packages/*/README.md", "apps/*/README.md"]
+"type: ci":
+  - changed-files:
+      - any-glob-to-any-file: .github/workflows/**

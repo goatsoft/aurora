@@ -1,0 +1,38 @@
+name: Labels
+
+on:
+  push:
+    branches: [main, develop]
+    paths: [.github/labels.yml, .github/workflows/labels.yml]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Keeps the repo's labels identical to .github/labels.yml.
+  sync:
+    if: github.event_name != 'pull_request_target'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: crazy-max/ghaction-github-labeler@v6
+        with:
+          yaml-file: .github/labels.yml
+
+  # Adds pkg:/type: labels to PRs from the paths they change. It never checks out PR code.
+  pr:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/labeler@v7
+        with:
+          sync-labels: false
