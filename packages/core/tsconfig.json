@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["@webgpu/types", "vite/client"],
+    "allowImportingTsExtensions": true,
+    "outDir": "../../node_modules/.cache/tsc/core",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "test"],
+  "references": [{ "path": "../format" }]
+}

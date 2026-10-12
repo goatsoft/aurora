@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "allowImportingTsExtensions": true,
+    "outDir": "../../node_modules/.cache/tsc/format",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "test"]
+}
