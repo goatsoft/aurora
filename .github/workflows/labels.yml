@@ -25,7 +25,7 @@ jobs:
         with:
           yaml-file: .github/labels.yml
 
-  # Adds pkg:/type: labels to PRs from the paths they change. It never checks out PR code.
+  # Adds pkg: and type: docs labels to PRs from the paths they change. It never checks out PR code.
   pr:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
