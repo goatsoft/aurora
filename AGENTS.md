@@ -37,7 +37,8 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
-pnpm verify          # lint + typecheck + all tests with coverage + build + size budgets. Must pass before every push.
+pnpm verify          # lint + typecheck + tests with coverage + build + app tests + size budgets. Must pass before every push.
+pnpm test:apps       # apps/* against the built packages (run after pnpm build)
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)

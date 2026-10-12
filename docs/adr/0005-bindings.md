@@ -17,4 +17,4 @@ Every GOATsoft site has to drop in a background in one line, with no flash of em
 ## Consequences
 
 - With the plugin, files never need validating in the browser; `<aurora-bg src>` is the only path that pays for the schema.
-- The sample app (`apps/sample`) is tested by running Vite outside Vitest in a child process (as a real app does): SSR output and the client build. Vitest's own module interception would otherwise resolve externalised workspace packages to their TypeScript sources.
+- The sample app (`apps/sample`) is tested against the built packages (`pnpm test:apps`, after `pnpm build` in `pnpm verify`) by running Vite outside Vitest in a child process, as a real app does: SSR output and the client build. Vitest's own module interception would otherwise resolve externalised workspace packages to their TypeScript sources.

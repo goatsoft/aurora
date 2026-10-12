@@ -29,11 +29,19 @@ export default defineConfig({
     },
     projects: [
       {
+        // Apps consume the built packages, like real apps do: run after `pnpm build`.
+        test: {
+          name: 'apps',
+          environment: 'node',
+          include: ['apps/*/test/**/*.test.ts'],
+        },
+      },
+      {
         ssr,
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['packages/*/test/**/*.test.ts', 'apps/*/test/**/*.test.ts'],
+          include: ['packages/*/test/**/*.test.ts'],
           exclude: ['**/*.browser.test.ts'],
         },
       },
