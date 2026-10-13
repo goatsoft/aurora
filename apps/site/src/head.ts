@@ -7,7 +7,7 @@ export const SITE = {
   url: 'https://aurora.goatsoft.io',
   repo: 'https://github.com/goatsoft/aurora',
   npm: 'https://www.npmjs.com/package/@goatsoft/aurora',
-  description: 'Animated backgrounds for your site. Create one in Aurora Studio, then use it with Vue or HTML. WebGPU, with a CSS fallback.',
+  description: 'Give your site atmosphere: beautiful backgrounds that move with you. Design one in Aurora Studio, then use it with Vue or HTML. WebGPU, with a CSS fallback.',
 }
 
 export interface Head {
