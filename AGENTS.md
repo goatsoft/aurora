@@ -46,6 +46,7 @@ Each package: `src/index.ts` entry, tests in `test/`. Packages export a `@goatso
 
 ```sh
 pnpm install
+pnpm dev             # the site on localhost:5180 with Studio at /studio/, as deployed; its Studio link edits this repo's .aurora files
 pnpm verify          # lint + typecheck + tests with coverage + build + app tests + size budgets. Must pass before every push.
 pnpm test:apps       # apps/* against the built packages, and Studio's component tests (run after pnpm build)
 pnpm lint:fix        # fixes lint and formatting
