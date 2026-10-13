@@ -82,8 +82,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <figure class="rounded-2xl bg-linear-to-b from-white/25 via-white/8 to-white/4 p-px shadow-[0_40px_120px_-30px_oklch(0_0_0/0.95)]">
-    <div class="overflow-hidden rounded-[15px] bg-[oklch(0.12_0.012_270)]">
+  <!-- A real border (with a lighter top edge) rather than a gradient showing through 1px of padding:
+       that trick loses the border around the rounded corners. -->
+  <figure class="overflow-hidden rounded-2xl border border-white/10 border-t-white/25 bg-[oklch(0.12_0.012_270)] shadow-[0_40px_120px_-30px_oklch(0_0_0/0.95)]">
+    <div>
       <div class="grid h-11 grid-cols-[1fr_auto_1fr] items-center border-b border-white/8 px-4">
         <div class="flex gap-2">
           <span class="size-3 rounded-full bg-[#ff5f57]" /><span class="size-3 rounded-full bg-[#febc2e]" /><span class="size-3 rounded-full bg-[#28c840]" />
