@@ -19,6 +19,12 @@ The `.aurora` presets and starters (`presets/`), generators, colour tokens and p
 - Redistribute the Brand Assets **only as part of unmodified official Aurora builds and this repository**, so that a checkout, a fork used for contributing, or a mirror of an official release keeps working.
 - Use the Aurora name and mark to refer to Aurora (reviews, articles, links, "built with Aurora", "works with Aurora"), and show screenshots of Aurora Studio and of backgrounds made with Aurora.
 
+## Official attribution badges
+
+As an exception to the restrictions below, you may embed, download, self-host and redistribute the **unmodified official attribution badge SVGs** in `assets/brand/badges/` with websites, applications and documentation that use Aurora. They may be scaled proportionally and linked to `https://aurora.goatsoft.io/`. Attribution is optional. The badges identify use of Aurora; they do not imply endorsement and do not certify that WebGPU is currently active.
+
+This permission covers the complete badges only, not extraction or alteration of their marks or use as your own branding. The badges remain Brand Assets under this licence, not MIT-licensed software.
+
 ## What you may not do
 
 - Ship a modified, renamed or rebranded build of Aurora or Aurora Studio that still carries the Brand Assets. A fork you distribute must replace the mark, icons and brand artwork with your own and must not use the Aurora name or mark in a way that suggests it is Aurora or endorsed by it.

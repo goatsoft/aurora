@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
+import badge from '~/assets/brand/badges/v1/made-with-inline-dark.svg?url'
 
 const year = new Date().getFullYear()
 </script>
@@ -83,6 +84,14 @@ const year = new Date().getFullYear()
             >JSON Schema</a>
           </li>
           <li>
+            <RouterLink
+              to="/docs/guide/attribution"
+              class="hover:text-foreground"
+            >
+              Attribution badges
+            </RouterLink>
+          </li>
+          <li>
             <a
               :href="SITE.repo"
               target="_blank"
@@ -124,7 +133,7 @@ const year = new Date().getFullYear()
         </ul>
       </div>
     </div>
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:justify-between">
+    <div class="mx-auto flex max-w-6xl flex-col items-start gap-4 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
       <span>© {{ year }} GOATsoft. <a
         :href="`${SITE.repo}/blob/develop/LICENSE`"
         target="_blank"
@@ -136,7 +145,18 @@ const year = new Date().getFullYear()
         rel="noopener"
         class="hover:text-foreground"
       >Artwork licence</a></span>
-      <span>Built with Aurora and gruff.</span>
+      <a
+        :href="SITE.url"
+        class="inline-flex shrink-0 rounded-lg outline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+      >
+        <img
+          :src="badge"
+          alt="Made with Aurora"
+          width="148"
+          height="32"
+          decoding="async"
+        >
+      </a>
     </div>
   </footer>
 </template>

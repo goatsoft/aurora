@@ -3,6 +3,7 @@ import type TopBar from '@/components/TopBar.vue'
 import type { Viewport } from '@/editor/studio'
 import { TooltipProvider } from 'reka-ui'
 import { useStudio } from '@/editor/studio'
+import badge from '~/assets/brand/badges/v1/made-with-inline-dark.svg?url'
 
 /**
  * The editor: a full-bleed live canvas with floating glass panels. Everything is reachable from
@@ -125,8 +126,9 @@ useEventListener(window, 'drop', (e: DragEvent) => {
 
 <template>
   <TooltipProvider>
+    <div class="flex size-full flex-col">
     <main
-      class="relative size-full overflow-hidden"
+      class="relative min-h-0 flex-1 overflow-hidden"
       aria-label="Aurora Studio"
     >
       <Stage />
@@ -176,5 +178,23 @@ useEventListener(window, 'drop', (e: DragEvent) => {
         </div>
       </Transition>
     </main>
+      <footer class="relative z-20 flex shrink-0 justify-center border-t border-panel-border bg-background px-4 py-1">
+        <a
+          href="https://aurora.goatsoft.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex rounded-lg outline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label="Made with Aurora (opens in a new tab)"
+        >
+          <img
+            :src="badge"
+            alt="Made with Aurora"
+            width="148"
+            height="32"
+            decoding="async"
+          >
+        </a>
+      </footer>
+    </div>
   </TooltipProvider>
 </template>

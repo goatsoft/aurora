@@ -185,6 +185,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/guide/attribution': RouteRecordInfo<
+      '/docs/guide/attribution',
+      '/docs/guide/attribution',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/guide/format': RouteRecordInfo<
       '/docs/guide/format',
       '/docs/guide/format',
@@ -446,6 +453,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/glossary.md': {
       routes:
         | '/docs/glossary'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/attribution.md': {
+      routes:
+        | '/docs/guide/attribution'
       views:
         | never
       pathParamNames:

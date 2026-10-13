@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="48" viewBox="0 0 168 48" role="img" aria-label="Powered by Aurora">
+  <title>Powered by Aurora</title>
+  <style>.panel{fill:#fcfbff}.line{stroke:#d9d5e7}.ink{fill:#262139}.muted{fill:#655c79}</style>
+  <defs>
+    <linearGradient id="edge" x1="0" y1="48" x2="168" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#43f4dc"/><stop offset=".5" stop-color="#8c83ff"/><stop offset="1" stop-color="#ee82ed"/></linearGradient>
+    <filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <rect class="panel line" x=".5" y=".5" width="167" height="47" rx="12"/>
+  <rect class="breathe" x="3" y="3" width="162" height="42" rx="10" fill="none" stroke="url(#edge)" stroke-width="1.5" filter="url(#glow)" opacity=".24"/>
+  <svg x="10" y="8" width="32" height="32" viewBox="0 0 128 128" fill="none" aria-hidden="true"><defs><linearGradient id="aurora-spectrum" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs><g stroke="url(#aurora-spectrum)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>
+  <g font-family="Arial,Helvetica,sans-serif"><text class="muted" x="51" y="20" font-size="10">Powered by</text><text class="ink" x="50" y="36" font-size="16" font-weight="600" letter-spacing="-.4">Aurora</text></g>
+  <path class="line" d="m145 20 4 4-4 4m-5-4h9" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

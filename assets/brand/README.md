@@ -35,3 +35,11 @@ Studio and the site import these files from here (`~/assets/brand/…`); don't c
 ## Licence
 
 The Aurora mark and every file in `assets/` are Brand Assets under the [Aurora artwork and brand licence](../../LICENSE-ART.md), not the MIT licence that covers the code.
+
+## Attribution badges
+
+`badges/v1/` contains single-file inline (32 px tall, the default) and stacked (168 × 48) SVGs for `made-with`, `powered-by` and `enabled`, each in `auto`, `light` and `dark`, with a static default and an optional `-animated` suffix. Embed as a linked image; the compact mark is reproduced unchanged at 24 px inline or 32 px stacked. The slow animation affects only the card's inset glow and honours reduced motion.
+
+Use `badges/preview.html` for a live comparison. Inline URLs are `/badges/v1/{label}-inline-{theme}[-animated].svg`; stacked cards retain `/badges/v1/{label}-{theme}[-animated].svg`; the site's Vite plugin serves these directly in development and emits them at those stable paths for production. The package helpers reference these URLs and contain no artwork. See `docs/guide/attribution.md` for HTML, Markdown, Vue and self-hosting examples.
+
+The complete, unmodified badges may be used for attribution under the specific permission in LICENSE-ART.md. This does not change the licence of the mark or the rest of the artwork.

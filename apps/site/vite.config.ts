@@ -13,6 +13,7 @@ import Components from 'unplugin-vue-components/vite'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
 import { VueRouterAutoImports } from 'vue-router/unplugin'
 import VueRouter from 'vue-router/vite'
+import { attributionBadges } from './badges'
 
 const here = fileURLToPath(new URL('.', import.meta.url))
 const root = searchForWorkspaceRoot(here)
@@ -62,6 +63,7 @@ function schema(): Plugin {
 export default defineConfig({
   plugins: [
     schema(),
+    attributionBadges(root),
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
     VueRouter({
       root: here,
