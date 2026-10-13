@@ -5,7 +5,7 @@ import { generatorSpec } from '@/generators/define'
 import { GENERATORS, loadGenerators } from '@/generators/index'
 import AuroraWorker from '@/worker?worker'
 
-const doc = assertAurora({ version: 1, layers: [{ type: 'starfield' }] })
+const doc = assertAurora({ format: 'aurora', version: 1, name: 'Worker test', palette: ['oklch(0.95 0.02 250)'], layers: [{ type: 'starfield' }] })
 
 function state(): SurfaceState {
   return { doc, width: 64, height: 64, scene: { width: 64, height: 64, rect: [0, 0, 1, 1] }, scroll: 0, visible: true, reduced: false, origin: Date.now(), output: 'srgb' }

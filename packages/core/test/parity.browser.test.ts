@@ -89,17 +89,29 @@ describe('classic parity (mix: "srgb")', () => {
     expect(Object.keys(monoByName).sort()).toEqual(MONO_USAGES.map(([n]) => n).sort())
   })
 
-  it.each([...USAGES, ...MONO_USAGES.map(([n, o, size]) => [`mono/${n}`, o, size] as const)])('%s renders identically to the original shader', async (name, options, [width, height]) => {
+  it.each(USAGES)('%s renders identically to the original shader', async (name, options, size) => {
     // The original applies the download cards' fade as a CSS mask on top of the canvas, so compare without it.
-    const doc = name.startsWith('mono/') ? assertAurora(monoByName[name.slice(5)]) : preset(name)
-    const unmasked = { ...doc, layers: doc.layers.map(({ mask, ...layer }) => layer) }
-    const shader = compose(unmasked)
-    for (const [time, scroll] of [[0, 0], [12.5, 0], [97.25, 0.3]] as const) {
-      const expected = await render(gpu, CLASSIC_WGSL, classicUniforms(options, width, height, time, scroll), width, height)
-      const actual = await render(gpu, shader.code, packUniforms(unmasked, shader, { width, height, time, scroll }), width, height)
-      const result = diff(expected, actual)
-      expect(result.coverage, `${name} should draw something`).toBeGreaterThan(0.05)
-      expect(result.changed, `${name} at t=${time}: ${(result.changed * 100).toFixed(3)}% of pixels differ (max ${result.max})`).toBe(0)
-    }
+    await compare(name, preset(name), options, size, true)
+  })
+
+  // Some mono auroras are faint enough to leave a small test canvas nearly empty, so each is compared
+  // as authored (still bit-exact) and again at full intensity on both sides, where it must also draw.
+  it.each(MONO_USAGES)('mono/%s renders identically to the original shader', async (name, options, size) => {
+    const doc = assertAurora(monoByName[name])
+    await compare(`mono/${name}`, doc, options, size, false)
+    const full = { ...doc, layers: doc.layers.map((layer) => ({ ...layer, params: { ...layer.params, intensity: 1 } })) }
+    await compare(`mono/${name} at full intensity`, full, { ...options, intensity: 1 }, size, true)
   })
 })
+
+async function compare(name: string, doc: AuroraDocument, options: ReturnType<typeof classic>, [width, height]: [number, number], inked: boolean) {
+  const unmasked = { ...doc, layers: doc.layers.map(({ mask, ...layer }) => layer) }
+  const shader = compose(unmasked)
+  for (const [time, scroll] of [[0, 0], [12.5, 0], [97.25, 0.3]] as const) {
+    const expected = await render(gpu, CLASSIC_WGSL, classicUniforms(options, width, height, time, scroll), width, height)
+    const actual = await render(gpu, shader.code, packUniforms(unmasked, shader, { width, height, time, scroll }), width, height)
+    const result = diff(expected, actual)
+    if (inked) expect(result.coverage, `${name} should draw something`).toBeGreaterThan(0.05)
+    expect(result.changed, `${name} at t=${time}: ${(result.changed * 100).toFixed(3)}% of pixels differ (max ${result.max})`).toBe(0)
+  }
+}
