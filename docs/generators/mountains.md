@@ -1,3 +1,7 @@
+---
+order: 12
+---
+
 # Mountains (`mountains`)
 
 Earth: layered mountain ridges that fade into haze, with mist in the valleys.

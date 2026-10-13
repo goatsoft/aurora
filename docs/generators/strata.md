@@ -1,3 +1,7 @@
+---
+order: 14
+---
+
 # Strata (`strata`)
 
 Earth: folded sandstone layers that drift slowly.

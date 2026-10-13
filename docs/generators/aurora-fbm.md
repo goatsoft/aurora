@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # Aurora (`aurora-fbm`)
 
 Drifting ribbons of light.

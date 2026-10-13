@@ -1,3 +1,7 @@
+---
+order: 5
+---
+
 # Linear sweep (`linear-sweep`)
 
 A flowing linear gradient through three colours.

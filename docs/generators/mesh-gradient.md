@@ -1,3 +1,7 @@
+---
+order: 7
+---
+
 # Mesh gradient (`mesh-gradient`)
 
 Four colours that drift and blend into each other.

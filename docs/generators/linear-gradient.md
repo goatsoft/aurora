@@ -1,3 +1,7 @@
+---
+order: 4
+---
+
 # Linear gradient (`linear-gradient`)
 
 A straight gradient through two to four colours, like CSS linear-gradient().

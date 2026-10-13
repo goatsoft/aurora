@@ -1,3 +1,7 @@
+---
+order: 9
+---
+
 # Wind (`wind`)
 
 Air in motion: thin streaks that flow across the canvas and bend in gusts.

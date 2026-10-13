@@ -1,5 +1,6 @@
 import type { Doc } from '@/editor/document'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { generatorIds } from '@goatsoft/aurora'
 import { parseAurora } from '@goatsoft/aurora-format'
 
 // Read as text, so presets open exactly as authored (and export byte-identical).
@@ -23,10 +24,20 @@ function pack(files: Record<string, string>): Preset[] {
   })
 }
 
+/** Starters in catalogue order (kind by kind), not alphabetically. */
+function byCatalogue(presets: Preset[]): Preset[] {
+  const ids = generatorIds()
+  const rank = (p: Preset) => {
+    const i = ids.indexOf(p.id.replace(/^starters\//, ''))
+    return i < 0 ? ids.length : i
+  }
+  return [...presets].sort((a, b) => rank(a) - rank(b))
+}
+
 /** The galleries Studio ships: art-directed scenes, the classic presets (the parity reference), GOATsoft's monochrome auroras and one starter per generator. */
 export const PACKS = [
   { id: 'scenes', label: 'Scenes', description: 'Art-directed, multi-layer', presets: pack(scenes) },
   { id: 'classic', label: 'Classic pack', description: 'The original eight backgrounds, bit-exact', presets: pack(classic) },
   { id: 'mono', label: 'GOATsoft mono', description: 'Grayscale mist, dark and light', presets: pack(mono) },
-  { id: 'starters', label: 'Starters', description: 'One per generator', presets: pack(starters) },
+  { id: 'starters', label: 'Starters', description: 'One per generator', presets: byCatalogue(pack(starters)) },
 ]

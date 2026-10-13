@@ -1,3 +1,7 @@
+---
+order: 2
+---
+
 # Curtain (`curtain`)
 
 Aurora curtains: a bright, swaying lower edge with rays rising out of it.

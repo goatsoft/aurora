@@ -1,3 +1,7 @@
+---
+order: 3
+---
+
 # Starfield (`starfield`)
 
 A night sky: twinkling stars, a faint milky way and the odd shooting star.

@@ -1,3 +1,7 @@
+---
+order: 6
+---
+
 # Conic (`conic`)
 
 Colours turning around a point.

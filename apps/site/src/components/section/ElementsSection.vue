@@ -13,21 +13,22 @@ const starter = (id: string) => Object.entries(starters).find(([path]) => path.e
 const SCENES: Record<string, AuroraModule> = { mountains: blueHour, treeline: mistyForest, rain: glacierStorm }
 
 const cards = [
+  // Grouped by kind, in reading order; the wide cards keep every row of three full.
   { id: 'aurora-fbm', name: 'Aurora', kind: 'Aurora', body: 'Drifting ribbons of light. This is the original Aurora shader.', span: 'md:col-span-2' },
-  { id: 'starfield', name: 'Starfield', kind: 'Night sky', body: 'Three depths of stars, a milky way and the odd meteor.', span: '' },
-  { id: 'mountains', name: 'Mountains', kind: 'Earth', body: 'Ridges that fade into haze. Shown here over a linear gradient.', span: '' },
-  { id: 'treeline', name: 'Treeline', kind: 'Earth', body: 'Rows of spruce silhouettes, fading into the mist behind them.', span: '' },
-  { id: 'clouds', name: 'Clouds', kind: 'Air', body: 'Cumulus at two depths, lit from one side.', span: '' },
-  { id: 'fire', name: 'Fire', kind: 'Fire', body: 'Flames and rising embers.', span: '' },
-  { id: 'water', name: 'Water', kind: 'Water', body: 'Light patterns on the floor of clear water.', span: '' },
-  { id: 'strata', name: 'Strata', kind: 'Earth', body: 'Folded sandstone layers.', span: '' },
-  { id: 'wind', name: 'Wind', kind: 'Air', body: 'Thin streaks that bend in the gusts.', span: '' },
-  { id: 'mesh-gradient', name: 'Mesh gradient', kind: 'Gradients', body: 'Four colours that drift and blend.', span: 'md:col-span-2' },
-  { id: 'conic', name: 'Conic', kind: 'Gradients', body: 'Colours turning slowly around a point.', span: '' },
   { id: 'curtain', name: 'Curtain', kind: 'Aurora', body: 'Hanging curtains with rays that rise from a bright lower edge.', span: '' },
+  { id: 'starfield', name: 'Starfield', kind: 'Night sky', body: 'Three depths of stars, a milky way and the odd meteor.', span: '' },
   { id: 'linear-gradient', name: 'Linear gradient', kind: 'Gradients', body: 'Two to four colours along an angle, like CSS linear-gradient().', span: '' },
+  { id: 'conic', name: 'Conic', kind: 'Gradients', body: 'Colours turning slowly around a point.', span: '' },
+  { id: 'mesh-gradient', name: 'Mesh gradient', kind: 'Gradients', body: 'Four colours that drift and blend.', span: 'md:col-span-2' },
+  { id: 'clouds', name: 'Clouds', kind: 'Air', body: 'Cumulus at two depths, lit from one side.', span: '' },
   { id: 'rain', name: 'Rain', kind: 'Air', body: 'Rain in three depths, leaning with the wind. Shown here in a storm with lightning.', span: 'md:col-span-2' },
   { id: 'lightning', name: 'Lightning', kind: 'Air', body: 'Forked bolts and sky flashes, every few seconds.', span: '' },
+  { id: 'wind', name: 'Wind', kind: 'Air', body: 'Thin streaks that bend in the gusts.', span: '' },
+  { id: 'mountains', name: 'Mountains', kind: 'Earth', body: 'Ridges that fade into haze. Shown here over a linear gradient.', span: '' },
+  { id: 'treeline', name: 'Treeline', kind: 'Earth', body: 'Rows of spruce silhouettes, fading into the mist behind them.', span: '' },
+  { id: 'strata', name: 'Strata', kind: 'Earth', body: 'Folded sandstone layers.', span: '' },
+  { id: 'water', name: 'Water', kind: 'Water', body: 'Light patterns on the floor of clear water.', span: '' },
+  { id: 'fire', name: 'Fire', kind: 'Fire', body: 'Flames and rising embers.', span: '' },
 ].map((card) => ({ ...card, scene: SCENES[card.id] ?? starter(card.id) }))
 </script>
 

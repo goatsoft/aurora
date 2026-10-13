@@ -1,3 +1,7 @@
+---
+order: 11
+---
+
 # Lightning (`lightning`)
 
 Air: forked lightning and sky flashes, for storms.

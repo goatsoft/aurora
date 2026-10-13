@@ -1,3 +1,7 @@
+---
+order: 8
+---
+
 # Clouds (`clouds`)
 
 Air: cumulus clouds at two depths, lit from one side, drifting slowly.

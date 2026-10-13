@@ -1,3 +1,7 @@
+---
+order: 16
+---
+
 # Fire (`fire`)
 
 Fire: flames rising from the bottom edge, with embers above them.
