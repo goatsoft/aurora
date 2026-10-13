@@ -77,9 +77,9 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 ### Releasing
 
-- A release is a `release/<version>` branch from `develop`, merged into `main` by PR. `release.yml` runs CI on `main`, then opens a "Version Packages" PR from the pending changesets; merging that PR publishes the `@goatsoft/*` packages to npm with provenance and creates a GitHub Release for each. `pages.yml` deploys the site from the same pushes.
-- After each release, merge `main` back into `develop` (versions, changelogs, consumed changesets).
-- Never publish by hand: only the workflow publishes, so every version carries provenance.
+- A release is a `release/<version>` branch from `develop`, merged into `main` by PR with a **merge commit** (not squash). `release.yml` runs CI on `main`, then opens a "Version Packages" PR from the pending changesets; merging that PR runs `scripts/publish.ts`, which publishes the `@goatsoft/*` packages to npm through trusted publishing (no token, provenance included) and creates a tag and GitHub Release for each. `pages.yml` deploys the site from the same pushes.
+- After each release, merge `main` back into `develop` with a merge commit (versions, changelogs, consumed changesets). Squashing either merge cuts `develop` off from `main`'s history, and the back-merge then conflicts on every released file.
+- Never publish by hand: only the workflow publishes, so every version carries provenance. `node scripts/publish.ts --dry-run` checks what would be published.
 - The `@goatsoft/source` condition and `src/` are never published. Run `pnpm consumers` after changing a package's `exports`, `files`, `bin`, build config or dependencies: it checks the packed tarballs and builds a fresh project with each supported bundler.
 - The site must be deployed before a release whose packages point at new hosted URLs (badges, schema).
 

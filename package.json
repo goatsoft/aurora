@@ -22,7 +22,7 @@
     "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts && vitest run --config apps/site/vitest.config.ts",
     "badges:generate": "node scripts/generate-badges.ts",
     "consumers": "node scripts/consumers.ts",
-    "release": "pnpm -r --filter \"@goatsoft/*\" build && changeset publish"
+    "release": "pnpm -r --filter \"@goatsoft/*\" build && node scripts/publish.ts"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
