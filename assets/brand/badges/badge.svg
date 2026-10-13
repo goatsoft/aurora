@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="{{width}}" height="{{height}}" viewBox="0 0 {{width}} {{height}}" role="img" aria-label="{{label}}">
+  <title>{{label}}</title>
+  <style>{{css}}</style>
+  <defs>
+    <linearGradient id="edge" x1="0" y1="{{height}}" x2="{{width}}" y2="0" gradientUnits="userSpaceOnUse"><stop class="e0" stop-color="{{edge0}}"/><stop class="e1" offset=".5" stop-color="{{edge1}}"/><stop class="e2" offset="1" stop-color="{{edge2}}"/></linearGradient>
+    <filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <rect class="panel line" x=".5" y=".5" width="{{panelWidth}}" height="{{panelHeight}}" rx="{{radius}}"/>
+  <rect class="breathe" x="3" y="3" width="{{glowWidth}}" height="{{glowHeight}}" rx="{{glowRadius}}" fill="none" stroke="url(#edge)" stroke-width="1.5" filter="url(#glow)" opacity="{{haloOpacity}}"/>
+  {{animatedEdge}}
+  {{mark}}
+  <g font-family="Inter,Arial,Helvetica,sans-serif">{{text}}</g>
+  {{arrow}}
+</svg>

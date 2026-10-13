@@ -13,6 +13,8 @@ import Components from 'unplugin-vue-components/vite'
 import { defineConfig, searchForWorkspaceRoot } from 'vite'
 import { VueRouterAutoImports } from 'vue-router/unplugin'
 import VueRouter from 'vue-router/vite'
+import { badgeSnippets } from './badge-snippets'
+import { attributionBadges } from './badges'
 
 const here = fileURLToPath(new URL('.', import.meta.url))
 const root = searchForWorkspaceRoot(here)
@@ -62,12 +64,14 @@ function schema(): Plugin {
 export default defineConfig({
   plugins: [
     schema(),
+    attributionBadges(root),
+    badgeSnippets(),
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
     VueRouter({
       root: here,
       routesFolder: [{ src: `${here}src/pages` }, { src: docs, path: 'docs/', exclude: ['**/adr/**'] }],
       extensions: ['.vue', '.md'],
-      dts: `${here}src/typed-router.d.ts`,
+      dts: process.env['VITEST'] ? false : `${here}src/typed-router.d.ts`,
       extendRoute(node) {
         if (node.fullPath.endsWith('/README')) node.path = node.path.replace(/\/?README$/, '')
       },
@@ -85,10 +89,10 @@ export default defineConfig({
     tailwindcss(),
     AutoImport({
       imports: ['vue', VueRouterAutoImports, { '@vueuse/core': ['useEventListener', 'useIntersectionObserver', 'useScroll', 'useWindowScroll', 'watchDebounced'] }],
-      dts: `${here}src/auto-imports.d.ts`,
+      dts: process.env['VITEST'] ? false : `${here}src/auto-imports.d.ts`,
       vueTemplate: true,
     }),
-    Components({ dirs: [`${here}src/components`], extensions: ['vue', 'md'], include: [/\.vue$/, /\.vue\?vue/, /\.md$/], dts: `${here}src/components.d.ts`, resolvers: [IconsResolver({ prefix: 'i', alias: { hg: 'hugeicons', si: 'simple-icons' } })] }),
+    Components({ dirs: [`${here}src/components`], extensions: ['vue', 'md'], include: [/\.vue$/, /\.vue\?vue/, /\.md$/], dts: process.env['VITEST'] ? false : `${here}src/components.d.ts`, resolvers: [IconsResolver({ prefix: 'i', alias: { hg: 'hugeicons', si: 'simple-icons' } })] }),
     Icons({ compiler: 'vue3', scale: 1 }),
     aurora(),
   ],

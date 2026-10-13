@@ -8,5 +8,5 @@
     "noEmit": false,
     "emitDeclarationOnly": true
   },
-  "include": ["*.config.ts", "*.ts", "scripts/*.ts"]
+  "include": ["*.config.ts", "*.ts", "scripts/*.ts", "assets/brand/badges/*.ts"]
 }

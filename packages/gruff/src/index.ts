@@ -74,7 +74,7 @@ export function gruff(options: GruffOptions): Plugin[] {
 export { containers } from './containers'
 export { glossaryLinks, parseGlossary } from './glossary'
 export type { GlossaryEntry } from './glossary'
-export { highlight, parseInfo } from './highlight'
+export { createCodeHighlighter, highlight, parseInfo } from './highlight'
 export type { HighlightOptions } from './highlight'
 export { links } from './links'
 export type { LinkOptions } from './links'

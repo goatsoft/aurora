@@ -19,7 +19,8 @@
     "changeset": "changeset",
     "verify": "pnpm lint && pnpm typecheck && pnpm test:all --coverage && pnpm build && pnpm test:apps && pnpm size",
     "size": "node scripts/size.ts",
-    "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts"
+    "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts && vitest run --config apps/site/vitest.config.ts",
+    "badges:generate": "node scripts/generate-badges.ts"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
@@ -47,5 +48,8 @@
     "vue": "^3.5.43",
     "vue-eslint-parser": "^10.4.1",
     "vue-tsc": "^3.3.13"
+  },
+  "imports": {
+    "#badge-assets": "./assets/brand/badges/generate.ts"
   }
 }

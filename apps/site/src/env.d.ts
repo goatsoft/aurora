@@ -23,3 +23,8 @@ declare module '*.md' {
   const component: DefineComponent
   export default component
 }
+
+declare module 'virtual:badge-snippets' {
+  const highlights: Record<string, string>
+  export default highlights
+}

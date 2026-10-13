@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
+import badge from '~/assets/brand/badges/v1/made-with-inline-dark.svg?url'
 
 const year = new Date().getFullYear()
 </script>
@@ -13,7 +14,12 @@ const year = new Date().getFullYear()
           <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
         </div>
         <p class="mt-3 max-w-xs text-sm text-pretty text-muted-foreground">
-          Animated WebGPU backgrounds with a CSS fallback. Made by GOATsoft.
+          Animated WebGPU backgrounds with a CSS fallback. Made by <a
+            href="https://goatsoft.io"
+            target="_blank"
+            rel="noopener"
+            class="hover:text-foreground"
+          >GOATsoft</a>.
         </p>
         <p class="mt-3 max-w-xs text-xs/relaxed text-muted-foreground">
           Code, docs and presets: MIT. The Aurora name and mark have <a
@@ -83,6 +89,14 @@ const year = new Date().getFullYear()
             >JSON Schema</a>
           </li>
           <li>
+            <RouterLink
+              to="/docs/guide/attribution"
+              class="hover:text-foreground"
+            >
+              Attribution badges
+            </RouterLink>
+          </li>
+          <li>
             <a
               :href="SITE.repo"
               target="_blank"
@@ -94,7 +108,18 @@ const year = new Date().getFullYear()
       </div>
       <div>
         <h2 class="text-sm font-semibold">
-          GOATsoft
+          <a
+            href="https://goatsoft.io"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 rounded-sm text-foreground outline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+          >
+            <span
+              class="size-6 shrink-0 goatsoft-mark"
+              aria-hidden="true"
+            />
+            <span>GOATsoft</span>
+          </a>
         </h2>
         <ul class="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>
@@ -124,8 +149,13 @@ const year = new Date().getFullYear()
         </ul>
       </div>
     </div>
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:justify-between">
-      <span>© {{ year }} GOATsoft. <a
+    <div class="mx-auto flex max-w-6xl flex-col items-start gap-4 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
+      <span>© {{ year }} <a
+        href="https://goatsoft.io"
+        target="_blank"
+        rel="noopener"
+        class="hover:text-foreground"
+      >GOATsoft</a>. <a
         :href="`${SITE.repo}/blob/develop/LICENSE`"
         target="_blank"
         rel="noopener"
@@ -136,7 +166,18 @@ const year = new Date().getFullYear()
         rel="noopener"
         class="hover:text-foreground"
       >Artwork licence</a></span>
-      <span>Built with Aurora and gruff.</span>
+      <a
+        :href="SITE.url"
+        class="inline-flex shrink-0 rounded-lg outline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+      >
+        <img
+          :src="badge"
+          alt="Made with Aurora"
+          width="148"
+          height="32"
+          decoding="async"
+        >
+      </a>
     </div>
   </footer>
 </template>

@@ -9,3 +9,4 @@ coverage/
 *.tsbuildinfo
 *.actual.png
 dist-server/
+assets/brand/badges/v1/
