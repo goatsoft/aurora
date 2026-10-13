@@ -23,5 +23,5 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "files": ["./types/vitest.d.ts"]
+  "files": ["./types/vitest.d.ts", "./types/subset-font.d.ts"]
 }

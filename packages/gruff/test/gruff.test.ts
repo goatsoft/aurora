@@ -1,11 +1,13 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { runInNewContext } from 'node:vm'
 import vue from '@vitejs/plugin-vue'
 import MarkdownIt from 'markdown-it'
 import { createServer } from 'vite'
-import { describe, expect, inject, it } from 'vitest'
-import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, links, pageInfo, parseGlossary, parseInfo, prerender, SEARCH_FIELDS, toc } from '@/index'
+import { describe, expect, inject, it, vi } from 'vitest'
+import { buildSearchIndex, containers, glossaryLinks, gruff, highlight, idleLoader, links, pageCharacters, pageInfo, parseGlossary, parseInfo, prerender, SEARCH_FIELDS, toc } from '@/index'
 
 const root = inject('root')
 const fixtures = resolve(root, 'packages/gruff/test/fixtures')
@@ -117,11 +119,108 @@ describe('prerender', () => {
     expect(readFileSync(join(out, 'index.html'), 'utf8')).toBe('<head><style>body{color:red}</style><link rel="stylesheet" href="//fonts.example/a.css"></head><div id="app"></div>')
   })
 
+  it('replaces the template\'s <html> attributes of the same name', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    writeFileSync(join(out, 'index.html'), '<html lang="x" class="dark"><head><!--head--></head><div id="app"><!--app--></div></html>')
+    await prerender({ outDir: out, routes: ['/'], render: () => Promise.resolve({ html: '', head: '', htmlAttrs: 'lang="en"' }) })
+    expect(readFileSync(join(out, 'index.html'), 'utf8')).toMatch(/^<html class="dark" lang="en">/)
+  })
+
+  it('with hydrate idle, drops the preloads and starts the entry from the loader', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    writeFileSync(join(out, 'index.html'), '<head><!--head--><script type="module" crossorigin src="/assets/index-a.js"></script>\n<link rel="modulepreload" crossorigin href="/assets/b.js"></head><div id="app"><!--app--></div>')
+    await prerender({ outDir: out, routes: ['/'], hydrate: 'idle', render: () => Promise.resolve({ html: '', head: '' }) })
+    expect(readFileSync(join(out, 'index.html'), 'utf8')).toBe(`<head>${idleLoader('/assets/index-a.js')}</head><div id="app"></div>`)
+  })
+
+  it('with hydrate idle, needs exactly one module script', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    writeFileSync(join(out, 'index.html'), '<head><!--head--></head><div id="app"><!--app--></div>')
+    await expect(prerender({ outDir: out, routes: ['/'], hydrate: 'idle', render: () => Promise.resolve({ html: '', head: '' }) }))
+      .rejects.toThrow('prerender: hydrate \'idle\' needs exactly one module script in the template, found 0.')
+  })
+
+  it('subsets the fonts the pages use and renames them', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    mkdirSync(join(out, 'assets'))
+    const inter = createRequire(import.meta.url).resolve('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    copyFileSync(inter, join(out, 'assets/inter-latin-AbCd1234.woff2'))
+    const css = '@font-face{font-family:Inter;src:url(/assets/inter-latin-AbCd1234.woff2)format("woff2")}'
+    writeFileSync(join(out, 'assets/index-x.css'), css)
+    writeFileSync(join(out, 'index.html'), `<head><style>${css}</style><!--head--></head><div id="app"><!--app--></div>`)
+    await prerender({ outDir: out, routes: ['/'], subsetFonts: { axes: { wght: { min: 400, max: 700 } } }, render: () => Promise.resolve({ html: '<p>Caf&eacute; &#x2192; é</p>', head: '' }) })
+    const fonts = readdirSync(join(out, 'assets')).filter((f) => f.endsWith('.woff2'))
+    expect(fonts).toHaveLength(1)
+    expect(fonts[0]).toMatch(/^inter-latin-[\w-]{8}\.woff2$/)
+    expect(fonts[0]).not.toBe('inter-latin-AbCd1234.woff2')
+    expect(statSync(join(out, 'assets', fonts[0]!)).size).toBeLessThan(statSync(inter).size / 2)
+    expect(readFileSync(join(out, 'index.html'), 'utf8')).toContain(`url(/assets/${fonts[0]})`)
+    expect(readFileSync(join(out, 'assets/index-x.css'), 'utf8')).toContain(`url(/assets/${fonts[0]})`)
+    expect(existsSync(join(out, 'assets/inter-latin-AbCd1234.woff2'))).toBe(false)
+  })
+
   it('says what the template is missing', async () => {
     const out = mkdtempSync(join(tmpdir(), 'gruff-'))
     writeFileSync(join(out, 'index.html'), '<html></html>')
     await expect(prerender({ outDir: out, routes: ['/'], render: () => Promise.resolve({ html: '', head: '' }) }))
       .rejects.toThrow(`prerender: ${join(out, 'index.html')} needs <!--head--> in <head> and <!--app--> inside the app element.`)
+  })
+})
+
+describe('pageCharacters', () => {
+  it('collects what a page shows, decoding entities and skipping scripts and styles', () => {
+    const chars = pageCharacters('<style>ü{}</style><p title="ß">a&amp;&#233;&#x2192;&nbsp;&bogus;</p><script>ö</script>')
+    expect(chars).toContain('ß')
+    expect(chars).toContain('&')
+    expect(chars).toContain('é')
+    expect(chars).toContain('→')
+    expect(chars).toContain(' ')
+    expect(chars).not.toContain('ü')
+    expect(chars).not.toContain('ö')
+  })
+})
+
+describe('idleLoader', () => {
+  /** Runs the loader against a stand-in window; `import()` becomes `load()`. */
+  function boot(readyState = 'loading') {
+    const win = new EventTarget()
+    const load = vi.fn()
+    let idle: (() => void) | undefined
+    const body = idleLoader('/entry.js').replace(/^<script>|<\/script>$/g, '').replace('import(', 'load(')
+    runInNewContext(body, {
+      addEventListener: win.addEventListener.bind(win),
+      removeEventListener: win.removeEventListener.bind(win),
+      document: { readyState },
+      self: { requestIdleCallback: true },
+      requestIdleCallback: (fn: () => void) => (idle = fn),
+      load,
+    })
+    return { win, load, idle: () => idle?.() }
+  }
+
+  it('starts the app when the page has loaded and the browser is idle', () => {
+    const { win, load, idle } = boot()
+    expect(load).not.toHaveBeenCalled()
+    win.dispatchEvent(new Event('load'))
+    idle()
+    expect(load).toHaveBeenCalledExactlyOnceWith('/entry.js')
+  })
+
+  it('starts sooner on interaction, once, and replays a button clicked before hydration', () => {
+    const { win, load, idle } = boot('complete')
+    const button = { isConnected: true, click: vi.fn() }
+    const pointer = new Event('pointerdown')
+    win.dispatchEvent(pointer)
+    const click = new Event('click')
+    Object.defineProperty(click, 'target', { value: { closest: () => button } })
+    win.dispatchEvent(click)
+    idle()
+    expect(load).toHaveBeenCalledOnce()
+    expect(button.click).not.toHaveBeenCalled()
+    win.dispatchEvent(new Event('gruff:hydrated'))
+    expect(button.click).toHaveBeenCalledOnce()
+    win.dispatchEvent(new Event('gruff:hydrated'))
+    expect(button.click).toHaveBeenCalledOnce()
   })
 })
 

@@ -29,7 +29,17 @@ function paths(list: typeof entry.routes, base = ''): string[] {
 // The 404 page is written once, as 404.html, which GitHub Pages serves for unknown paths.
 const routes = [...new Set(paths(entry.routes))].filter((path) => path !== '/404')
 // The CSS is small (about 10 kB gzip), so it rides in the HTML instead of blocking first paint.
-const files = await prerender({ outDir: join(here, 'dist'), routes, render: entry.render, notFound: '/404', inlineCss: true })
+// The pages read fine before Vue starts, so the JavaScript waits until after first paint, and
+// Inter is cut down to the characters and weights (400 to 700) the site uses.
+const files = await prerender({
+  outDir: join(here, 'dist'),
+  routes,
+  render: entry.render,
+  notFound: '/404',
+  inlineCss: true,
+  hydrate: 'idle',
+  subsetFonts: { axes: { wght: { min: 400, max: 700 } } },
+})
 
 // The format's JSON Schema, at the URL every .aurora file's $schema points to.
 mkdirSync(join(here, 'dist/schema'), { recursive: true })
