@@ -80,10 +80,9 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
     event.preventDefault()
     const to = ui.layer + (event.key === 'ArrowUp' ? 1 : -1)
     if (to >= 0 && to < studio.doc.value.layers.length) studio.layers.move(ui.layer, to)
-  } else if (k === 'm' || k === 's') {
+  } else if (k === 'm') {
     const id = studio.layerIds.value[ui.layer]!
-    if (k === 's') ui.solo = ui.solo === id ? undefined : id
-    else if (ui.muted.has(id)) ui.muted.delete(id)
+    if (ui.muted.has(id)) ui.muted.delete(id)
     else ui.muted.add(id)
   } else if (k === 'r') {
     const layer = studio.rendered.value.layers[ui.layer]

@@ -28,15 +28,12 @@ describe('Studio store', () => {
     expect(studio.doc.value).toBe(before)
   })
 
-  it('hides muted layers in the preview only, and solo shows one layer', () => {
-    const [grain, aurora] = studio.layerIds.value
+  it('hides muted layers in the preview only', () => {
+    const [grain] = studio.layerIds.value
     studio.ui.muted.add(grain!)
     expect(studio.preview.value.layers.map((l) => l.opacity)).toEqual([0, 1])
     expect(studio.file.value).not.toContain('"opacity"')
     studio.ui.muted.clear()
-    studio.ui.solo = aurora
-    expect(studio.preview.value.layers.map((l) => l.opacity)).toEqual([0, 1])
-    studio.ui.solo = undefined
   })
 
   it('pauses by freezing time in the preview, without touching the document', () => {

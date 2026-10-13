@@ -46,9 +46,8 @@ export interface UiState {
   split: number
   palette: boolean
   gallery: boolean
-  /** Layer ids hidden or soloed while designing. */
+  /** Layer ids hidden while designing. */
   muted: Set<number>
-  solo: number | undefined
   notices: Notice[]
   /** On small screens, which panel is open as a sheet at the bottom. */
   sheet: 'layers' | 'inspector' | undefined
@@ -113,7 +112,6 @@ function createStudio() {
     palette: false,
     gallery: false,
     muted: new Set(),
-    solo: undefined,
     notices: [],
     sheet: undefined,
     focus: false,
@@ -217,7 +215,6 @@ function createStudio() {
     commit(next, undefined, next.layers.map(() => ++nextId))
     ui.layer = 0
     ui.muted = new Set()
-    ui.solo = undefined
     return true
   }
 
@@ -233,7 +230,7 @@ function createStudio() {
   const preview = computed<AuroraDocument>(() => {
     const base = rendered.value
     const ids = layerIds.value
-    const visible = base.layers.map((_, i) => (ui.solo === undefined ? !ui.muted.has(ids[i]!) : ui.solo === ids[i]))
+    const visible = base.layers.map((_, i) => !ui.muted.has(ids[i]!))
     const layers = base.layers.map((layer, i) => (visible[i] ? layer : { ...layer, opacity: 0 }))
     const speed = ui.playing ? base.motion.speed * (ui.reducedMotion && base.motion.reduced === 'slow' ? 0.1 : 1) : 0
     return { ...base, layers, motion: { ...base.motion, speed: ui.reducedMotion && base.motion.reduced === 'still' ? 0 : speed } }
