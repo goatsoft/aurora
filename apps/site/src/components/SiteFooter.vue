@@ -75,6 +75,8 @@ const year = new Date().getFullYear()
           <li>
             <a
               href="/schema/v1.json"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >JSON Schema</a>
           </li>
