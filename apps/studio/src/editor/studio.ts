@@ -414,9 +414,15 @@ function createStudio() {
       }
     }
     let timer: ReturnType<typeof setTimeout> | undefined
+    let warned = false
     watch(doc, (next) => {
       clearTimeout(timer)
-      timer = setTimeout(() => void save(AUTOSAVE, structuredClone(next)), 400)
+      timer = setTimeout(() => void save(AUTOSAVE, structuredClone(next)).then((saved) => {
+        // Say so once: the work is still here, but a reload would lose it.
+        if (saved || warned) return
+        warned = true
+        notify('Autosave isn\'t working in this browser (storage is off or full). Export or share a link to keep your work.', 'error')
+      }), 400)
     })
   }
 

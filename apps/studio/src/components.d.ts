@@ -33,7 +33,6 @@ declare module 'vue' {
     IHgFile01: typeof import('~icons/hugeicons/file01')['default']
     IHgFolderOpen: typeof import('~icons/hugeicons/folder-open')['default']
     IHgGridView: typeof import('~icons/hugeicons/grid-view')['default']
-    IHgHeadphones: typeof import('~icons/hugeicons/headphones')['default']
     IHgImage01: typeof import('~icons/hugeicons/image01')['default']
     IHgLayers01: typeof import('~icons/hugeicons/layers01')['default']
     IHgLayout03: typeof import('~icons/hugeicons/layout03')['default']

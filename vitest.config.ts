@@ -64,7 +64,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
-            provider: playwright({ launchOptions: { args: chromiumWebGPU } }),
+            provider: playwright({ launchOptions: { args: chromiumWebGPU, ...(process.env['AURORA_CHROME'] ? { channel: 'chrome' } : {}) } }),
             instances: [{ browser: 'chromium' }],
           },
         },

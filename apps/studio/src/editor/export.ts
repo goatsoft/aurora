@@ -9,9 +9,12 @@ export function download(name: string, text: string | Blob, type = 'application/
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-/** Ready-to-paste usage for each binding. */
+/**
+ * Ready-to-paste usage for each binding. The Vue import is always called `background`: a name made
+ * from the file name could be a number (`123.aurora`) or a reserved word (`default.aurora`).
+ */
 export function snippets(fileName: string, doc: AuroraDocument): { id: string, label: string, code: string }[] {
-  const name = fileName.replace(/\.aurora$/, '').replace(/-(\w)/g, (_, c: string) => c.toUpperCase())
+  const name = 'background'
   const css = compileCss(doc)
   return [
     {
@@ -23,7 +26,7 @@ import ${name} from './${fileName}'
 </script>
 
 <template>
-  <section class="relative">
+  <section style="position: relative">
     <AuroraBackground :src="${name}" />
     <!-- your content -->
   </section>

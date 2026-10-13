@@ -66,6 +66,8 @@ export function useAurora(
       onModeChange: (next) => {
         mode.value = next
       },
+      // Why it's on CSS when it could be on WebGPU; the fallback stays on screen regardless.
+      ...(options.onError ? { onError: options.onError } : {}),
     })
   }
 

@@ -19,6 +19,12 @@ export interface MountOptions {
   /** Aborting disposes the surface. */
   signal?: AbortSignal
   onModeChange?: (mode: AuroraMode) => void
+  /**
+   * Why the background is showing its CSS fallback when it could be using WebGPU: a generator
+   * that didn't load or isn't registered, or a GPU that failed to start or stopped. The CSS
+   * fallback stays on screen either way; this is for logging and diagnostics.
+   */
+  onError?: (error: Error) => void
 }
 
 export interface AuroraSurface {
@@ -28,6 +34,11 @@ export interface AuroraSurface {
   /** Swaps the document. Values update in place; a new layer stack compiles in the background. */
   update: (source: AuroraSource) => void
   dispose: () => void
+  /**
+   * Resolves once the generators the first document uses have loaded and the CSS fallback is
+   * painted from them. Server-rendered bindings keep their own fallback on screen until then.
+   */
+  readonly ready: Promise<void>
 }
 
 const generators = (id: string) => GENERATORS[id]
@@ -82,7 +93,10 @@ function installKeyframes() {
  */
 export function mountAurora(host: HTMLElement, source: AuroraSource, options: MountOptions = {}): AuroraSurface {
   let doc = documentOf(source)
-  let unwatch = isAuroraModule(source) ? watchModule(source.id, (next) => update(next)) : undefined
+  /** An imported module's precompiled fallback: right from the first paint, before generators load. */
+  let precompiled = isAuroraModule(source) ? source.css : undefined
+  // Hot updates from the module's own watcher apply in place; update() is for a new source.
+  let unwatch = isAuroraModule(source) ? watchModule(source.id, (next) => apply(next)) : undefined
   let mode: AuroraMode = 'css'
   let disposed = false
   let lease: Lease | undefined
@@ -99,8 +113,13 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   root.dataset['aurora'] = 'css'
   root.style.cssText = `${FILL_STYLE};contain:strict`
   const fallback = document.createElement('div')
-  const canvas = document.createElement('canvas')
-  canvas.style.cssText = `position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity ${CROSSFADE_MS}ms ease`
+  const newCanvas = () => {
+    const c = document.createElement('canvas')
+    c.style.cssText = `position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity ${CROSSFADE_MS}ms ease`
+    return c
+  }
+  // Replaced after a fallback to CSS: a canvas handed to the worker can't be handed over again.
+  let canvas = newCanvas()
   root.append(fallback, canvas)
   host.append(root)
 
@@ -109,11 +128,15 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const cssOnly = () => !!reducedQuery?.matches && doc.motion.reduced === 'css'
 
   function paintFallback() {
-    const css = compileCss(doc)
+    // Until every generator has loaded, compileCss would leave their layers out.
+    const css = precompiled && !loaded() ? precompiled : compileCss(doc)
     root.style.position = doc.canvas.fixed ? 'fixed' : 'absolute'
     const drift = mode === 'css' && css.drift > 0 && !reducedQuery?.matches
     fallback.style.cssText = `position:absolute;inset:-10%;${css.style}${drift ? `;animation:aurora-drift ${css.drift}s ease-in-out infinite;will-change:transform` : ''}`
-    fallback.style.visibility = mode === 'webgpu' ? 'hidden' : 'visible'
+    // While a plain document's generators are still loading, its fallback would be missing their
+    // layers: show nothing of ours yet (a server-rendered fallback underneath covers it).
+    const incomplete = loading && !precompiled && !loaded()
+    fallback.style.visibility = mode === 'webgpu' || incomplete ? 'hidden' : 'visible'
   }
 
   const member: SceneMember = {
@@ -161,6 +184,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     root.dataset['aurora'] = next
     clearTimeout(fadeTimer)
     if (next === 'webgpu') {
+      canvas.style.display = ''
       canvas.style.transition = reducedQuery?.matches ? 'none' : `opacity ${CROSSFADE_MS}ms ease`
       canvas.style.opacity = '1'
       // Keep the CSS underneath until the crossfade has finished, then stop painting it.
@@ -173,19 +197,46 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     options.onModeChange?.(next)
   }
 
+  const report = (message: string, cause?: unknown) => options.onError?.(new Error(message, cause === undefined ? undefined : { cause }))
+
   function toCss() {
+    const attached = !!lease
     lease?.release()
     lease = undefined
     setMode('css')
+    // A canvas that went to the worker can't be transferred again, so a later start needs a new one.
+    if (attached) {
+      const next = newCanvas()
+      next.style.display = 'none'
+      canvas.replaceWith(next)
+      canvas = next
+    }
   }
 
+  /** Whether the current document's generators are still loading. */
+  let loading = true
   /** Loads the built-in generators the document uses, then repaints; unknown generators mean CSS. */
-  const prepare = () => loadGenerators(doc.layers.map((layer) => layer.type)).then(() => {
+  const prepare = () => {
+    loading = true
+    return loadGenerators(doc.layers.map((layer) => layer.type)).finally(() => {
+      loading = false
+    }).then(settled, failed)
+  }
+  function settled() {
     if (disposed) return
     paintFallback()
-    if (!loaded()) toCss()
-    else push()
-  })
+    if (!loaded()) {
+      const missing = doc.layers.map((l) => l.type).filter((type) => !(type in GENERATORS))
+      report(`Aurora: no generator ${missing.map((type) => `"${type}"`).join(', ')}; showing the CSS fallback.`)
+      toCss()
+    } else push()
+  }
+  function failed(error: unknown) {
+    if (disposed) return
+    report('Aurora: generators failed to load; showing the CSS fallback.', error)
+    paintFallback()
+    toCss()
+  }
   let generatorsReady = prepare()
 
   async function start() {
@@ -195,7 +246,13 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     if (cssOnly() || typeof navigator === 'undefined' || !('gpu' in navigator)) return
     if (config.touch === 'css' && media('(pointer: coarse)')) return
     const { worker, main } = getBackends()
-    const listener = { frame: () => setMode('webgpu'), fail: toCss }
+    const listener = {
+      frame: () => setMode('webgpu'),
+      fail: () => {
+        report('Aurora: the GPU renderer stopped; showing the CSS fallback.')
+        toCss()
+      },
+    }
     const candidates = config.worker && typeof Worker !== 'undefined' && 'transferControlToOffscreen' in canvas ? [worker, main] : [main]
     for (const backend of candidates) {
       const next = backend.acquire(listener)
@@ -211,6 +268,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       next.release()
       lease = undefined
     }
+    report('Aurora: WebGPU is present but no renderer could start; showing the CSS fallback.')
   }
 
   paintFallback()
@@ -253,13 +311,19 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     root.remove()
   }
 
+  /** A new source: watch its module (or stop watching the old one, for a plain document). */
   function update(next: AuroraSource) {
     if (disposed) return
-    if (isAuroraModule(next)) {
-      unwatch?.()
-      unwatch = watchModule(next.id, (doc) => update(doc))
-    }
+    unwatch?.()
+    unwatch = isAuroraModule(next) ? watchModule(next.id, (hot) => apply(hot)) : undefined
+    apply(documentOf(next), isAuroraModule(next) ? next.css : undefined)
+  }
+
+  /** Shows a document, from update() or from the current module's hot update. */
+  function apply(next: AuroraSource, css?: typeof precompiled) {
+    if (disposed) return
     doc = documentOf(next)
+    precompiled = css
     generatorsReady = prepare()
     paintFallback()
     if (cssOnly()) toCss()
@@ -271,11 +335,13 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   options.signal?.addEventListener('abort', dispose, { once: true })
   if (options.signal?.aborted) dispose()
   else void start()
+  const ready = generatorsReady
 
   return {
     get mode() { return mode },
     element: root,
     update,
     dispose,
+    ready,
   }
 }

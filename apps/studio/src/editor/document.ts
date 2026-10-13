@@ -1,4 +1,5 @@
 import type { AuroraDocument, AuroraInput, FormatIssue } from '@goatsoft/aurora-format'
+import { checkDocument } from '@goatsoft/aurora'
 import { FORMAT_ID, FORMAT_VERSION, parseAurora, stringifyAurora } from '@goatsoft/aurora-format'
 
 /**
@@ -31,9 +32,16 @@ export function newLayer(type: string, colors: number[]): LayerInput {
   return { type, blend: 'normal', params: {}, colors, mix: 'oklab' }
 }
 
-/** Validates for rendering. Studio keeps showing the last good document while this fails. */
+/**
+ * Validates for rendering and saving, as strictly as the build plugin: the format, then every
+ * generator id, parameter name and range (against the loaded generators; Studio loads them all at
+ * start). Studio keeps showing the last valid document while this fails.
+ */
 export function resolve(doc: Doc): { ok: true, doc: AuroraDocument } | { ok: false, issues: FormatIssue[] } {
-  return parseAurora(doc)
+  const parsed = parseAurora(doc)
+  if (!parsed.ok) return parsed
+  const issues = checkDocument(parsed.doc)
+  return issues.length ? { ok: false, issues } : parsed
 }
 
 /** The `.aurora` file for a document. */

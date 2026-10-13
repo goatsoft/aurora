@@ -52,6 +52,7 @@ pnpm test:apps       # apps/* against the built packages, and Studio's component
 pnpm lint:fix        # fixes lint and formatting
 pnpm test            # unit tests
 pnpm test:browser    # WebGPU browser tests (needs `pnpm exec playwright install chromium` once)
+AURORA_CHROME=1 pnpm test:browser   # the same, in the installed Google Chrome instead of Playwright's Chromium
 pnpm --filter aurora-studio dev   # Studio on localhost, with dev-tool mode on this repo's .aurora files
 pnpm coverage
 pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json

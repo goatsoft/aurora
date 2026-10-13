@@ -1,7 +1,10 @@
+import { loadGenerators } from '@goatsoft/aurora'
 import { describe, expect, it } from 'vitest'
 import { newLayer } from '@/editor/document'
 import { useStudio } from '@/editor/studio'
 
+// Studio loads every generator when it starts; documents are checked against them.
+await loadGenerators()
 const studio = useStudio()
 
 describe('Studio store', () => {
@@ -54,6 +57,19 @@ describe('Studio store', () => {
     expect(studio.issues.value[0]?.path).toBe('$.palette[0]')
     expect(studio.rendered.value).toBe(good)
     studio.undo()
+    expect(studio.issues.value).toEqual([])
+  })
+
+  it('checks generators and parameters as strictly as the build plugin', () => {
+    const good = studio.rendered.value
+    studio.commit({ ...studio.doc.value, layers: [{ ...studio.doc.value.layers[0]!, type: 'nebula' }] })
+    expect(studio.issues.value[0]).toMatchObject({ path: '$.layers[0].type' })
+    expect(studio.rendered.value).toBe(good)
+    studio.undo()
+    studio.commit(studio.ops.param(studio.doc.value, 1, 'speed', 99))
+    expect(studio.issues.value[0]?.path).toBe('$.layers[1].params.speed')
+    studio.undo()
+    expect(studio.open({ ...studio.doc.value, layers: [{ type: 'nebula' }] })).toBe(false)
     expect(studio.issues.value).toEqual([])
   })
 

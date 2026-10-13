@@ -5,7 +5,7 @@ import type { AuroraInput } from '@goatsoft/aurora-format'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GENERATORS } from '@/generators/index'
-import { auroraStats, configureAurora, mountAurora } from '@/index'
+import { auroraStats, compileCss, configureAurora, hotUpdate, mountAurora } from '@/index'
 import { createMainThreadBackend, createWorkerBackend } from '@/pool'
 import { setBackends } from '@/surface'
 import AuroraWorker from '@/worker?worker'
@@ -156,6 +156,51 @@ describe('mountAurora', () => {
     expect(surface.element.dataset['aurora']).toBe('css')
     expect((surface.element.lastElementChild as HTMLElement).style.display).toBe('none')
     expect((surface.element.firstElementChild as HTMLElement).style.visibility).toBe('visible')
+    surface.dispose()
+  })
+
+  it('goes back to WebGPU after falling back to CSS, on a fresh canvas', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    const surface = mountAurora(host, hero)
+    await until(() => (leases[0]?.states.length ?? 0) > 0)
+    const first = surface.element.lastElementChild
+    leases[0]!.listener.frame()
+    leases[0]!.listener.fail()
+    expect(surface.mode).toBe('css')
+    // A canvas that went to the worker can't be handed over again.
+    expect(surface.element.lastElementChild).not.toBe(first)
+    surface.update(hero)
+    await until(() => (leases[1]?.states.length ?? 0) > 0)
+    leases[1]!.listener.frame()
+    expect(surface.mode).toBe('webgpu')
+    expect((surface.element.lastElementChild as HTMLElement).style.display).toBe('')
+    expect((surface.element.lastElementChild as HTMLElement).style.opacity).toBe('1')
+    surface.dispose()
+  })
+
+  it('paints an imported module\'s precompiled fallback before its generators load, and says why it stays on CSS', async () => {
+    setBackends({ worker: scripted().backend, main: scripted().backend })
+    const errors: Error[] = []
+    const cold = assertAurora({ format: 'aurora', version: 1, name: 'cold', palette: ['#000'], layers: [{ type: 'not-loaded-yet' }] })
+    const css = { backgroundImage: 'linear-gradient(red, blue)', backgroundBlendMode: 'normal', drift: 0, style: 'background-image:linear-gradient(red, blue)' }
+    const surface = mountAurora(host, { id: 'cold.aurora', doc: cold, css }, { onError: (e) => errors.push(e) })
+    const fallback = surface.element.firstElementChild as HTMLElement
+    expect(fallback.style.backgroundImage).toContain('linear-gradient')
+    await surface.ready
+    expect(fallback.style.backgroundImage).toContain('linear-gradient')
+    expect(surface.mode).toBe('css')
+    expect(errors[0]?.message).toContain('"not-loaded-yet"')
+    surface.dispose()
+  })
+
+  it('stops following a module\'s hot updates once it shows something else', async () => {
+    setBackends({ worker: scripted().backend, main: scripted().backend })
+    const module = { id: 'hot-a.aurora', doc: hero, css: compileCss(hero) }
+    const surface = mountAurora(host, module)
+    const other = doc({ name: 'Other' })
+    surface.update(other)
+    expect(hotUpdate({ ...module, doc: doc({ name: 'Edited A' }) })).toBe(0)
     surface.dispose()
   })
 

@@ -2,7 +2,7 @@ import type { SurfaceState, WorkerRequest, WorkerResponse } from '@/protocol'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GENERATORS } from '@/generators/index'
-import { createMainThreadBackend, createWorkerBackend, PROBE_TIMEOUT } from '@/pool'
+import { createMainThreadBackend, createWorkerBackend, IDLE_RELEASE_MS, PROBE_TIMEOUT } from '@/pool'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 
 installGpuGlobals()
@@ -166,6 +166,24 @@ describe('main-thread backend', () => {
     fake.device.error()
     expect(l.fail).toHaveBeenCalledOnce()
     expect(lease.attach(new fake.Canvas() as unknown as HTMLCanvasElement, state)).toBe(false)
+  })
+
+  it('destroys the renderer once it has had no surfaces for a while, and stays warm for a quick remount', async () => {
+    const fake = fakeGpu()
+    const pool = createMainThreadBackend(() => fake.gpu, () => 30, (id) => GENERATORS[id])
+    const first = pool.acquire(listener())
+    await first.ready
+    first.release()
+    await vi.advanceTimersByTimeAsync(IDLE_RELEASE_MS / 2)
+    // A new surface inside the window reuses the same device.
+    const second = pool.acquire(listener())
+    await second.ready
+    await vi.advanceTimersByTimeAsync(IDLE_RELEASE_MS)
+    expect(fake.device.destroyed).toBe(false)
+    second.release()
+    await vi.advanceTimersByTimeAsync(IDLE_RELEASE_MS)
+    expect(fake.device.destroyed).toBe(true)
+    expect(await pool.stats()).toBeUndefined()
   })
 
   it('reports not ready without WebGPU, and retries on the next lease', async () => {

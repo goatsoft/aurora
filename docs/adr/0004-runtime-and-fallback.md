@@ -32,3 +32,11 @@ Headless SwiftShader in Chromium 141 loses the device the moment a WebGPU canvas
 
 - Generators can be added in code with `registerGenerator`; `.aurora` files still never carry code.
 - A layer stack change compiles a new pipeline asynchronously; the surface keeps its last frame until it is ready.
+
+## Review fixes, October 2026
+
+- **The fallback survives startup.** A surface mounted from an imported module paints the module's precompiled CSS until the generators its layers use have loaded; compiling it again before then would leave those layers out. Surfaces expose `ready`, and `<AuroraBackground>` keeps its server-rendered fallback until it resolves.
+- **CSS and back.** Falling back to CSS replaces the canvas element: a canvas handed to the worker can't be transferred again, so a later restart (reduced motion turned off, say) gets a fresh one, and returning to WebGPU clears the `display: none` the fallback set.
+- **Hot updates follow the current source.** A module's watcher applies its hot updates in place; `update()` with a different source (another module or a plain document) detaches the old watcher, so an edit to a file no longer in use can't bring it back.
+- **Errors are reported, not thrown.** `onError` (and `@error`, and `aurora-error`) says why a background is on CSS when WebGPU is available; the fallback stays on screen.
+- **The main-thread renderer is released when idle**, 10 seconds after its last surface, rather than kept for the page's lifetime. The worker already terminates with its last surface.
