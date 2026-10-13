@@ -1,5 +1,14 @@
 # @goatsoft/aurora
 
+## 0.1.1
+
+### Patch Changes
+
+- 174e434: Maintenance release with no code changes: published through npm trusted publishing, so releases no longer use a long-lived npm token, and every version still carries provenance.
+- Updated dependencies [174e434]
+  - @goatsoft/aurora-format@0.1.1
+  - @goatsoft/color@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
