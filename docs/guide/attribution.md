@@ -27,7 +27,7 @@ import { AuroraBadge } from '@goatsoft/aurora-vue/badge'
   <AuroraBadge />
   <!-- Keep the original, taller card. -->
   <AuroraBadge layout="stacked" />
-  <!-- Explicit theme, different label and optional slow edge glow. -->
+  <!-- Explicit theme, different label and optional flowing edge glow. -->
   <AuroraBadge label="powered-by" theme="dark" animated />
 </template>
 ```
@@ -78,7 +78,7 @@ Inline files are named `{label}-inline-{theme}.svg` and `{label}-inline-{theme}-
 
 Use `light` or `dark` to match a specific surface. `auto` follows `prefers-color-scheme`; an embedding element's CSS `color-scheme` can supply the page's manually selected theme. See [MDN's embedded SVG colour-scheme example](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-color-scheme#inherited_color_scheme_in_embedded_elements).
 
-Animation is a slow pulse of the inset edge glow; the mark and text do not move. The animated files remain still unless `prefers-reduced-motion: no-preference` matches. Choose the static files for README badges, email or platforms that sanitise SVG styles. The badge remains readable if a viewer ignores its animation.
+Animation is a pair of luminous colour trails moving around the edge, with a soft breathing halo; the mark and text do not move. The animated files remain still unless `prefers-reduced-motion: no-preference` matches. Choose the static files for README badges, email or platforms that sanitise SVG styles. The badge remains readable if a viewer ignores its animation.
 
 ## Self-hosting and licence
 
@@ -96,7 +96,7 @@ The hosted URLs are deployed with the Aurora site. When developing this feature 
 
 ## Building the badges
 
-Contributors edit `assets/brand/badges/badge.svg` and its variant settings in `generate.ts`. The generator embeds the approved favicon artwork without changing its paths. Site and Studio development/builds generate the ignored `assets/brand/badges/v1/` directory automatically; the site publishes it at `/badges/v1/`.
+Contributors edit `assets/brand/badges/badge.svg` and its variant settings in `generate.ts`. The generator embeds the approved favicon artwork without changing its paths. Site development/builds generate the ignored `assets/brand/badges/v1/` directory automatically; the site publishes it at `/badges/v1/`.
 
 To generate the files without building the apps:
 

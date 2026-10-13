@@ -2,6 +2,8 @@
 import type { BadgeLabel, BadgeLayout, BadgeTheme } from '@goatsoft/aurora/badge'
 import { auroraBadge } from '@goatsoft/aurora/badge'
 import { computed, ref } from 'vue'
+import { badgeSnippet } from '@/lib/badge-snippet'
+import highlights from 'virtual:badge-snippets'
 
 const layout = ref<BadgeLayout>('inline')
 const theme = ref<BadgeTheme>('auto')
@@ -13,13 +15,8 @@ const examples = computed(() => labels.map((label) => {
   const options = { label, layout: layout.value, theme: theme.value, animated: animated.value }
   const badge = auroraBadge(options)
   const local = auroraBadge({ ...options, baseUrl: '/badges/v1' })
-  const vue = `<AuroraBadge label="${label}" layout="${layout.value}" theme="${theme.value}"${animated.value ? ' animated' : ''} />`
-  const snippets = {
-    Vue: `<script setup lang="ts">\nimport { AuroraBadge } from '@goatsoft/aurora-vue/badge'\n\x3c/script>\n\n<template>\n  ${vue}\n</template>`,
-    HTML: `<a href="${badge.href}">\n  <img src="${badge.src}"\n    alt="${badge.alt}" width="${badge.width}" height="${badge.height}">\n</a>`,
-    Markdown: `[![${badge.alt}](${badge.src})](${badge.href})`,
-  }
-  return { label, badge, local, snippet: snippets[format.value] }
+  const snippet = badgeSnippet(options)[format.value]
+  return { label, badge, local, snippet, highlighted: highlights[snippet] }
 }))
 
 async function copy(code: string, label: string) {
@@ -102,7 +99,12 @@ async function copy(code: string, label: string) {
             Copy snippet
           </button>
         </div>
-        <pre class="overflow-x-auto text-xs/relaxed"><code>{{ example.snippet }}</code></pre>
+        <!-- eslint-disable vue/no-v-html -- Shiki output generated from our own fixed badge snippets at build time. -->
+        <div
+          class="overflow-x-auto font-mono text-[13px]/6"
+          v-html="example.highlighted"
+        />
+        <!-- eslint-enable vue/no-v-html -->
       </div>
     </article>
     <p

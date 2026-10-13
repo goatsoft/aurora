@@ -1,5 +1,3 @@
-import { execFileSync } from 'node:child_process'
-import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import aurora from '@goatsoft/aurora-unplugin/vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -15,8 +13,6 @@ import VueRouter from 'vue-router/vite'
 // From import.meta.url, not import.meta.dirname: Vitest bundles this config when it extends it.
 const here = fileURLToPath(new URL('.', import.meta.url))
 const root = searchForWorkspaceRoot(here)
-
-execFileSync(process.execPath, [join(root, 'scripts/generate-badges.ts')], { cwd: root })
 
 export default defineConfig({
   // Hosted under /studio/ on aurora.goatsoft.io; served from / in dev and dev-tool mode.

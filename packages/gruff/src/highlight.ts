@@ -25,7 +25,7 @@ export function parseInfo(info: string): { lang: string, title: string | undefin
  * A fence with the language `aurora` is a live background: `<AuroraDemo>` renders the JSON next to
  * its highlighted source, editable in place.
  */
-export async function highlight(md: MarkdownIt, options: HighlightOptions = {}): Promise<void> {
+export async function createCodeHighlighter(options: HighlightOptions = {}) {
   const themes = options.themes ?? { light: 'github-light', dark: 'github-dark-dimmed' }
   const langs = options.langs ?? DEFAULT_LANGS
   const shiki = await createHighlighter({ themes: [themes.light, themes.dark], langs })
@@ -38,6 +38,11 @@ export async function highlight(md: MarkdownIt, options: HighlightOptions = {}):
     transformers,
   })
 
+  return code
+}
+
+export async function highlight(md: MarkdownIt, options: HighlightOptions = {}): Promise<void> {
+  const code = await createCodeHighlighter(options)
   md.renderer.rules['fence'] = (tokens, idx) => {
     const token = tokens[idx]!
     const { lang, title } = parseInfo(token.info)

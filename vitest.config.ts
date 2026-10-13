@@ -62,7 +62,7 @@ export default defineConfig({
         optimizeDeps: { include: ['vue', 'vue/server-renderer', '@vue/test-utils', 'fast-check'] },
         test: {
           name: 'browser',
-          include: ['packages/*/test/**/*.browser.test.ts', 'apps/site/test/**/*.browser.test.ts'],
+          include: ['packages/*/test/**/*.browser.test.ts'],
           browser: {
             enabled: true,
             headless: true,

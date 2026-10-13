@@ -1,21 +1,12 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": [
-      "ES2023"
-    ],
+    "lib": ["ES2023"],
     "allowImportingTsExtensions": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "outDir": "node_modules/.cache/tsc/node",
     "noEmit": false,
     "emitDeclarationOnly": true
   },
-  "include": [
-    "*.config.ts",
-    "*.ts",
-    "scripts/*.ts",
-    "assets/brand/badges/*.ts"
-  ]
+  "include": ["*.config.ts", "*.ts", "scripts/*.ts", "assets/brand/badges/*.ts"]
 }

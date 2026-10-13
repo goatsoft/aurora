@@ -38,8 +38,14 @@ The Aurora mark and every file in `assets/` are Brand Assets under the [Aurora a
 
 ## Attribution badges
 
-`badges/badge.svg` is the shared template. `badges/generate.ts` combines it with the approved favicon artwork to generate single-file inline (32 px tall, the default) and stacked (168 × 48) SVGs for `made-with`, `powered-by` and `enabled`, each in `auto`, `light` and `dark`, with a static default and an optional `-animated` suffix. Embed as a linked image; the compact mark is reproduced unchanged at 20 px inline or 32 px stacked. The slow animation affects only the card's inset glow and honours reduced motion.
+`badges/badge.svg` is the shared template. `badges/generate.ts` combines it with the approved favicon artwork to generate single-file inline (32 px tall, the default) and stacked (168 × 48) SVGs for `made-with`, `powered-by` and `enabled`, each in `auto`, `light` and `dark`, with a static default and an optional `-animated` suffix. Embed as a linked image; the compact mark is reproduced unchanged at 20 px inline or 32 px stacked. Badge text uses Inter when installed, with Arial/Helvetica/sans-serif fallbacks; standalone SVG images cannot inherit the embedding page’s web font. The animation moves luminous trails around the edge over a soft halo and honours reduced motion.
 
-Use the attribution docs page for live examples, downloads and copyable Vue/HTML/Markdown snippets. Generated files in `badges/v1/` are ignored by Git; site and Studio configs generate them automatically, or run `pnpm badges:generate`. Inline URLs are `/badges/v1/{label}-inline-{theme}[-animated].svg`; stacked cards retain `/badges/v1/{label}-{theme}[-animated].svg`; the site's Vite plugin serves generated SVGs in development and emits them at those stable paths for production. The package helpers reference these URLs and contain no artwork. See `docs/guide/attribution.md` for HTML, Markdown, Vue and self-hosting examples.
+Use the attribution docs page for live examples, downloads and copyable Vue/HTML/Markdown snippets. Generated files in `badges/v1/` are ignored by Git; the site config generates them automatically, or run `pnpm badges:generate`. Inline URLs are `/badges/v1/{label}-inline-{theme}[-animated].svg`; stacked cards retain `/badges/v1/{label}-{theme}[-animated].svg`; the site's Vite plugin serves generated SVGs in development and emits them at those stable paths for production. The package helpers reference these URLs and contain no artwork. See `docs/guide/attribution.md` for HTML, Markdown, Vue and self-hosting examples.
+
+Restart the dev server after editing `badges/badge.svg` or `badges/generate.ts`: generation runs when the site config loads, and those source files are not watched.
 
 The complete, unmodified badges may be used for attribution under the specific permission in LICENSE-ART.md. This does not change the licence of the mark or the rest of the artwork.
+
+## GOATsoft masthead
+
+`goatsoft-masthead.svg` is the supplied monochrome GOATsoft icon, preserved unchanged. The site uses it as a CSS mask beside the GOATsoft name, so both inherit the same theme foreground colour. Link the complete lockup to `https://goatsoft.io`.

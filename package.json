@@ -19,7 +19,7 @@
     "changeset": "changeset",
     "verify": "pnpm lint && pnpm typecheck && pnpm test:all --coverage && pnpm build && pnpm test:apps && pnpm size",
     "size": "node scripts/size.ts",
-    "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts",
+    "test:apps": "vitest run --project apps && vitest run --config apps/studio/vitest.config.ts && vitest run --config apps/site/vitest.config.ts",
     "badges:generate": "node scripts/generate-badges.ts"
   },
   "devDependencies": {

@@ -28,15 +28,21 @@ export function generateBadges(root: string) {
           const artwork = favicon.slice(favicon.indexOf('>') + 1, favicon.lastIndexOf('</svg>')).trim()
           const mark = `<svg x="${inline ? 8 : 10}" y="${inline ? 6 : 8}" width="${inline ? 20 : 32}" height="${inline ? 20 : 32}" viewBox="0 0 128 128" fill="none" aria-hidden="true">${artwork}</svg>`
           let css = colors[theme === 'dark' ? 'dark' : 'light']
-          if (theme === 'auto') css += `@media(prefers-color-scheme:dark){${colors.dark}.s0{stop-color:#43f4dc}.s1{stop-color:#8c83ff}.s2{stop-color:#ee82ed}}`
-          if (animated) css += '@media(prefers-reduced-motion:no-preference){.breathe{animation:aurora-breathe 6s ease-in-out infinite}}@keyframes aurora-breathe{0%,100%{opacity:.16}50%{opacity:.5}}'
+          if (theme === 'auto') css += `@media(prefers-color-scheme:dark){${colors.dark}.s0{stop-color:#43f4dc}.s1{stop-color:#8c83ff}.s2{stop-color:#ee82ed}.e0{stop-color:#43f4dc}.e1{stop-color:#8c83ff}.e2{stop-color:#ee82ed}}`
+          if (animated) css += '.orbit{stroke-dasharray:24 76;stroke-linecap:round}.orbit-echo{stroke-dashoffset:-50;opacity:.6}@media(prefers-reduced-motion:no-preference){.orbit{animation:aurora-orbit 6s linear infinite}.orbit-echo{stroke-dashoffset:0;animation-delay:-3s}.breathe{animation:aurora-breathe 3s ease-in-out infinite}}@keyframes aurora-orbit{to{stroke-dashoffset:-100}}@keyframes aurora-breathe{0%,100%{opacity:.45}50%{opacity:.8}}'
           const text = inline
             ? `<text x="36" y="20.5">${enabled ? '<tspan class="ink" font-size="12" font-weight="600">Aurora</tspan><tspan class="muted" dx="4" font-size="10.5">enabled</tspan>' : `<tspan class="muted" font-size="10.5">${prefix}</tspan><tspan class="ink" dx="4" font-size="12" font-weight="600">Aurora</tspan>`}</text>`
             : enabled
               ? '<text class="ink" x="50" y="23" font-size="16" font-weight="600" letter-spacing="-.4">Aurora</text><text class="muted" x="51" y="37" font-size="10">enabled</text>'
               : `<text class="muted" x="51" y="20" font-size="10">${prefix}</text><text class="ink" x="50" y="36" font-size="16" font-weight="600" letter-spacing="-.4">Aurora</text>`
+          const edge = (blurred: boolean) => `<rect class="orbit" x="1.5" y="1.5" width="${width - 3}" height="${height - 3}" rx="${inline ? 8 : 11}" pathLength="100" fill="none" stroke="url(#edge)" stroke-width="${blurred ? 4 : 1.5}"${blurred ? ' filter="url(#glow)"' : ''}/><rect class="orbit orbit-echo" x="1.5" y="1.5" width="${width - 3}" height="${height - 3}" rx="${inline ? 8 : 11}" pathLength="100" fill="none" stroke="url(#edge)" stroke-width="${blurred ? 4 : 1.5}"${blurred ? ' filter="url(#glow)"' : ''}/>`
           const values: Record<string, string | number> = {
             label: labels[key], width, height, css, mark, text,
+            haloOpacity: animated ? 0.55 : 0.24,
+            edge0: animated && theme !== 'dark' ? '#007f91' : '#43f4dc',
+            edge1: animated && theme !== 'dark' ? '#5145cd' : '#8c83ff',
+            edge2: animated && theme !== 'dark' ? '#a72fa6' : '#ee82ed',
+            animatedEdge: animated ? edge(true) + edge(false) : '',
             panelWidth: width - 1, panelHeight: height - 1, radius: inline ? 9 : 12,
             glowWidth: width - 6, glowHeight: height - 6, glowRadius: inline ? 7 : 10,
             arrow: inline ? '' : '<path class="line" d="m145 20 4 4-4 4m-5-4h9" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',

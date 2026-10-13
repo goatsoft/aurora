@@ -8,6 +8,8 @@ describe('badge examples', () => {
     const wrapper = mount(BadgeExamples)
     try {
       expect(wrapper.findAll('article')).toHaveLength(3)
+      expect(wrapper.findAll('pre.shiki')).toHaveLength(3)
+      expect(wrapper.get('pre.shiki span[style]').attributes('style')).toContain('--shiki-dark:')
       const selects = wrapper.findAll('select')
       await selects[0]!.setValue('stacked')
       await selects[1]!.setValue('light')
@@ -18,6 +20,7 @@ describe('badge examples', () => {
         expect(card.get('img').attributes('src')).toBe(`/badges/v1/${label}-light-animated.svg`)
         expect(card.get('img').attributes('height')).toBe('48')
         expect(card.get('a[download]').attributes('href')).toBe(`/badges/v1/${label}-light-animated.svg`)
+        expect(card.findAll('code span').length).toBeGreaterThan(1)
         expect(card.get('code').text()).toContain(`https://aurora.goatsoft.io/badges/v1/${label}-light-animated.svg`)
         await card.get('button').trigger('click')
         expect(clipboard).toHaveBeenLastCalledWith(card.get('code').text())

@@ -20,10 +20,12 @@ export function attributionBadges(root: string): Plugin {
           return
         }
         res.setHeader('Content-Type', 'image/svg+xml')
-        res.end(source)
+        res.setHeader('Cache-Control', 'no-cache')
+        res.end(readFileSync(join(directory, (req.url ?? '').split('?')[0]!.slice('/badges/v1/'.length)), 'utf8'))
       })
     },
     generateBundle() {
+      if (this.environment.name !== 'client') return
       for (const [path, source] of files) {
         this.emitFile({ type: 'asset', fileName: path.slice(1), source })
       }
