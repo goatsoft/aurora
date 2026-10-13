@@ -63,6 +63,15 @@ const layerAt = (doc: Doc, i: number) => {
   return layer
 }
 
+/**
+ * The palette indices a layer reads, one per generator colour. A layer without `colors` cycles
+ * through the whole palette, so what it reads depends on the palette's length.
+ */
+export function layerColors(layer: LayerInput, paletteLength: number, count: number): number[] {
+  const source = layer.colors?.length ? layer.colors : Array.from({ length: paletteLength }, (_, k) => k)
+  return Array.from({ length: count }, (_, k) => source[k % source.length]!)
+}
+
 export const ops = {
   rename: (doc: Doc, name: string) => edit(doc, (d) => {
     d.name = name
@@ -101,6 +110,24 @@ export const ops = {
     for (const layer of d.layers) {
       if (layer.colors) layer.colors = layer.colors.map((c) => (c === index ? fallback : c > index ? c - 1 : c))
     }
+  }),
+
+  /**
+   * Gives one colour slot of a layer its own copy of the palette colour it reads, so editing it
+   * changes only that slot. Layers that cycle through the whole palette would start reading the new
+   * colour too, so every layer's current colours are written out first. `count` gives a generator's
+   * number of colours.
+   */
+  ownColor: (doc: Doc, i: number, slot: number, count: (type: string) => number) => edit(doc, (d) => {
+    const length = d.palette.length
+    for (const layer of d.layers) {
+      if (!layer.colors?.length) layer.colors = layerColors(layer, length, count(layer.type))
+    }
+    const layer = layerAt(d, i)
+    const colors = layerColors(layer, length, count(layer.type))
+    d.palette.push(d.palette[colors[slot]!]!)
+    colors[slot] = length
+    layer.colors = colors
   }),
 
   addLayer: (doc: Doc, layer: LayerInput, at = doc.layers.length) => edit(doc, (d) => {

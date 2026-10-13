@@ -79,11 +79,7 @@ function ownColor(slot: number) {
     studio.notify('A palette holds up to 16 colours.', 'error')
     return
   }
-  const css = studio.doc.value.palette[colorSlots.value[slot]!]!
-  studio.commit(studio.ops.addColor(studio.doc.value, css), `own:${index.value}:${slot}`)
-  const colors = [...colorSlots.value]
-  colors[slot] = studio.doc.value.palette.length - 1
-  studio.commit(studio.ops.layer(studio.doc.value, index.value, 'colors', colors), `own:${index.value}:${slot}`)
+  studio.commit(studio.ops.ownColor(studio.doc.value, index.value, slot, (type) => studio.generator(type)?.colors ?? 0))
   end()
 }
 const colorEditing = ref<number>()

@@ -96,4 +96,29 @@ describe('snap', () => {
     expect(snap(7.4, 1)).toBe(7)
     expect(snap(0.0349, 0.005)).toBe(0.035)
   })
+
+  describe('ownColor', () => {
+    const count = (type: string) => (type === 'aurora-fbm' ? 3 : 1)
+    const two = (palette: string[], colors?: number[][]): Doc => ({
+      ...starter(),
+      palette,
+      layers: [0, 1].map((i) => ({ type: 'aurora-fbm', ...(colors ? { colors: colors[i] } : {}) })),
+    })
+
+    it('leaves layers that cycle through the palette reading the same colours', () => {
+      const doc = ops.ownColor(two(['red']), 0, 1, count)
+      expect(doc.palette).toEqual(['red', 'red'])
+      expect(doc.layers[0]!.colors).toEqual([0, 1, 0])
+      expect(doc.layers[1]!.colors).toEqual([0, 0, 0])
+      // Editing the copy now changes only the first layer's second slot.
+      expect(ops.color(doc, 1, 'blue').layers[1]!.colors).toEqual([0, 0, 0])
+    })
+
+    it('redirects only the chosen slot of a layer with its own colours', () => {
+      const doc = ops.ownColor(two(['red', 'green', 'blue'], [[0, 1, 2], [0, 1, 2]]), 1, 2, count)
+      expect(doc.palette).toEqual(['red', 'green', 'blue', 'blue'])
+      expect(doc.layers[0]!.colors).toEqual([0, 1, 2])
+      expect(doc.layers[1]!.colors).toEqual([0, 1, 3])
+    })
+  })
 })
