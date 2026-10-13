@@ -18,6 +18,8 @@ const year = new Date().getFullYear()
         <p class="mt-3 max-w-xs text-xs/relaxed text-muted-foreground">
           Code, docs and presets: MIT. The Aurora name and mark have <a
             :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+            target="_blank"
+            rel="noopener"
             class="underline underline-offset-2 hover:text-foreground"
           >separate terms</a>.
         </p>
@@ -83,6 +85,8 @@ const year = new Date().getFullYear()
           <li>
             <a
               :href="SITE.repo"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >GitHub</a>
           </li>
@@ -96,6 +100,8 @@ const year = new Date().getFullYear()
           <li>
             <a
               href="https://goatsoft.io"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >goatsoft.io</a>
           </li>
@@ -110,6 +116,8 @@ const year = new Date().getFullYear()
           <li>
             <a
               :href="`${SITE.repo}/issues`"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >Issues</a>
           </li>
@@ -119,9 +127,13 @@ const year = new Date().getFullYear()
     <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:justify-between">
       <span>© {{ year }} GOATsoft. <a
         :href="`${SITE.repo}/blob/develop/LICENSE`"
+        target="_blank"
+        rel="noopener"
         class="hover:text-foreground"
       >MIT licence</a> · <a
         :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+        target="_blank"
+        rel="noopener"
         class="hover:text-foreground"
       >Artwork licence</a></span>
       <span>Built with Aurora and gruff.</span>
