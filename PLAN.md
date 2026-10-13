@@ -253,10 +253,7 @@ Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API 
 ## 8. Decisions
 
 1. **Domain:** `aurora.goatsoft.io`, served by GitHub Pages with a CNAME record at Porkbun.
-2. **Packages:** `@goatsoft/*`, published to **GitHub Packages only** (`npm.pkg.github.com`) once the Phase 2 parity tests pass. Note that GitHub's npm registry needs a token with `read:packages` to install, even for public packages. Consuming sites need this `.npmrc`, plus `NODE_AUTH_TOKEN` in CI:
-   ```
-   @goatsoft:registry=https://npm.pkg.github.com
-   ```
+2. **Packages:** `@goatsoft/*`, published to **npm** (registry.npmjs.org) with provenance, plus a GitHub Release per package, from `release.yml` (ADR-0010). Installing needs no token or `.npmrc`. (Originally GitHub Packages only; changed before the first release because GitHub's registry needs a token even for public packages.)
 3. **Licence:** MIT.
 4. **Package manager:** pnpm workspaces.
 5. **Touch devices:** use WebGPU on touch devices when it is available, with an opt-out to force CSS.

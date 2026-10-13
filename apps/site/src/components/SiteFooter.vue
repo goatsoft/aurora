@@ -104,6 +104,14 @@ const year = new Date().getFullYear()
               class="hover:text-foreground"
             >GitHub</a>
           </li>
+          <li>
+            <a
+              :href="SITE.npm"
+              target="_blank"
+              rel="noopener"
+              class="hover:text-foreground"
+            >npm</a>
+          </li>
         </ul>
       </div>
       <div>

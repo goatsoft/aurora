@@ -6,22 +6,17 @@ order: 1
 
 # Getting started
 
-## Before you install
+## The packages
 
-Aurora's packages are on GitHub Packages under the `@goatsoft` scope, and GitHub Packages needs a token even for public packages.
+Aurora is published on [npm](https://www.npmjs.com/org/goatsoft) under the `@goatsoft` scope, with [provenance](https://docs.npmjs.com/generating-provenance-statements): each release is built and signed by the repository's release workflow on GitHub. Most sites need the first three.
 
-1. On GitHub, create a personal access token (classic) with the `read:packages` scope.
-2. Add it to your user `~/.npmrc` (not the project's, so it isn't committed):
-
-   ```ini [~/.npmrc]
-   //npm.pkg.github.com/:_authToken=YOUR_TOKEN
-   ```
-
-3. Point the scope at GitHub Packages in your project's `.npmrc`:
-
-   ```ini [.npmrc]
-   @goatsoft:registry=https://npm.pkg.github.com
-   ```
+| Package | What it is |
+|---|---|
+| [`@goatsoft/aurora`](https://www.npmjs.com/package/@goatsoft/aurora) | The runtime: WebGPU rendering, the CSS fallback and the `<aurora-bg>` element |
+| [`@goatsoft/aurora-vue`](https://www.npmjs.com/package/@goatsoft/aurora-vue) | Vue 3 components: `<AuroraBackground>`, `<AuroraScene>` and `useAurora()` |
+| [`@goatsoft/aurora-unplugin`](https://www.npmjs.com/package/@goatsoft/aurora-unplugin) | Imports `.aurora` files in Vite, Rollup, Rolldown, esbuild, webpack and Rspack |
+| [`@goatsoft/aurora-format`](https://www.npmjs.com/package/@goatsoft/aurora-format) | The `.aurora` format: schema, validation and migrations |
+| [`@goatsoft/color`](https://www.npmjs.com/package/@goatsoft/color) | OKLab and OKLCH colour maths |
 
 ## Your first file
 
@@ -100,6 +95,20 @@ The background sizes itself to that element, so it needs no classes of its own. 
 ::: tip One background across panels
 Wrap separate sections in `<AuroraScene name="landing">` and their backgrounds share their timing and position, so they line up as one background. See [Shared backgrounds](shared-backgrounds.md).
 :::
+
+## Other bundlers
+
+The plugin works the same way in Rollup, Rolldown, esbuild, webpack and Rspack. Import it from `@goatsoft/aurora-unplugin/rollup`, `/rolldown`, `/esbuild`, `/webpack` or `/rspack`:
+
+```js [webpack.config.js]
+import aurora from '@goatsoft/aurora-unplugin/webpack'
+
+export default {
+  plugins: [aurora()],
+}
+```
+
+Aurora renders in a worker, which it loads with `new URL(…, import.meta.url)`. Vite, webpack and Rspack copy that file into your build automatically. Rollup, Rolldown and esbuild don't, so there Aurora renders WebGPU on the main thread instead: it still works, but frames share the main thread with your page. To keep it in a worker, copy `node_modules/@goatsoft/aurora/dist/assets/` to an `assets/` folder next to your built JavaScript files, or use a plugin that handles `import.meta.url` assets.
 
 ## Without a framework
 

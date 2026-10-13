@@ -1,8 +1,19 @@
 {
   "name": "@goatsoft/aurora-format",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The .aurora file format: schema, validation and migrations.",
+  "keywords": [
+    "aurora",
+    "background",
+    "schema",
+    "validation",
+    "json-schema"
+  ],
   "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/format",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "repository": {
@@ -23,13 +34,15 @@
     "./schema/v1.json": "./schema/v1.json"
   },
   "scripts": {
-    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
   },
   "dependencies": {
     "@goatsoft/color": "workspace:^",
     "valibot": "^1.5.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

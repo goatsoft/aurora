@@ -25,6 +25,10 @@ export function libraryConfig(root: string): UserConfig {
 
   return {
     root,
+    // Emitted assets (core's worker) are referenced relative to the chunk that uses them:
+    // `new URL('assets/worker-….js', import.meta.url)`. The default base ('/') would point at the
+    // root of the consuming site, where the file isn't.
+    base: './',
     // Packages built on Vue ship single-file components.
     plugins: manifest.peerDependencies?.['vue'] ? [vue()] : [],
     build: {

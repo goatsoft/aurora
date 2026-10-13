@@ -1,0 +1,17 @@
+{
+  "name": "aurora-consumers",
+  "private": true,
+  "type": "module",
+  "description": "A fresh project that installs the packed @goatsoft/* tarballs and builds with each bundler. Run by scripts/consumers.ts, which adds the tarballs as dependencies.",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@rspack/core": "2.2.9",
+    "@vitejs/plugin-vue": "6.0.10",
+    "esbuild": "0.28.2",
+    "rolldown": "1.2.13",
+    "rollup": "4.64.6",
+    "vite": "8.3.4",
+    "vue": "3.5.44",
+    "webpack": "5.111.1"
+  }
+}
