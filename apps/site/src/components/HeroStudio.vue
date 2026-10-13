@@ -11,7 +11,7 @@ const modes: { id: string, label: string, icon: Component, scene: typeof glacier
   { id: 'night', label: 'Night', icon: IconNight, scene: glacierNight, inspect: 'curtain' },
   { id: 'storm', label: 'Storm', icon: IconStorm, scene: glacierStorm, inspect: 'lightning' },
 ]
-const current = ref(modes[0]!)
+const current = ref(modes[1]!)
 </script>
 
 <template>

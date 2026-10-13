@@ -10,8 +10,9 @@ import lagoon from '~/presets/scenes/lagoon.aurora'
 import mistyForest from '~/presets/scenes/misty-forest.aurora'
 import northernLights from '~/presets/scenes/northern-lights.aurora'
 import polarNight from '~/presets/scenes/polar-night.aurora'
+import solarWinds from '~/presets/scenes/solar-winds.aurora'
 
-export { blueHour, borealis, glacier, glacierNight, glacierStorm, goldenHour, lagoon, mistyForest, northernLights, polarNight }
+export { blueHour, borealis, glacier, glacierNight, glacierStorm, goldenHour, lagoon, mistyForest, northernLights, polarNight, solarWinds }
 
 /** A CSS-fallback thumbnail of one layer, for mock layer lists. */
 export function layerThumb(doc: AuroraDocument, { mask: _, ...layer }: AuroraLayer): string {
