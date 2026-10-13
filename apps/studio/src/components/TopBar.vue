@@ -31,7 +31,9 @@ watchDebounced([() => studio.rendered.value, () => ui.page, comparing], async ()
 
 const exporting = ref(false)
 const copied = ref<string>()
-const code = computed(() => snippets(studio.fileName.value, studio.rendered.value))
+/** Tailwind classes in the Vue and HTML snippets instead of an inline style; remembered per browser. */
+const tailwind = useLocalStorage('aurora-studio:tailwind', false)
+const code = computed(() => snippets(studio.fileName.value, studio.rendered.value, { tailwind: tailwind.value }))
 async function copy(id: string, text: string) {
   await navigator.clipboard.writeText(text)
   copied.value = id
@@ -503,6 +505,13 @@ defineExpose({ save: () => void save(), share, saveAs })
           </div>
         </button>
         <div class="mt-1 flex flex-col gap-1.5 border-t border-panel-border p-1 pt-2">
+          <label class="flex items-center justify-between px-1 py-0.5 text-[11px] text-muted-foreground">
+            Use Tailwind classes
+            <Switch
+              v-model="tailwind"
+              label="Use Tailwind classes"
+            />
+          </label>
           <div
             v-for="snippet in code"
             :key="snippet.id"

@@ -20,6 +20,8 @@ Studio only saves or exports a document that is valid. If something is out of ra
 
 **Export** in the top bar gives you the `.aurora` file, a Vue, HTML or CSS snippet to paste into a page, or a poster PNG.
 
+Turn on **Use Tailwind classes** and the Vue and HTML snippets use `class="relative"` instead of an inline style. Studio remembers the setting.
+
 ## Share links
 
 **Copy share link** puts the whole document in the link itself. Anyone with the link can open it in Studio, and nothing is uploaded anywhere.

@@ -85,6 +85,18 @@ import hero from './hero.aurora'
 
 On the server, `<AuroraBackground>` renders the CSS fallback, so the first paint already has the background. In the browser, WebGPU replaces it once its first frame is ready, with a short crossfade.
 
+::: tip Using Tailwind
+The examples use inline styles so they work anywhere. With Tailwind, use classes instead:
+
+| Inline style | Tailwind |
+|---|---|
+| `position: relative` | `relative` |
+| `position: fixed; inset: 0; z-index: -1; pointer-events: none` (a full-page background) | `fixed inset-0 -z-1 pointer-events-none` |
+| `position: relative; overflow: hidden` (a card) | `relative overflow-hidden` |
+
+The background sizes itself to that element, so it needs no classes of its own. Studio's **Export** menu can also give you its snippets with Tailwind classes.
+:::
+
 ::: tip One background across panels
 Wrap separate sections in `<AuroraScene name="landing">` and their backgrounds share their timing and position, so they line up as one background. See [Shared backgrounds](shared-backgrounds.md).
 :::

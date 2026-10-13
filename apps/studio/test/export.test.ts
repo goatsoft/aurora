@@ -11,4 +11,14 @@ describe('export snippets', () => {
     expect(vue(fileName)).toContain(`import background from './${fileName}'`)
     expect(vue(fileName)).toContain(':src="background"')
   })
+
+  it('uses an inline style by default and Tailwind classes when asked', () => {
+    for (const id of ['vue', 'html']) {
+      const plain = snippets('sky.aurora', doc).find((s) => s.id === id)!.code
+      const tw = snippets('sky.aurora', doc, { tailwind: true }).find((s) => s.id === id)!.code
+      expect(plain).toContain('<section style="position: relative">')
+      expect(tw).toContain('<section class="relative">')
+      expect(tw).not.toContain('style=')
+    }
+  })
 })
