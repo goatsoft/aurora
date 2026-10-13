@@ -1,5 +1,6 @@
 import vue from '@vitejs/plugin-vue'
 import { playwright } from '@vitest/browser-playwright'
+import { generateBadges } from '#badge-assets'
 import { defaultClientConditions, defaultServerConditions } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { packageSrcAlias, ROOT, rootAlias } from './aliases.ts'
@@ -18,6 +19,8 @@ const chromiumWebGPU = [
   '--use-angle=swiftshader',
   '--use-webgpu-adapter=swiftshader',
 ]
+
+generateBadges(ROOT)
 
 export default defineConfig({
   test: {
@@ -59,7 +62,7 @@ export default defineConfig({
         optimizeDeps: { include: ['vue', 'vue/server-renderer', '@vue/test-utils', 'fast-check'] },
         test: {
           name: 'browser',
-          include: ['packages/*/test/**/*.browser.test.ts'],
+          include: ['packages/*/test/**/*.browser.test.ts', 'apps/site/test/**/*.browser.test.ts'],
           browser: {
             enabled: true,
             headless: true,

@@ -21,7 +21,7 @@ The `.aurora` presets and starters (`presets/`), generators, colour tokens and p
 
 ## Official attribution badges
 
-As an exception to the restrictions below, you may embed, download, self-host and redistribute the **unmodified official attribution badge SVGs** in `assets/brand/badges/` with websites, applications and documentation that use Aurora. They may be scaled proportionally and linked to `https://aurora.goatsoft.io/`. Attribution is optional. The badges identify use of Aurora; they do not imply endorsement and do not certify that WebGPU is currently active.
+As an exception to the restrictions below, you may embed, download, self-host and redistribute the **unmodified official attribution badge SVGs** generated from `assets/brand/badges/` with websites, applications and documentation that use Aurora. They may be scaled proportionally and linked to `https://aurora.goatsoft.io/`. Attribution is optional. The badges identify use of Aurora; they do not imply endorsement and do not certify that WebGPU is currently active.
 
 This permission covers the complete badges only, not extraction or alteration of their marks or use as your own branding. The badges remain Brand Assets under this licence, not MIT-licensed software.
 

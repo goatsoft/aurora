@@ -1,9 +1,11 @@
 import type { Plugin } from 'vite'
+import { execFileSync } from 'node:child_process'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /** Stable public URLs without moving protected brand assets into MIT packages. */
 export function attributionBadges(root: string): Plugin {
+  execFileSync(process.execPath, [join(root, 'scripts/generate-badges.ts')], { cwd: root })
   const directory = join(root, 'assets/brand/badges/v1')
   const files = new Map(readdirSync(directory).filter((name) => name.endsWith('.svg')).map((name) => [
     `/badges/v1/${name}`, readFileSync(join(directory, name), 'utf8'),

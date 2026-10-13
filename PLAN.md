@@ -236,7 +236,7 @@ Phase 2 is the critical path. Phases 4 and 5 can overlap once the generator API 
 
 **Phase 2 notes.** Parity is stricter than planned: every classic preset renders bit-identically to the original shader (0 differing pixels). Headless SwiftShader can't present WebGPU canvases (the device is lost on first present), so CI checks rendering through texture-backed canvases and checks presentation only for truthful fallback; on-screen presentation needs real-device acceptance (ADR-0004).
 
-**Attribution badges (ADR-0009).** Optional single-SVG badges live in `assets/brand/badges/v1/`, served by the site at `/badges/v1/`. Separate `/badge` entries in core and Vue support hosted or self-hosted attribution without bundling the brand artwork or runtime. Compact inline layout and static rendering by default, with optional stacked cards and reduced-motion-aware glow variants. Deploy the site assets before releasing packages that reference their URLs.
+**Attribution badges (ADR-0009).** Optional single-SVG badges are generated from `assets/brand/badges/badge.svg` and the approved favicon artwork into ignored `assets/brand/badges/v1/` build output, served by the site at `/badges/v1/`. The attribution docs include interactive previews, SVG downloads and copyable Vue/HTML/Markdown snippets. Separate `/badge` entries in core and Vue support hosted or self-hosted attribution without bundling the brand artwork or runtime. Compact inline layout and static rendering by default, with optional stacked cards and reduced-motion-aware glow variants. Deploy the site assets before releasing packages that reference their URLs.
 
 ## 7. Engineering bars ("really, really slick")
 

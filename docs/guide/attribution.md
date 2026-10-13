@@ -10,6 +10,12 @@ Attribution is optional. If Aurora lights up your site, add a small badge to its
 
 Each badge is a single, self-contained SVG: no JavaScript, external fonts, tracking or GPU work. The approved compact mark stays unchanged. Choose **Made with Aurora** (the default), **Powered by Aurora**, or **Aurora enabled**. These describe use of Aurora, not the renderer's current status.
 
+## Choose your badge
+
+Choose a layout, theme and glow, then copy a snippet for any label or download its SVG. The preview uses the local site; copied image URLs use the public Aurora site. Auto follows your colour scheme. Animated glow stays still when reduced motion is enabled.
+
+<BadgeExamples />
+
 ## Vue
 
 ```vue
@@ -68,7 +74,7 @@ Wrap the image in a link: SVG-in-image links themselves are non-interactive. See
 | `animated` | `true`, `false` | `false` |
 | `baseUrl` | URL or path of your badge directory | `https://aurora.goatsoft.io/badges/v1` |
 
-Inline files are named `{label}-inline-{theme}.svg` and `{label}-inline-{theme}-animated.svg`. Stacked files retain `{label}-{theme}.svg` and `{label}-{theme}-animated.svg`. All 36 combinations are included under `assets/brand/badges/v1/` in the repository.
+Inline files are named `{label}-inline-{theme}.svg` and `{label}-inline-{theme}-animated.svg`. Stacked files retain `{label}-{theme}.svg` and `{label}-{theme}-animated.svg`. All 36 combinations are generated from one template during development and builds. Generated SVGs are build output and are not committed.
 
 Use `light` or `dark` to match a specific surface. `auto` follows `prefers-color-scheme`; an embedding element's CSS `color-scheme` can supply the page's manually selected theme. See [MDN's embedded SVG colour-scheme example](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-color-scheme#inherited_color_scheme_in_embedded_elements).
 
@@ -76,7 +82,7 @@ Animation is a slow pulse of the inset edge glow; the mark and text do not move.
 
 ## Self-hosting and licence
 
-Download the chosen official SVG from the repository into your site's public directory, keep it unmodified, then point the component or helper to that directory:
+Use **Download SVG** above to save the chosen official badge into your site's public directory, keep it unmodified, then point the component or helper to that directory:
 
 ```vue
 <AuroraBadge base-url="/brand/badges" theme="light" />
@@ -87,3 +93,13 @@ This loads `/brand/badges/made-with-inline-light.svg`. Serve SVGs as `image/svg+
 The helper and Vue component are MIT code. The artwork stays under the [Aurora artwork and brand licence](https://github.com/goatsoft/aurora/blob/develop/LICENSE-ART.md), which explicitly permits embedding and self-hosting these unmodified attribution badges. They are not a certification or an endorsement.
 
 The hosted URLs are deployed with the Aurora site. When developing this feature before that deployment, use a self-hosted badge directory or the local site's `/badges/v1/` route.
+
+## Building the badges
+
+Contributors edit `assets/brand/badges/badge.svg` and its variant settings in `generate.ts`. The generator embeds the approved favicon artwork without changing its paths. Site and Studio development/builds generate the ignored `assets/brand/badges/v1/` directory automatically; the site publishes it at `/badges/v1/`.
+
+To generate the files without building the apps:
+
+```sh
+pnpm badges:generate
+```

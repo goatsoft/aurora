@@ -127,57 +127,57 @@ useEventListener(window, 'drop', (e: DragEvent) => {
 <template>
   <TooltipProvider>
     <div class="flex size-full flex-col">
-    <main
-      class="relative min-h-0 flex-1 overflow-hidden"
-      aria-label="Aurora Studio"
-    >
-      <Stage />
-      <TopBar ref="top" />
-      <LayersPanel />
-      <Inspector />
-      <MotionBar />
-      <MobileBar />
-      <Transition
-        enter-from-class="opacity-0 -translate-y-2"
-        leave-to-class="opacity-0"
-        enter-active-class="transition duration-300"
-        leave-active-class="transition duration-150"
+      <main
+        class="relative min-h-0 flex-1 overflow-hidden"
+        aria-label="Aurora Studio"
       >
-        <Button
-          v-if="ui.focus"
-          class="absolute top-3 right-3 z-30 glass"
-          @click="ui.focus = false"
+        <Stage />
+        <TopBar ref="top" />
+        <LayersPanel />
+        <Inspector />
+        <MotionBar />
+        <MobileBar />
+        <Transition
+          enter-from-class="opacity-0 -translate-y-2"
+          leave-to-class="opacity-0"
+          enter-active-class="transition duration-300"
+          leave-active-class="transition duration-150"
         >
-          <IHgArrowShrink02 />Show panels <Kbd class="max-md:hidden">F</Kbd>
-        </Button>
-      </Transition>
-      <Notices />
-      <Gallery />
-      <CommandPalette :actions="actions" />
-      <input
-        ref="picker"
-        type="file"
-        accept=".aurora,application/json"
-        class="hidden"
-        @change="(e) => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) void studio.openFile(f); (e.target as HTMLInputElement).value = '' }"
-      >
-      <Transition
-        enter-from-class="opacity-0"
-        leave-to-class="opacity-0"
-        enter-active-class="transition duration-200"
-        leave-active-class="transition duration-200"
-      >
-        <div
-          v-if="dropping"
-          class="pointer-events-none absolute inset-3 z-50 grid place-items-center rounded-3xl border-2 border-dashed border-primary/70 bg-primary/10 backdrop-blur-sm"
+          <Button
+            v-if="ui.focus"
+            class="absolute top-3 right-3 z-30 glass"
+            @click="ui.focus = false"
+          >
+            <IHgArrowShrink02 />Show panels <Kbd class="max-md:hidden">F</Kbd>
+          </Button>
+        </Transition>
+        <Notices />
+        <Gallery />
+        <CommandPalette :actions="actions" />
+        <input
+          ref="picker"
+          type="file"
+          accept=".aurora,application/json"
+          class="hidden"
+          @change="(e) => { const f = (e.target as HTMLInputElement).files?.[0]; if (f) void studio.openFile(f); (e.target as HTMLInputElement).value = '' }"
         >
-          <div class="flex items-center gap-3 rounded-2xl glass px-5 py-4">
-            <IHgUpload04 class="size-5 text-primary" />
-            <span class="text-sm font-medium">Drop to open the .aurora file</span>
+        <Transition
+          enter-from-class="opacity-0"
+          leave-to-class="opacity-0"
+          enter-active-class="transition duration-200"
+          leave-active-class="transition duration-200"
+        >
+          <div
+            v-if="dropping"
+            class="pointer-events-none absolute inset-3 z-50 grid place-items-center rounded-3xl border-2 border-dashed border-primary/70 bg-primary/10 backdrop-blur-sm"
+          >
+            <div class="flex items-center gap-3 rounded-2xl glass px-5 py-4">
+              <IHgUpload04 class="size-5 text-primary" />
+              <span class="text-sm font-medium">Drop to open the .aurora file</span>
+            </div>
           </div>
-        </div>
-      </Transition>
-    </main>
+        </Transition>
+      </main>
       <footer class="relative z-20 flex shrink-0 justify-center border-t border-panel-border bg-background px-4 py-1">
         <a
           href="https://aurora.goatsoft.io/"

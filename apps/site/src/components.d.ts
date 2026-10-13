@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AuroraDemo: typeof import('./components/doc/AuroraDemo.vue')['default']
+    BadgeExamples: typeof import('./components/doc/BadgeExamples.vue')['default']
     Button: typeof import('./components/ui/Button.vue')['default']
     CodeGroup: typeof import('./components/doc/CodeGroup.vue')['default']
     CodeSection: typeof import('./components/section/CodeSection.vue')['default']

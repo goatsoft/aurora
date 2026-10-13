@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="{{width}}" height="{{height}}" viewBox="0 0 {{width}} {{height}}" role="img" aria-label="{{label}}">
+  <title>{{label}}</title>
+  <style>{{css}}</style>
+  <defs>
+    <linearGradient id="edge" x1="0" y1="{{height}}" x2="{{width}}" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#43f4dc"/><stop offset=".5" stop-color="#8c83ff"/><stop offset="1" stop-color="#ee82ed"/></linearGradient>
+    <filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <rect class="panel line" x=".5" y=".5" width="{{panelWidth}}" height="{{panelHeight}}" rx="{{radius}}"/>
+  <rect class="breathe" x="3" y="3" width="{{glowWidth}}" height="{{glowHeight}}" rx="{{glowRadius}}" fill="none" stroke="url(#edge)" stroke-width="1.5" filter="url(#glow)" opacity=".24"/>
+  {{mark}}
+  <g font-family="Arial,Helvetica,sans-serif">{{text}}</g>
+  {{arrow}}
+</svg>
