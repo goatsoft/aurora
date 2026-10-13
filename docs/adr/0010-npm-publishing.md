@@ -12,8 +12,10 @@ The workspace also resolves packages through the `@goatsoft/source` condition, s
 
 Publish to **npm** (registry.npmjs.org) under the `@goatsoft` org, with **provenance**, and a GitHub Release per package.
 
-- `release.yml` runs on `main`. It calls `ci.yml` first, so nothing publishes unless CI passes on that commit, then runs `changesets/action`: pending changesets open a "Version Packages" PR, and merging it publishes and creates the releases. Publishing runs in the `npm` GitHub environment.
-- The first release authenticates with an `NPM_TOKEN` (a short-lived granular token) in that environment. After it, each package switches to npm trusted publishing (OIDC, tied to `release.yml` and the `npm` environment), the token is deleted, and the packages refuse token publishes.
+- `release.yml` runs on `main`. It calls `ci.yml` first, so nothing publishes unless CI passes on that commit, then runs `changesets/action`, which opens a "Version Packages" PR from pending changesets. When nothing is left to version (that PR was merged), `scripts/publish.ts` publishes every version not yet on npm, then tags it and creates its GitHub Release from its CHANGELOG. Publishing runs in the `npm` GitHub environment, restricted to `main`.
+- Publishing uses **npm trusted publishing**: each package's trusted publisher names `goatsoft/aurora`, `release.yml` and the `npm` environment, and the workflow authenticates with a short-lived OIDC token, so there is no npm token anywhere and every version has provenance. 0.1.0 was published once with a short-lived granular token, which was then deleted; 0.1.1 is the first trusted publish. The packages refuse token publishes.
+- `scripts/publish.ts` packs each package with pnpm (rewriting `workspace:` ranges and running `prepack`) and publishes the tarball with npm's own CLI (11.5.1 or later), which handles the OIDC exchange. `changeset publish` is not used: it publishes with `pnpm publish`, and Changesets 3's output isn't recognised by `changesets/action`, so 0.1.0's tags and releases had to be created by hand.
+- The trusted publishers allow `npm publish` as well as `npm stage publish`. Staged publishing (each release waits for a maintainer's 2FA approval on npm) is the stronger option and a planned follow-up.
 - Five packages publish: `@goatsoft/aurora`, `-vue`, `-unplugin`, `-format` and `@goatsoft/color`. gruff and editor-ui stay private, and Changesets never versions or tags private packages.
 - Each package ships its own README and, through `prepack`, a copy of the MIT `LICENSE`. `src/` is not published; the `@goatsoft/source` condition stays in `exports` for the workspace and points at nothing in the tarball.
 - Libraries build with `base: './'`, so emitted assets are referenced relative to the chunk that uses them.
@@ -22,4 +24,4 @@ Publish to **npm** (registry.npmjs.org) under the `@goatsoft` org, with **proven
 
 ## Consequences
 
-Installing Aurora needs nothing but `npm install`. Every published version is traceable to a commit and workflow run. Releases go through two PRs (the release branch into `main`, then "Version Packages"), and `main` is merged back into `develop` after each. The consumer check adds a CI job of about a minute.
+Installing Aurora needs nothing but `npm install`. Every published version is traceable to a commit and workflow run, and no long-lived credential can publish. Releases go through two PRs (the release branch into `main`, then "Version Packages"), and `main` is merged back into `develop` after each. The consumer check adds a CI job of about a minute.

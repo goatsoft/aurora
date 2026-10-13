@@ -1,8 +1,11 @@
 name: Release
 
-# On main, after CI passes on the same commit: open or update the "Version Packages" PR from the
-# pending changesets. Merging that PR runs this again, which publishes the @goatsoft/* packages to
-# npm with provenance and creates a GitHub Release for each.
+# On main, after CI passes on the same commit:
+# - pending changesets: open or update the "Version Packages" PR;
+# - nothing left to version: publish any @goatsoft/* version that isn't on npm yet
+#   (scripts/publish.ts), then tag it and create its GitHub Release.
+# Publishing uses npm trusted publishing (OIDC from the `npm` environment): no token, and every
+# version carries provenance.
 on:
   push:
     branches: [main]
@@ -22,7 +25,7 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Holds NPM_TOKEN for the first release; trusted publishing is tied to it afterwards.
+    # Each package's trusted publisher on npm names this workflow and environment.
     environment: npm
     permissions:
       contents: write
@@ -33,23 +36,28 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
+      # No registry-url: that writes an .npmrc expecting a token, and publishing uses OIDC instead.
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
-          registry-url: https://registry.npmjs.org
+
+      - name: npm with trusted publishing
+        run: npm install -g npm@^11.5.1
 
       - run: pnpm install --frozen-lockfile
 
-      - uses: changesets/action@v1
+      - id: changesets
+        uses: changesets/action@v1
         with:
           version: pnpm changeset version
-          publish: pnpm release
           title: 'chore: version packages'
           commit: 'chore: version packages'
-          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+
+      - name: Publish
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: pnpm release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
