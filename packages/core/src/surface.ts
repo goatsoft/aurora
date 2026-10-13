@@ -3,7 +3,7 @@ import type { Backend, Lease } from './pool'
 import type { SurfaceState } from './protocol'
 import type { SceneMember } from './scene'
 import type { RgbSpace } from '@goatsoft/color'
-import { getConfig } from './config'
+import { getConfig, renderRatio } from './config'
 import { compileCss, DRIFT_KEYFRAMES } from './css'
 import { GENERATORS, loadGenerators } from './generators/index'
 import { documentOf, isAuroraModule, watchModule } from './module'
@@ -131,9 +131,8 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   }
 
   function state(): SurfaceState {
-    const { maxPixels, pixelRatio } = getConfig()
     const r = root.getBoundingClientRect()
-    const ratio = Math.min((devicePixelRatio || 1) * pixelRatio, 1, maxPixels / Math.max(1, r.width), maxPixels / Math.max(1, r.height))
+    const ratio = renderRatio(devicePixelRatio, r.width, r.height)
     const geometry = options.scene ? sceneGeometry(options.scene, member) : { width: r.width, height: r.height, rect: [0, 0, 1, 1] as const }
     return {
       doc,
@@ -220,7 +219,11 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     push()
   }, { rootMargin: '20%' })
   io.observe(root)
-  const ro = new ResizeObserver(() => push())
+  // A member's size is part of the whole scene's geometry, so its neighbours recompute too.
+  const ro = new ResizeObserver(() => {
+    push()
+    scene?.notify()
+  })
   ro.observe(root)
   addEventListener('scroll', () => {
     if (doc.canvas.fixed) push()

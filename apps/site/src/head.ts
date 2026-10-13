@@ -6,7 +6,7 @@ export const SITE = {
   name: 'Aurora',
   url: 'https://aurora.goatsoft.io',
   repo: 'https://github.com/goatsoft/aurora',
-  description: 'WebGPU backgrounds that feel alive, with a CSS fallback for everyone else. Design them in Aurora Studio, drop them into any site.',
+  description: 'Animated backgrounds for your site. Create one in Aurora Studio, then use it with Vue or HTML. WebGPU, with a CSS fallback.',
 }
 
 export interface Head {
@@ -29,7 +29,7 @@ export function useHead(meta: { title?: MaybeRefOrGetter<string | undefined>, de
   if (!head) return
   watchEffect(() => {
     const title = toValue(meta.title)
-    head.title = title ? `${title} · ${SITE.name}` : `${SITE.name}: WebGPU backgrounds that feel alive`
+    head.title = title ? `${title} · ${SITE.name}` : `${SITE.name}: animated WebGPU backgrounds`
     head.description = toValue(meta.description) ?? SITE.description
     if (typeof document !== 'undefined') {
       document.title = head.title

@@ -12,7 +12,7 @@ describe('validateDocument', () => {
 
   const cases: [AuroraInput['layers'], string, string][] = [
     [[{ type: 'aurora-fmb' }], '$.layers[0].type', 'is not a known generator. Did you mean "aurora-fbm"?'],
-    [[{ type: 'nebula' }], '$.layers[0].type', 'is not a known generator. Available: aurora-fbm, mesh-gradient, linear-sweep, conic, grain, strata, mountains, clouds, wind, fire, water, starfield.'],
+    [[{ type: 'nebula' }], '$.layers[0].type', 'is not a known generator. Available: aurora-fbm, mesh-gradient, linear-sweep, linear-gradient, conic, grain, strata, mountains, treeline, clouds, wind, rain, lightning, fire, water, curtain, starfield.'],
     [[{ type: 'aurora-fbm', params: { sped: 1 } }], '$.layers[0].params.sped', 'is not a parameter of aurora-fbm. Did you mean "speed"?'],
     [[{ type: 'aurora-fbm', params: { 'my param': 1 } }], '$.layers[0].params["my param"]', 'is not a parameter of aurora-fbm. Expected one of: intensity, scale, speed, seed, stretch, sweep.'],
     [[{ type: 'aurora-fbm', params: { seed: 'x' } }], '$.layers[0].params.seed', 'must be a number, got "x".'],

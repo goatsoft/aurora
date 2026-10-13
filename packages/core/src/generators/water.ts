@@ -8,15 +8,15 @@ import { defineGenerator } from './define'
 export const water = defineGenerator({
   id: 'water',
   label: 'Water',
-  description: 'Water: sunlight caustics rippling over deep, clear water.',
+  description: 'Water: moving light patterns on the floor of clear water.',
   colors: 3,
   palette: ['oklch(0.3 0.08 245)', 'oklch(0.55 0.12 220)', 'oklch(0.95 0.07 185)'],
   requires: ['worley', 'simplex'],
   params: {
-    scale: { default: 3, min: 0.5, max: 10, step: 0.05, label: 'Scale', description: 'Size of the caustic cells.' },
+    scale: { default: 3, min: 0.5, max: 10, step: 0.05, label: 'Scale', description: 'Higher gives smaller light cells; lower gives larger ones.' },
     speed: { default: 0.28, min: 0, max: 2, step: 0.01, label: 'Speed', description: 'How fast the light ripples.' },
     caustics: { default: 0.85, min: 0, max: 2, step: 0.01, label: 'Caustics', description: 'Brightness of the light web.' },
-    sharpness: { default: 0.6, min: 0, max: 1, step: 0.01, label: 'Sharpness', description: 'Thin, crisp lines or broad, soft light.' },
+    sharpness: { default: 0.6, min: 0, max: 1, step: 0.01, label: 'Sharpness', description: 'Higher gives thin, crisp lines; lower gives broad, soft light.' },
     wobble: { default: 0.35, min: 0, max: 1, step: 0.01, label: 'Wobble', description: 'How much the surface distorts the light.' },
     depth: { default: 0.6, min: 0, max: 1, step: 0.01, label: 'Depth', description: 'How much darker the water gets towards the bottom.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different surface.', ui: 'seed' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { auroraStats } from '@goatsoft/aurora'
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
 import { useStudio } from '@/editor/studio'
 
 /** Motion: play/pause, the document's speed, reduced-motion preview, and a live perf readout. */
@@ -36,7 +37,10 @@ function shuffle() {
 </script>
 
 <template>
-  <footer class="absolute bottom-4 left-1/2 z-30 flex h-12 -translate-x-1/2 animate-[rise-in_500ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1 rounded-2xl glass px-1.5">
+  <footer
+    v-show="!ui.focus"
+    class="absolute bottom-4 left-1/2 z-30 flex h-12 -translate-x-1/2 animate-[rise-in_500ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1 rounded-2xl glass px-1.5 max-md:hidden"
+  >
     <Tip
       :label="ui.playing ? 'Pause' : 'Play'"
       keys="Space"

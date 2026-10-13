@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { validateDocument } from '@goatsoft/aurora'
+import { encodeShare } from '@goatsoft/aurora-editor-ui'
 import { parseAurora } from '@goatsoft/aurora-format'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
 
@@ -27,13 +28,10 @@ watchDebounced(text, async (value) => {
   if (parsed.ok && !issues.length) doc.value = parsed.doc
 }, { debounce: 200 })
 
-/** Opens the current document in Studio, as a share link (the format of Studio's editor/share.ts). */
+/** Opens the current document in Studio, as a share link. */
 async function openInStudio() {
   if (!doc.value) return
-  const bytes = new Blob([JSON.stringify(doc.value)]).stream().pipeThrough(new CompressionStream('deflate-raw'))
-  let s = ''
-  for (const b of new Uint8Array(await new Response(bytes).arrayBuffer())) s += String.fromCharCode(b)
-  window.open(`/studio/#a=${btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`, '_blank', 'noopener')
+  window.open(`/studio/#${await encodeShare(doc.value)}`, '_blank', 'noopener')
 }
 </script>
 

@@ -6,7 +6,7 @@
  *
  * Each app runs from its own folder, as `pnpm --filter … dev` would: unplugin-icons finds icon
  * sets from the working directory. The site's config loads the unplugin and gruff from dist, so
- * those two are built first.
+ * those two, and the packages they use, are built first.
  */
 import { execFileSync, spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
@@ -20,7 +20,9 @@ const site = `http://localhost:${SITE_PORT}`
 
 // The pnpm running this script (npm_execpath), so its pinned version builds the packages too.
 const pnpm = process.env['npm_execpath']
-const filters = ['--filter', '@goatsoft/aurora-unplugin', '--filter', '@goatsoft/gruff', 'build']
+// With their dependencies (the trailing ...): the unplugin validates .aurora files against the
+// built runtime's generators, so a new generator needs @goatsoft/aurora rebuilt too.
+const filters = ['--filter', '@goatsoft/aurora-unplugin...', '--filter', '@goatsoft/gruff...', 'build']
 execFileSync(pnpm ? process.execPath : 'pnpm', pnpm ? [pnpm, ...filters] : filters, { cwd: root, stdio: 'inherit' })
 
 // Studio, in its own process and folder, served under /studio/ like the hosted build.
@@ -47,7 +49,13 @@ const server = await createServer({
     proxy: { '/studio': { target: `http://localhost:${STUDIO_PORT}`, ws: true } },
   },
 })
-await server.listen()
+try {
+  await server.listen()
+} catch (error) {
+  // A busy port, say: don't leave Studio's server running on its own.
+  studio.kill()
+  throw error
+}
 server.printUrls()
 server.config.logger.info(`  \u001B[36m➜\u001B[0m  Studio:  ${site}/studio/`)
 

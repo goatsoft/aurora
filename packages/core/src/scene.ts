@@ -23,7 +23,7 @@ const scenes = new Map<string, Scene>()
  * Joins a named scene. Members share one clock and one document-space field, so separate panels
  * read as one continuous background. The scene ends with its last member.
  */
-export function joinScene(name: string, member: SceneMember, now: number): { origin: number, leave: () => void } {
+export function joinScene(name: string, member: SceneMember, now: number): { origin: number, notify: () => void, leave: () => void } {
   let scene = scenes.get(name)
   if (!scene) {
     scene = { origin: now, members: new Set() }
@@ -34,6 +34,10 @@ export function joinScene(name: string, member: SceneMember, now: number): { ori
   for (const other of current.members) if (other !== member) other.changed()
   return {
     origin: current.origin,
+    /** Tells the other members this one moved or resized, so they recompute their part. */
+    notify() {
+      for (const other of current.members) if (other !== member) other.changed()
+    },
     leave() {
       if (!current.members.delete(member)) return
       if (current.members.size) for (const other of current.members) other.changed()

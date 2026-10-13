@@ -1,27 +1,39 @@
 <script setup lang="ts">
 import type { AuroraModule } from '@goatsoft/aurora'
+import { generatorIds } from '@goatsoft/aurora'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { blueHour, glacierStorm, mistyForest } from '@/lib/scenes'
 
+/** Counted from the runtime, so the heading never goes stale. */
+const count = generatorIds().length
 const starters = import.meta.glob<AuroraModule>('~/presets/starters/*.aurora', { eager: true, import: 'default' })
 const starter = (id: string) => Object.entries(starters).find(([path]) => path.endsWith(`/${id}.aurora`))![1]
 
+/** Cards that show their generator inside a scene rather than alone. */
+const SCENES: Record<string, AuroraModule> = { mountains: blueHour, treeline: mistyForest, rain: glacierStorm }
+
 const cards = [
-  { id: 'aurora-fbm', name: 'Aurora', kind: 'The flagship', body: 'Ribbons of light from domain-warped noise.', span: 'md:col-span-2' },
-  { id: 'starfield', name: 'Starfield', kind: 'Night sky', body: 'Twinkling stars, a milky way, the odd meteor.', span: '' },
-  { id: 'mountains', name: 'Mountains', kind: 'Earth', body: 'Ridges fading into haze, with valley mist.', span: '' },
-  { id: 'clouds', name: 'Clouds', kind: 'Air', body: 'Sunlit cumulus drifting across an open sky.', span: '' },
-  { id: 'fire', name: 'Fire', kind: 'Fire', body: 'Flames licking up, embers rising.', span: '' },
-  { id: 'water', name: 'Water', kind: 'Water', body: 'Sunlight caustics over deep, clear water.', span: '' },
-  { id: 'strata', name: 'Strata', kind: 'Earth', body: 'Sandstone layers, folded and carved by wind.', span: '' },
-  { id: 'wind', name: 'Wind', kind: 'Air', body: 'Silky streaks of air, bent by gusts.', span: '' },
-  { id: 'mesh-gradient', name: 'Mesh gradient', kind: 'Gradients', body: 'Four colour fields, drifting together.', span: 'md:col-span-2' },
+  { id: 'aurora-fbm', name: 'Aurora', kind: 'Aurora', body: 'Drifting ribbons of light. This is the original Aurora shader.', span: 'md:col-span-2' },
+  { id: 'starfield', name: 'Starfield', kind: 'Night sky', body: 'Three depths of stars, a milky way and the odd meteor.', span: '' },
+  { id: 'mountains', name: 'Mountains', kind: 'Earth', body: 'Ridges that fade into haze. Shown here over a linear gradient.', span: '' },
+  { id: 'treeline', name: 'Treeline', kind: 'Earth', body: 'Rows of spruce silhouettes, fading into the mist behind them.', span: '' },
+  { id: 'clouds', name: 'Clouds', kind: 'Air', body: 'Cumulus at two depths, lit from one side.', span: '' },
+  { id: 'fire', name: 'Fire', kind: 'Fire', body: 'Flames and rising embers.', span: '' },
+  { id: 'water', name: 'Water', kind: 'Water', body: 'Light patterns on the floor of clear water.', span: '' },
+  { id: 'strata', name: 'Strata', kind: 'Earth', body: 'Folded sandstone layers.', span: '' },
+  { id: 'wind', name: 'Wind', kind: 'Air', body: 'Thin streaks that bend in the gusts.', span: '' },
+  { id: 'mesh-gradient', name: 'Mesh gradient', kind: 'Gradients', body: 'Four colours that drift and blend.', span: 'md:col-span-2' },
   { id: 'conic', name: 'Conic', kind: 'Gradients', body: 'Colours turning slowly around a point.', span: '' },
-].map((card) => ({ ...card, scene: starter(card.id) }))
+  { id: 'curtain', name: 'Curtain', kind: 'Aurora', body: 'Hanging curtains with rays that rise from a bright lower edge.', span: '' },
+  { id: 'linear-gradient', name: 'Linear gradient', kind: 'Gradients', body: 'Two to four colours along an angle, like CSS linear-gradient().', span: '' },
+  { id: 'rain', name: 'Rain', kind: 'Air', body: 'Rain in three depths, leaning with the wind. Shown here in a storm with lightning.', span: 'md:col-span-2' },
+  { id: 'lightning', name: 'Lightning', kind: 'Air', body: 'Forked bolts and sky flashes, every few seconds.', span: '' },
+].map((card) => ({ ...card, scene: SCENES[card.id] ?? starter(card.id) }))
 </script>
 
 <template>
   <section
-    id="elements"
+    id="generators"
     class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
   >
     <div
@@ -32,19 +44,19 @@ const cards = [
         Generators
       </p>
       <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        Auroras, and the elements.
+        {{ count }} generators
       </h2>
       <p class="mt-4 text-lg text-pretty text-muted-foreground">
-        Twelve generators ship built in, each art-directed so it looks right untouched. Layer them, blend them, mask them. Every card here is running live.
+        Try the backgrounds below, or combine them in Studio.
       </p>
     </div>
     <div class="mt-12 grid auto-rows-60 gap-4 md:grid-cols-3">
-      <RouterLink
+      <!-- The card is a link to the generator's docs (its title's link covers the card); the pencil opens it in Studio. -->
+      <div
         v-for="(card, i) in cards"
         :key="card.id"
         v-reveal="(i % 3) * 80"
-        :to="`/docs/generators/${card.id}`"
-        class="group relative isolate overflow-hidden rounded-2xl border border-white/10 bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        class="group relative isolate overflow-hidden rounded-2xl border border-white/10 bg-background focus-within:ring-2 focus-within:ring-ring"
         :class="card.span"
       >
         <div class="absolute inset-0 -z-10 transition-transform duration-700 group-hover:scale-105">
@@ -56,13 +68,22 @@ const cards = [
             {{ card.kind }}
           </p>
           <h3 class="mt-1 text-xl font-semibold">
-            {{ card.name }}
+            <RouterLink
+              :to="`/docs/generators/${card.id}`"
+              class="outline-none after:absolute after:inset-0"
+            >
+              {{ card.name }}
+            </RouterLink>
           </h3>
           <p class="mt-1 text-sm text-white/75">
             {{ card.body }}
           </p>
         </div>
-      </RouterLink>
+        <EditInStudio
+          :src="card.scene"
+          :label="card.name"
+        />
+      </div>
     </div>
   </section>
 </template>

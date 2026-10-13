@@ -6,13 +6,14 @@ import { defineGenerator } from './define'
  * sky. Each ridge is ridged fbm along the horizon, so peaks are sharp and valleys soft; farther
  * ridges are lower, smaller and fade towards the haze colour (atmospheric perspective), mist pools
  * in the valleys, and the crests catch a thin rim of light from the sky. Above the farthest ridge
- * the layer is transparent, so whatever is beneath shows through. Ridges drift at different
- * speeds, for a slow parallax.
+ * the layer is transparent, so whatever is beneath shows through. With `speed` above 0 the ridges
+ * drift at different speeds, for a slow parallax; by default they stand still. On a canvas taller
+ * than it is wide the ridges get lower in proportion, so peaks keep their shape on phones.
  */
 export const mountains = defineGenerator({
   id: 'mountains',
   label: 'Mountains',
-  description: 'Earth: a few peaks on layered ridges, fading into haze, with valley mist and lit crests.',
+  description: 'Earth: layered mountain ridges that fade into haze, with mist in the valleys.',
   colors: 3,
   palette: ['oklch(0.09 0.02 270)', 'oklch(0.36 0.06 268)', 'oklch(0.86 0.11 190)'],
   requires: ['fbm', 'hash'],
@@ -20,12 +21,12 @@ export const mountains = defineGenerator({
     ridges: { default: 3, min: 1, max: 6, step: 1, label: 'Ridges', description: 'How many layers of mountains.' },
     peaks: { default: 1.2, min: 1, max: 8, step: 0.1, label: 'Peaks', description: 'How many peaks stand across the nearest ridge (farther ridges have a few more). Raise it for a busier range.' },
     height: { default: 0.45, min: 0.1, max: 0.95, step: 0.01, label: 'Height', description: 'How high the tallest peaks reach, as a fraction of the canvas.' },
-    roughness: { default: 0.3, min: 0, max: 1, step: 0.01, label: 'Roughness', description: 'Gentle hills or jagged peaks.' },
+    roughness: { default: 0.3, min: 0, max: 1, step: 0.01, label: 'Roughness', description: 'Higher gives jagged peaks; lower gives gentle hills.' },
     haze: { default: 0.6, min: 0, max: 1, step: 0.01, label: 'Haze', description: 'How much the far ridges fade into the distance.' },
     mist: { default: 0.45, min: 0, max: 1, step: 0.01, label: 'Mist', description: 'Mist pooling in the valleys between ridges.' },
     rim: { default: 0.5, min: 0, max: 1, step: 0.01, label: 'Rim light', description: 'Light catching the crests.' },
-    speed: { default: 0.12, min: 0, max: 2, step: 0.01, label: 'Drift', description: 'How fast the ridges slide past (near ones faster).' },
-    scale: { default: 1, min: 0.3, max: 3, step: 0.05, label: 'Scale', description: 'Width of the mountains.' },
+    speed: { default: 0, min: 0, max: 2, step: 0.01, label: 'Drift', description: 'How fast the ridges slide past, near ones faster, for a parallax. 0 keeps them still, like real mountains.' },
+    scale: { default: 1, min: 0.3, max: 3, step: 0.05, label: 'Scale', description: 'Higher makes the mountains wider.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different range.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `
@@ -54,6 +55,7 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let aspect = ctx.res.x / ctx.res.y;
   let px = 1.0 / ctx.res.y;
   let n = i32(P.ridges);
+  let tall = P.height * min(1.0, aspect);
   var col = c[1];
   var alpha = 0.0;
   for (var i = 0; i < 6; i++) {
@@ -61,8 +63,8 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
     let k = select(f32(i) / (f32(n) - 1.0), 1.0, n == 1);
     let far = 1.0 - k;
     let x = ctx.uv.x * P.peaks * (1.0 + far * 0.35) / P.scale + ctx.time * P.speed * 0.015 * (0.25 + k) * P.peaks + f32(i) * 3.7;
-    let top = 1.0 - P.height * (1.0 - 0.5 * k);
-    let span = P.height * (0.8 + 0.2 * k);
+    let top = 1.0 - tall * (1.0 - 0.5 * k);
+    let span = tall * (0.8 + 0.2 * k);
     let y = top + (1.0 - crest(x, f32(i), P)) * span;
     let inside = smoothstep(y - px, y + px, ctx.uv.y);
     let depth = max(ctx.uv.y - y, 0.0);

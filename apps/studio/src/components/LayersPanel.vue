@@ -96,7 +96,12 @@ function add(generator: Generator) {
 </script>
 
 <template>
-  <aside class="absolute top-20 left-4 z-20 flex max-h-[calc(100%-11rem)] w-[268px] animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass">
+  <!-- A floating panel on the left; on phones, a sheet above the bottom bar. -->
+  <aside
+    v-show="!ui.focus"
+    class="absolute top-20 left-4 z-20 flex max-h-[calc(100%-11rem)] w-[268px] animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass max-md:inset-x-2 max-md:top-auto max-md:bottom-19 max-md:max-h-[55svh] max-md:w-auto"
+    :class="ui.sheet !== 'layers' && 'max-md:hidden'"
+  >
     <header class="flex h-11 shrink-0 items-center justify-between pr-1.5 pl-3.5">
       <h2 class="flex items-center gap-2 text-xs font-semibold">
         <IHgLayers01 class="size-4 text-muted-foreground" />Layers

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Glacier storm",
+  "palette": [
+    "oklch(0.2 0.02 250)",
+    "oklch(0.3 0.025 245)",
+    "oklch(0.4 0.03 240)",
+    "oklch(0.2 0.015 250)",
+    "oklch(0.32 0.02 245)",
+    "oklch(0.55 0.02 240)",
+    "oklch(0.8 0.06 250)",
+    "oklch(0.98 0.03 250)",
+    "oklch(0.13 0.02 250)",
+    "oklch(0.27 0.025 245)",
+    "oklch(0.55 0.03 240)",
+    "oklch(0.07 0.01 250)",
+    "oklch(0.14 0.015 245)",
+    "oklch(0.4 0.02 240)",
+    "oklch(0.82 0.03 240)"
+  ],
+  "layers": [
+    {
+      "type": "linear-gradient",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "angle": 180,
+        "stops": 3
+      }
+    },
+    {
+      "type": "clouds",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "sky": 0,
+        "coverage": 0.75,
+        "scale": 1.2,
+        "speed": 1.2,
+        "light": 0.3,
+        "softness": 0.6,
+        "seed": 4
+      }
+    },
+    {
+      "type": "lightning",
+      "blend": "screen",
+      "colors": [
+        6,
+        7
+      ],
+      "params": {
+        "frequency": 0.7,
+        "flash": 0.6,
+        "seed": 2
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        8,
+        9,
+        10
+      ],
+      "params": {
+        "height": 0.45,
+        "ridges": 3,
+        "peaks": 2,
+        "roughness": 0.5,
+        "seed": 11,
+        "haze": 0.7,
+        "mist": 0.45,
+        "rim": 0.2
+      }
+    },
+    {
+      "type": "treeline",
+      "colors": [
+        11,
+        12,
+        13
+      ],
+      "params": {
+        "height": 0.16,
+        "density": 12,
+        "rows": 2,
+        "variation": 0.6,
+        "seed": 3,
+        "mist": 0
+      }
+    },
+    {
+      "type": "rain",
+      "colors": [
+        14
+      ],
+      "params": {
+        "amount": 0.55,
+        "wind": 0.25,
+        "haze": 0.35,
+        "seed": 1
+      }
+    }
+  ]
+}

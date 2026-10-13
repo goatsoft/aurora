@@ -123,6 +123,9 @@ importers:
       '@goatsoft/aurora':
         specifier: workspace:^
         version: link:../../packages/core
+      '@goatsoft/aurora-editor-ui':
+        specifier: workspace:^
+        version: link:../../packages/editor-ui
       '@goatsoft/aurora-format':
         specifier: workspace:^
         version: link:../../packages/format
@@ -199,6 +202,9 @@ importers:
       '@goatsoft/aurora':
         specifier: workspace:^
         version: link:../../packages/core
+      '@goatsoft/aurora-editor-ui':
+        specifier: workspace:^
+        version: link:../../packages/editor-ui
       '@goatsoft/aurora-format':
         specifier: workspace:^
         version: link:../../packages/format
@@ -277,6 +283,12 @@ importers:
       '@webgpu/types':
         specifier: ^0.1.74
         version: 0.1.74
+
+  packages/editor-ui:
+    devDependencies:
+      vue:
+        specifier: ^3.5.43
+        version: 3.5.43(typescript@5.9.3)
 
   packages/format:
     dependencies:

@@ -13,7 +13,7 @@ const year = new Date().getFullYear()
           <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
         </div>
         <p class="mt-3 max-w-xs text-sm text-pretty text-muted-foreground">
-          WebGPU backgrounds that feel alive, and a CSS fallback for everyone else. Made by GOATsoft, in the open.
+          Animated WebGPU backgrounds with a CSS fallback. Made by GOATsoft.
         </p>
         <p class="mt-3 max-w-xs text-xs/relaxed text-muted-foreground">
           Code, docs and presets: MIT. The Aurora name and mark have <a
@@ -35,7 +35,7 @@ const year = new Date().getFullYear()
           </li>
           <li>
             <RouterLink
-              to="/#elements"
+              to="/#generators"
               class="hover:text-foreground"
             >
               Generators

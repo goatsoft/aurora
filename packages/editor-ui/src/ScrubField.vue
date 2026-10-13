@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { snap } from '@/editor/document'
+import { computed, nextTick, ref } from 'vue'
+import { snap } from './snap'
 
 /**
  * A number you can scrub: drag anywhere on it left or right (shift for ×10, alt for ÷10), click to
@@ -52,6 +53,12 @@ function move(event: PointerEvent) {
   const rate = ((props.max - props.min) / 240) * (event.shiftKey ? 10 : event.altKey ? 0.1 : 1)
   model.value = clamp(startValue + dx * rate)
 }
+/** A touch that turned into a vertical scroll: let the page have it. */
+function cancel() {
+  if (scrubbing.value) emit('end')
+  scrubbing.value = false
+  moved = true
+}
 function up(event: PointerEvent) {
   ;(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId)
   if (scrubbing.value) emit('end')
@@ -79,7 +86,7 @@ function key(event: KeyboardEvent) {
 
 <template>
   <div
-    class="group relative flex h-7 cursor-ew-resize items-center overflow-hidden rounded-md bg-input px-2 transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+    class="group relative flex h-7 cursor-ew-resize touch-pan-y items-center overflow-hidden rounded-md bg-input px-2 transition-colors outline-none select-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring max-md:h-9"
     :class="scrubbing && 'bg-accent'"
     tabindex="0"
     role="slider"
@@ -91,6 +98,7 @@ function key(event: KeyboardEvent) {
     @pointerdown="down"
     @pointermove="move"
     @pointerup="up"
+    @pointercancel="cancel"
     @dblclick="emit('reset')"
     @keydown="key"
     @keyup="(e) => e.key.startsWith('Arrow') && emit('end')"

@@ -8,7 +8,7 @@ import { defineGenerator } from './define'
 export const meshGradient = defineGenerator({
   id: 'mesh-gradient',
   label: 'Mesh gradient',
-  description: 'Four soft colour fields drifting into each other.',
+  description: 'Four colours that drift and blend into each other.',
   colors: 4,
   palette: ['oklch(0.6 0.2 262)', 'oklch(0.52 0.25 300)', 'oklch(0.74 0.15 198)', 'oklch(0.62 0.23 350)'],
   requires: ['simplex'],

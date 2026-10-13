@@ -1,27 +1,32 @@
 ---
 title: The runtime
-description: How Aurora renders, falls back, and stays light on the page.
+description: How Aurora chooses a renderer, what shows first, and how to tune its performance.
 order: 4
 ---
 
 # The runtime
 
-## The fallback ladder
+## How Aurora chooses a renderer
 
 Each background tries, in order:
 
-1. **WebGPU in a worker**, through an `OffscreenCanvas`, so rendering never blocks your page.
+1. **WebGPU in a worker**, through an `OffscreenCanvas`. Rendering runs in a worker where supported, off the main thread.
 2. **WebGPU on the main thread**, for browsers without WebGPU in workers.
-3. **The CSS fallback**: OKLab gradients compiled from the same layers.
+3. **The CSS fallback**: gradients that approximate the background, compiled from the same layers.
 
-The CSS fallback paints first, always. WebGPU crossfades in only once a real frame is on screen, and the element reports which mode it's in truthfully (`data-aurora="webgpu"` or `"css"`).
+## What shows first
 
-## Staying light
+- **An imported file, rendered on the server** (the Vue component with a file imported through the bundler plugin): the server writes the CSS fallback into the HTML, so it is in the first paint.
+- **A file loaded by URL** (the custom element, or the Vue component given a URL): the browser fetches the file first, so nothing shows until it has loaded. Then the CSS fallback shows.
 
-- One GPU device and one worker for the whole page, however many backgrounds it has.
+In both cases WebGPU replaces the CSS fallback, with a short crossfade, only after its first frame has rendered. The element reports which one it is showing in `data-aurora` (`"webgpu"` or `"css"`).
+
+## Performance
+
+- One GPU device for the whole page, however many backgrounds it has, and one worker when rendering in a worker.
 - One shader per unique layer stack, composed from the generators' WGSL and cached.
-- A shared frame budget (30 fps by default), half the device pixel ratio, and a cap on canvas size. Backgrounds are soft, so this is indistinguishable and much cheaper.
-- Backgrounds pause when they're off-screen or the tab is hidden.
+- A shared frame budget (30 fps by default), half the device pixel ratio, and a cap on canvas size. Lower resolution reduces rendering work, but can soften fine detail; raise `pixelRatio` if a background needs it.
+- Backgrounds pause when they're off screen or the tab is hidden.
 - Only `aurora-fbm` ships with the runtime; other generators load the first time a document uses them.
 
 Change the budgets before mounting anything:
@@ -32,17 +37,17 @@ import { configureAurora } from '@goatsoft/aurora'
 configureAurora({ fps: 60, pixelRatio: 1 })
 ```
 
-| Option | Default | |
+| Option | Default | Description |
 |---|---|---|
 | `fps` | `30` | Shared frame budget across every surface. |
 | `maxPixels` | `1280` | Cap on canvas size per axis, in device pixels. |
-| `pixelRatio` | `0.5` | Fraction of `devicePixelRatio` to render at. |
+| `pixelRatio` | `0.5` | Fraction of `devicePixelRatio` to render at; `1` is full device resolution, the most it will use. |
 | `touch` | `webgpu` | Use WebGPU on touch devices, or force `css` there. |
 | `worker` | `true` | Render in a worker when the browser allows. |
 
 ## Colour
 
-Palettes are authored in OKLCH and blended in OKLab, so gradients keep their chroma through the middle instead of going grey. The canvas renders in Display P3 when the screen supports it, and colours are gamut-mapped to what it can show.
+Palettes are written in OKLCH, and Aurora blends colours in OKLab rather than sRGB. A gradient between two saturated colours usually keeps more of its colour through the middle than the same gradient blended in sRGB. The canvas renders in Display P3 when the screen supports it, and colours are gamut-mapped to what it can show.
 
 ## Reduced motion
 

@@ -6,22 +6,11 @@
   "palette": [
     "oklch(0.72 0.17 205)",
     "oklch(0.62 0.25 300)",
-    "oklch(0.8 0.16 80)",
-    "oklch(1 0 0)"
+    "oklch(0.8 0.16 80)"
   ],
   "layers": [
     {
       "type": "conic"
-    },
-    {
-      "type": "grain",
-      "blend": "overlay",
-      "colors": [
-        3
-      ],
-      "params": {
-        "amount": 0.06
-      }
     }
   ]
 }

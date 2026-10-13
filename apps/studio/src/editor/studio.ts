@@ -50,6 +50,34 @@ export interface UiState {
   muted: Set<number>
   solo: number | undefined
   notices: Notice[]
+  /** On small screens, which panel is open as a sheet at the bottom. */
+  sheet: 'layers' | 'inspector' | undefined
+  /** Hides the panels, so the canvas has the whole window. */
+  focus: boolean
+  /** The sample copy over the background, so you can judge how text reads on it. */
+  copy: PreviewCopy
+}
+
+/** The sample text on the canvas. Kept in this browser, not in the document. */
+export interface PreviewCopy {
+  headline: string
+  body: string
+  action: string
+}
+
+export const DEFAULT_COPY: PreviewCopy = {
+  headline: 'Your website headline',
+  body: 'Click any text here to change it.',
+  action: 'Get started',
+}
+const COPY = 'aurora-studio:copy'
+function storedCopy(): PreviewCopy {
+  try {
+    const raw = localStorage.getItem(COPY)
+    return raw ? { ...DEFAULT_COPY, ...(JSON.parse(raw) as Partial<PreviewCopy>) } : { ...DEFAULT_COPY }
+  } catch {
+    return { ...DEFAULT_COPY }
+  }
 }
 
 /** A toast: what happened, and optionally how to undo it. */
@@ -87,6 +115,16 @@ function createStudio() {
     muted: new Set(),
     solo: undefined,
     notices: [],
+    sheet: undefined,
+    focus: false,
+    copy: storedCopy(),
+  })
+  watch(() => ({ ...ui.copy }), (copy) => {
+    try {
+      localStorage.setItem(COPY, JSON.stringify(copy))
+    } catch {
+      // Storage is off (a private window, say): the copy just isn't kept.
+    }
   })
 
   let noticeId = 0

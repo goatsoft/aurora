@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ParamSpec } from '@goatsoft/aurora'
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
 import { BLEND_MODES, REDUCED_MOTION } from '@goatsoft/aurora-format'
 import { useStudio } from '@/editor/studio'
 import { generatorIcon } from '@/lib/generators'
@@ -93,7 +94,12 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
 </script>
 
 <template>
-  <aside class="absolute top-20 right-4 bottom-24 z-20 flex w-[316px] animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass">
+  <!-- A floating panel on the right; on phones, a sheet above the bottom bar. -->
+  <aside
+    v-show="!ui.focus"
+    class="absolute top-20 right-4 bottom-24 z-20 flex w-[316px] animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass max-md:inset-x-2 max-md:top-auto max-md:bottom-19 max-md:h-[58svh] max-md:w-auto"
+    :class="ui.sheet !== 'inspector' && 'max-md:hidden'"
+  >
     <div class="shrink-0 p-1.5">
       <Segmented
         v-model="tab"

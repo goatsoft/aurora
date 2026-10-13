@@ -5,15 +5,15 @@ import { defineGenerator } from './define'
 export const fire = defineGenerator({
   id: 'fire',
   label: 'Fire',
-  description: 'Fire: flames licking up from the bottom edge, with rising embers.',
+  description: 'Fire: flames rising from the bottom edge, with embers above them.',
   colors: 3,
   palette: ['oklch(0.42 0.18 27)', 'oklch(0.66 0.22 42)', 'oklch(0.92 0.15 88)'],
   requires: ['fbm', 'worley', 'hash'],
   params: {
     height: { default: 0.6, min: 0.1, max: 1.2, step: 0.01, label: 'Height', description: 'How far up the canvas the flames reach.' },
     speed: { default: 0.55, min: 0, max: 3, step: 0.01, label: 'Speed', description: 'How fast the flames rise.' },
-    turbulence: { default: 0.65, min: 0, max: 1.5, step: 0.01, label: 'Turbulence', description: 'How wildly the flames lick.' },
-    scale: { default: 2.2, min: 0.5, max: 6, step: 0.05, label: 'Scale', description: 'Size of the flame tongues.' },
+    turbulence: { default: 0.65, min: 0, max: 1.5, step: 0.01, label: 'Turbulence', description: 'Higher makes the flames lick and flicker more.' },
+    scale: { default: 2.2, min: 0.5, max: 6, step: 0.05, label: 'Scale', description: 'Higher gives smaller, more numerous flame tongues.' },
     embers: { default: 0.5, min: 0, max: 1, step: 0.01, label: 'Embers', description: 'How many sparks rise above the flames.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different fire.', ui: 'seed' },
   },

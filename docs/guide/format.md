@@ -6,7 +6,7 @@ order: 2
 
 # The .aurora format
 
-A `.aurora` file is declarative JSON. It describes a background; it never contains shader code, so opening one can't run anything. Editors autocomplete it from the JSON Schema at [`/schema/v1.json`](https://aurora.goatsoft.io/schema/v1.json).
+A `.aurora` file is a JSON file containing colours, layers and animation settings. It contains settings, not executable shader code. Editors autocomplete it from the JSON Schema at [`/schema/v1.json`](https://aurora.goatsoft.io/schema/v1.json).
 
 ```aurora
 {
@@ -26,7 +26,7 @@ A `.aurora` file is declarative JSON. It describes a background; it never contai
 
 ## The document
 
-| Field | | |
+| Field | Required | Description |
 |---|---|---|
 | `format` | required | Always `"aurora"`. |
 | `version` | required | The format version, `1`. Older files are migrated forward on load. |
@@ -39,9 +39,9 @@ A `.aurora` file is declarative JSON. It describes a background; it never contai
 
 ## Layers
 
-Each layer is one generator. Its `type` is the generator's id; its `params` are that generator's parameters, every one optional, with defaults chosen to look right untouched. See [Generators](../generators/README.md) for them all.
+Each layer is one generator. Its `type` is the generator's id and its `params` are that generator's parameters. All parameters are optional; omitted parameters use the generator's defaults. Each [generator's page](../generators/README.md) lists its parameters and what each of its colours paints.
 
-| Field | Default | |
+| Field | Default | Description |
 |---|---|---|
 | `type` | | The generator, such as `aurora-fbm` or `clouds`. |
 | `colors` | `[0, 1, 2]` | Palette indices the generator uses, in its order. |

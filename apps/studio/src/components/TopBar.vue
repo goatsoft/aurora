@@ -122,22 +122,34 @@ defineExpose({ save: () => void save(), share, saveAs })
 </script>
 
 <template>
-  <header class="pointer-events-none absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4">
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_350ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-2.5 rounded-2xl glass pr-3 pl-2.5">
+  <header
+    v-show="!ui.focus"
+    class="pointer-events-none absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4 max-md:inset-x-2 max-md:top-2 max-md:gap-2"
+  >
+    <div class="pointer-events-auto flex h-11 min-w-0 animate-[rise-in_350ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-2.5 rounded-2xl glass pr-3 pl-2.5 max-md:gap-1.5 max-md:pr-1.5">
       <!-- The compact mark below 48 px (assets/brand/README.md); Studio's chrome is always dark. -->
-      <img
-        :src="mark"
-        alt=""
-        width="24"
-        height="24"
-        class="size-6"
-      >
-      <span class="text-xs font-semibold tracking-tight">Aurora Studio</span>
-      <span class="h-4 w-px bg-panel-border" />
+      <!-- The mark goes back to the site; Studio is served under it at /studio/. -->
+      <Tip label="Back to the Aurora site">
+        <a
+          href="/"
+          class="-m-1 flex shrink-0 items-center gap-2.5 rounded-lg p-1 outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Aurora home"
+        >
+          <img
+            :src="mark"
+            alt=""
+            width="24"
+            height="24"
+            class="size-6"
+          >
+          <span class="text-xs font-semibold tracking-tight max-lg:hidden">Aurora Studio</span>
+        </a>
+      </Tip>
+      <span class="h-4 w-px bg-panel-border max-lg:hidden" />
       <input
         :value="studio.doc.value.name"
         aria-label="Document name"
-        class="w-44 truncate rounded-md bg-transparent px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:bg-input focus:bg-input focus:text-foreground"
+        class="w-44 min-w-0 truncate rounded-md bg-transparent px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:bg-input focus:bg-input focus:text-foreground max-md:w-full"
         @change="(e) => { studio.apply(studio.ops.rename, (e.target as HTMLInputElement).value.trim() || 'Untitled'); studio.seal() }"
         @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
       >
@@ -277,7 +289,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       </Popover>
     </div>
 
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1.5 rounded-2xl glass px-1.5">
+    <div class="pointer-events-auto flex h-11 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1.5 rounded-2xl glass px-1.5 max-md:hidden">
       <Segmented
         v-model="ui.viewport"
         :options="viewports"
@@ -341,7 +353,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       </Transition>
     </div>
 
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-0.5 rounded-2xl glass px-1.5">
+    <div class="pointer-events-auto flex h-11 shrink-0 animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-0.5 rounded-2xl glass px-1.5">
       <Tip
         label="Undo"
         keys="⌘ Z"
@@ -361,6 +373,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       >
         <Button
           size="icon"
+          class="max-md:hidden"
           aria-label="Redo"
           :disabled="!studio.history.canRedo"
           @click="studio.redo()"
@@ -368,13 +381,27 @@ defineExpose({ save: () => void save(), share, saveAs })
           <IHgArrowTurnForward />
         </Button>
       </Tip>
-      <span class="mx-1 h-5 w-px bg-panel-border" />
+      <span class="mx-1 h-5 w-px bg-panel-border max-md:hidden" />
+      <Tip
+        label="Focus: hide the panels"
+        keys="F"
+      >
+        <Button
+          size="icon"
+          class="max-md:hidden"
+          aria-label="Hide the panels"
+          @click="ui.focus = true"
+        >
+          <IHgArrowExpand01 />
+        </Button>
+      </Tip>
       <Tip
         label="Presets"
         keys="G"
       >
         <Button
           size="icon"
+          class="max-md:hidden"
           aria-label="Presets"
           @click="ui.gallery = true"
         >
@@ -405,14 +432,15 @@ defineExpose({ save: () => void save(), share, saveAs })
       <Popover
         v-model:open="exporting"
         align="end"
-        class="w-[380px] p-2"
+        class="w-[min(380px,calc(100vw-1rem))] p-2"
       >
         <template #trigger>
           <Button
             variant="default"
-            class="ml-1"
+            class="ml-1 max-md:px-2.5"
+            aria-label="Export"
           >
-            <IHgDownload04 />Export
+            <IHgDownload04 /><span class="max-md:hidden">Export</span>
           </Button>
         </template>
         <button

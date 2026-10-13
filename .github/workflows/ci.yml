@@ -32,3 +32,13 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - run: pnpm verify
+
+      # A golden image that no longer matches is written next to it as <name>.actual.png. Keep
+      # them, so a change rendered on CI's SwiftShader can be reviewed and committed.
+      - name: Upload changed golden images
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-actual
+          path: packages/core/test/golden/*.actual.png
+          if-no-files-found: ignore

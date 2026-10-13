@@ -80,6 +80,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/curtain': RouteRecordInfo<
+      '/docs/generators/curtain',
+      '/docs/generators/curtain',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/fire': RouteRecordInfo<
       '/docs/generators/fire',
       '/docs/generators/fire',
@@ -90,6 +97,20 @@ declare module 'vue-router/auto-routes' {
     '/docs/generators/grain': RouteRecordInfo<
       '/docs/generators/grain',
       '/docs/generators/grain',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/lightning': RouteRecordInfo<
+      '/docs/generators/lightning',
+      '/docs/generators/lightning',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/linear-gradient': RouteRecordInfo<
+      '/docs/generators/linear-gradient',
+      '/docs/generators/linear-gradient',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -115,6 +136,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/rain': RouteRecordInfo<
+      '/docs/generators/rain',
+      '/docs/generators/rain',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/starfield': RouteRecordInfo<
       '/docs/generators/starfield',
       '/docs/generators/starfield',
@@ -125,6 +153,13 @@ declare module 'vue-router/auto-routes' {
     '/docs/generators/strata': RouteRecordInfo<
       '/docs/generators/strata',
       '/docs/generators/strata',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/treeline': RouteRecordInfo<
+      '/docs/generators/treeline',
+      '/docs/generators/treeline',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -167,6 +202,13 @@ declare module 'vue-router/auto-routes' {
     '/docs/guide/runtime': RouteRecordInfo<
       '/docs/guide/runtime',
       '/docs/guide/runtime',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/guide/shared-backgrounds': RouteRecordInfo<
+      '/docs/guide/shared-backgrounds',
+      '/docs/guide/shared-backgrounds',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -247,6 +289,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/curtain.md': {
+      routes:
+        | '/docs/generators/curtain'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/fire.md': {
       routes:
         | '/docs/generators/fire'
@@ -258,6 +308,22 @@ declare module 'vue-router/auto-routes' {
     '../../docs/generators/grain.md': {
       routes:
         | '/docs/generators/grain'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/lightning.md': {
+      routes:
+        | '/docs/generators/lightning'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/linear-gradient.md': {
+      routes:
+        | '/docs/generators/linear-gradient'
       views:
         | never
       pathParamNames:
@@ -287,6 +353,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/rain.md': {
+      routes:
+        | '/docs/generators/rain'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/starfield.md': {
       routes:
         | '/docs/generators/starfield'
@@ -298,6 +372,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/generators/strata.md': {
       routes:
         | '/docs/generators/strata'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/treeline.md': {
+      routes:
+        | '/docs/generators/treeline'
       views:
         | never
       pathParamNames:
@@ -346,6 +428,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/guide/runtime.md': {
       routes:
         | '/docs/guide/runtime'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/shared-backgrounds.md': {
+      routes:
+        | '/docs/guide/shared-backgrounds'
       views:
         | never
       pathParamNames:

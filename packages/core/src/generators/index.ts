@@ -7,14 +7,19 @@ export { auroraFbm }
 const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'mesh-gradient': () => import('./mesh-gradient').then((m) => m.meshGradient as Generator),
   'linear-sweep': () => import('./linear-sweep').then((m) => m.linearSweep as Generator),
+  'linear-gradient': () => import('./linear-gradient').then((m) => m.linearGradient as Generator),
   'conic': () => import('./conic').then((m) => m.conic as Generator),
   'grain': () => import('./grain').then((m) => m.grain as Generator),
   'strata': () => import('./strata').then((m) => m.strata as Generator),
   'mountains': () => import('./mountains').then((m) => m.mountains as Generator),
+  'treeline': () => import('./treeline').then((m) => m.treeline as Generator),
   'clouds': () => import('./clouds').then((m) => m.clouds as Generator),
   'wind': () => import('./wind').then((m) => m.wind as Generator),
+  'rain': () => import('./rain').then((m) => m.rain as Generator),
+  'lightning': () => import('./lightning').then((m) => m.lightning as Generator),
   'fire': () => import('./fire').then((m) => m.fire as Generator),
   'water': () => import('./water').then((m) => m.water as Generator),
+  'curtain': () => import('./curtain').then((m) => m.curtain as Generator),
   'starfield': () => import('./starfield').then((m) => m.starfield as Generator),
 }
 

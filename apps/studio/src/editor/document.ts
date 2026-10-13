@@ -41,11 +41,7 @@ export function serialize(doc: Doc): string {
   return stringifyAurora(doc)
 }
 
-/** Rounds a value to the precision of a control's step, so 0.1 + 0.2 saves as 0.3. */
-export function snap(value: number, step: number): number {
-  const decimals = Math.max(0, Math.ceil(-Math.log10(step)) + 1)
-  return Number((Math.round(value / step) * step).toFixed(decimals))
-}
+export { snap } from '@goatsoft/aurora-editor-ui'
 
 function edit(doc: Doc, change: (draft: Doc) => void): Doc {
   const draft = structuredClone(doc)

@@ -5,6 +5,10 @@ import { defineGenerator } from './define'
  * A night sky: three depths of stars that twinkle and wheel slowly around a pole above the canvas,
  * a faint milky way, and the odd shooting star. Stars are sized in pixels, so they stay pin-sharp at
  * any canvas size. Made to sit under an aurora.
+ *
+ * Each depth of stars sits on its own turned grid, with cell sizes (7, 23, 59 px)
+ * that share no lines, and each star wanders almost its whole cell, so no row or diagonal of a
+ * grid shows. Star positions are turned back to screen axes for the diffraction spikes.
  */
 export const starfield = defineGenerator({
   id: 'starfield',
@@ -20,20 +24,23 @@ export const starfield = defineGenerator({
     milkyway: { default: 0.6, min: 0, max: 1, step: 0.01, label: 'Milky way', description: 'Strength of the band of faint stars and glow.' },
     meteors: { default: 0.35, min: 0, max: 1, step: 0.01, label: 'Meteors', description: 'How often a shooting star crosses the sky.' },
     speed: { default: 0.5, min: 0, max: 4, step: 0.01, label: 'Speed', description: 'How fast the sky turns.' },
-    sky: { default: 1, min: 0, max: 1, step: 0.01, label: 'Sky', description: 'Opacity of the night-sky gradient behind the stars; 0 for stars alone.' },
+    sky: { default: 1, min: 0, max: 1, step: 0.01, label: 'Sky', description: 'Opacity of the sky behind the stars; 0 for stars alone.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different sky.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `
 fn ray(a: f32, b: f32, r: f32) -> f32 { return exp(-abs(a) * 2.2 - abs(b) / (r * 4.0)); }
-fn stars(px: vec2f, cell: f32, chance: f32, size: f32, seed: f32, t: f32, P: Params) -> f32 {
+fn turn2(a: f32) -> mat2x2f { return mat2x2f(cos(a), sin(a), -sin(a), cos(a)); }
+fn stars(px0: vec2f, cell: f32, turn: f32, chance: f32, size: f32, seed: f32, t: f32, P: Params) -> f32 {
+  let grid = turn2(turn);
+  let px = grid * px0;
   let base = floor(px / cell);
   var light = 0.0;
   for (var j = -1; j <= 1; j++) {
     for (var i = -1; i <= 1; i++) {
-      let id = base + vec2f(f32(i), f32(j)) + seed;
-      let h = noise_hash22(id);
-      if (noise_hash21(id * 1.31 + 7.0) > chance) { continue; }
-      let v = px - (id - seed + 0.5 + (h - 0.5) * 0.7) * cell;
+      let id = base + vec2f(f32(i), f32(j));
+      let h = noise_hash22(id + seed);
+      if (noise_hash21(id + vec2f(seed + 31.0, 57.0)) > chance) { continue; }
+      let v = transpose(grid) * (px - (id + 0.5 + (h - 0.5) * 0.92) * cell);
       let d = length(v);
       let m = h.x * h.x;
       let r = size * (0.55 + 1.1 * m);
@@ -60,14 +67,14 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let t = ctx.time;
   let pole = vec2f(0.5, -0.8) * ctx.res;
   let a = t * P.speed * 0.004;
-  let rot = mat2x2f(cos(a), sin(a), -sin(a), cos(a));
+  let rot = turn2(a);
   let px = rot * (ctx.uv * ctx.res - pole) + pole;
   let n = ctx.uv * vec2f(ctx.res.x / ctx.res.y, 1.0) + P.seed * 1.7;
   let across = dot(n - vec2f(0.9, 0.5), vec2f(0.41, 0.91));
   let band = exp(-across * across * 9.0) * (0.55 + 0.9 * noise_fbm(rot * n * 2.2, 4)) * P.milkyway;
-  let light = stars(px, 8.0, P.density * (0.3 + band * 1.4), 0.6, P.seed, t, P) * 0.7
-    + stars(px, 24.0, P.density * 0.7, 0.8, P.seed + 13.0, t, P) * 0.9
-    + stars(px, 64.0, P.density * 0.75, 1.05, P.seed + 29.0, t, P);
+  let light = stars(px, 7.0, 0.31, P.density * (0.23 + band * 1.08), 0.6, P.seed, t, P) * 0.7
+    + stars(px, 23.0, 1.17, P.density * 0.64, 0.8, P.seed + 13.0, t, P) * 0.9
+    + stars(px, 59.0, 2.03, P.density * 0.64, 1.05, P.seed + 29.0, t, P);
   let glow = max(band, 0.0) * 0.3;
   let s = clamp(light * P.brightness + meteor(px, ctx.res, t, P), 0.0, 1.0);
   let sky = mix(c[0], c[1], pow(smoothstep(0.1, 1.15, ctx.uv.y), 1.6));

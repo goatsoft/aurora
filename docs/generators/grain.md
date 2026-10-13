@@ -1,6 +1,6 @@
 # Grain (`grain`)
 
-Fine animated film grain that takes the digital edge off gradients.
+Animated film grain, to lay over other layers.
 
 ```aurora
 {
@@ -19,16 +19,26 @@ Fine animated film grain that takes the digital edge off gradients.
 }
 ```
 
-The starter above is [`presets/starters/grain.aurora`](/presets/starters/grain.aurora). It reads 1 palette colour, in order. Uses the noise library: `hash`.
+This is [`presets/starters/grain.aurora`](/presets/starters/grain.aurora): the generator alone, with its defaults.
+
+## Colours
+
+A layer's `colors` picks 1 palette colour, in the order below. To recolour part of the background, change the palette colour in that position.
+
+| Position | Paints | Default |
+|---|---|---|
+| 0 | Grain | `oklch(1 0 0)` |
 
 ## Parameters
+
+Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
 | `amount` | Amount | 0.07 | 0 to 0.5 | Grain strength. |
-| `size` | Size | 1.5 px | 0.5 to 6 | Grain size in canvas pixels. |
+| `size` | Size | 1 px | 1 to 6 | Grain size in whole canvas pixels. |
 | `rate` | Rate | 18 /s | 0 to 30 | New grain patterns per second; 0 keeps it still. |
 
-## Default palette
+## Implementation note
 
-- `oklch(1 0 0)`
+Built on the shared noise library: `hash`.

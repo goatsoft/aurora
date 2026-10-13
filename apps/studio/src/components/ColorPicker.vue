@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Oklch } from '@goatsoft/color'
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
 import { contrastRatio, gamutMap, inGamut, maxChroma, oklabToOklch, oklchToOklab, parseColor } from '@goatsoft/color'
 import { snap } from '@/editor/document'
 

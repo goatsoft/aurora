@@ -11,6 +11,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
     "@goatsoft/aurora": "workspace:^",
+    "@goatsoft/aurora-editor-ui": "workspace:^",
     "@goatsoft/aurora-format": "workspace:^",
     "@goatsoft/aurora-vue": "workspace:^",
     "@goatsoft/color": "workspace:^",

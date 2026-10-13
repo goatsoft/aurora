@@ -1,6 +1,6 @@
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import ScrubField from '@/components/ui/ScrubField.vue'
 
 function field(value = 0.5) {
   return mount(ScrubField, {

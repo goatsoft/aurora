@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const pillars = [
-  { icon: 'gpu', title: 'WebGPU, done right', body: 'One device and one shader per layer stack, rendered in a worker where it can be. It pauses off-screen and in background tabs, and keeps to a frame budget.' },
-  { icon: 'css', title: 'Never a blank box', body: 'Every background compiles to a CSS fallback that paints in the first frame. WebGPU crossfades in only once a real frame is on screen; without it, the CSS stays.' },
-  { icon: 'colour', title: 'Colour in OKLab', body: 'Palettes are authored in OKLCH and blended in OKLab, so gradients stay vivid through the middle. Display P3 where the screen has it, gamut-mapped where it doesn\'t.' },
+  { icon: 'gpu', title: 'One GPU device per page', body: 'All the backgrounds on a page share one GPU device. They stop drawing when they scroll out of view or the tab is hidden.' },
+  { icon: 'css', title: 'CSS gradient fallback', body: 'Each background also has a CSS gradient that approximates it. Browsers without WebGPU show the gradient.' },
+  { icon: 'colour', title: 'Colour in OKLab', body: 'Colours blend in OKLab, so a gradient between two bright colours stays bright in the middle.' },
 ]
 </script>
 
@@ -16,10 +16,10 @@ const pillars = [
       class="text-center"
     >
       <p class="eyebrow">
-        Built for the web you have
+        How it works
       </p>
       <h2 class="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        Fast on the GPU. <span class="text-muted-foreground">Graceful everywhere else.</span>
+        Uses WebGPU when available, <span class="text-muted-foreground">with a CSS fallback.</span>
       </h2>
     </div>
     <div class="mt-14 grid gap-4 md:grid-cols-3">

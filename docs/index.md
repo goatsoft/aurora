@@ -6,7 +6,7 @@ order: 0
 
 # Introduction
 
-Aurora is animated backgrounds for the web. You design one in [Aurora Studio](guide/studio.md), save it as a `.aurora` file, and drop it into any page. WebGPU renders it; browsers without WebGPU get a CSS fallback compiled from the same file, so nobody sees a blank box.
+Aurora draws animated backgrounds for web pages. You design one in [Aurora Studio](guide/studio.md), save it as a `.aurora` file, and add it to a page. WebGPU renders it. Browsers without WebGPU show a CSS gradient that approximates it, compiled from the same file.
 
 ```aurora
 {
@@ -22,14 +22,14 @@ Aurora is animated backgrounds for the web. You design one in [Aurora Studio](gu
 }
 ```
 
-That's a whole background, running live above. Press **Edit** to change it, or **Studio** to open it in the builder.
+That file is the whole background, and it's running above. Press **Edit** to change it, or **Studio** to open it in the builder.
 
 ## How it fits together
 
-- **The file.** A `.aurora` file is declarative JSON: a palette in OKLCH, and a stack of layers, each a built-in generator with its parameters, a blend mode and an optional mask. It can never contain code. See [the format](guide/format.md).
-- **The runtime.** `@goatsoft/aurora` composes one WGSL shader per layer stack and renders every background on the page from one GPU device, in a worker where the browser allows. It pauses off-screen and keeps to a shared frame budget. See [the runtime](guide/runtime.md).
-- **The bindings.** `<AuroraBackground>` for Vue, `<aurora-bg>` for any page, `mountAurora()` for plain TypeScript. With the bundler plugin, files are validated and typed at build time and their CSS fallback is in your server-rendered HTML.
-- **Studio.** The builder: a live canvas with layers, generated controls, an OKLCH picker and a CSS fidelity score. It opens and saves files on your machine.
+- **The file.** A `.aurora` file is a JSON file containing colours, layers and animation settings. It contains settings, not executable shader code. See [the format](guide/format.md).
+- **The runtime.** `@goatsoft/aurora` renders every background on the page with one GPU device, in a worker where the browser supports it, and pauses backgrounds that are off screen. See [the runtime](guide/runtime.md).
+- **The bindings.** `<AuroraBackground>` for Vue, `<aurora-bg>` for any page, `mountAurora()` for plain TypeScript. With the bundler plugin, files are checked and typed at build time.
+- **Studio.** The editor, for adjusting layers, colours and motion. It opens and saves files on your machine. See [Aurora Studio](guide/studio.md).
 
 ## Where next
 
