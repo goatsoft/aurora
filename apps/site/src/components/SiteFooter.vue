@@ -99,7 +99,9 @@ const year = new Date().getFullYear()
           </li>
           <li>
             <a
-              href="mailto:bleet@goatsoft.io"
+              href="https://goatsoft.io/#contact"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >Contact</a>
           </li>
