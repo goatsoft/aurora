@@ -1,0 +1,7 @@
+{
+  "format": "aurora",
+  "version": 1,
+  "name": "Broken",
+  "palette": ["oklch(0.7 0.1 200)"],
+  "layers": [{ "type": "aurora-fmb", "blnd": "screen" }]
+}

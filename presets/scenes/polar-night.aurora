@@ -1,0 +1,61 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Polar night",
+  "palette": [
+    "oklch(0.11 0.035 275)",
+    "oklch(0.24 0.08 290)",
+    "oklch(0.97 0.02 245)",
+    "oklch(0.8 0.15 178)",
+    "oklch(0.62 0.2 300)",
+    "oklch(0.86 0.12 195)",
+    "oklch(0.08 0.02 275)",
+    "oklch(0.3 0.06 280)",
+    "oklch(0.8 0.12 200)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "seed": 7,
+        "density": 0.75,
+        "milkyway": 0.85
+      }
+    },
+    {
+      "type": "aurora-fbm",
+      "blend": "screen",
+      "colors": [
+        3,
+        5,
+        4
+      ],
+      "params": {
+        "intensity": 0.95,
+        "scale": 1.1,
+        "speed": 0.08,
+        "seed": 31,
+        "stretch": 0.4
+      },
+      "mask": {
+        "type": "linear",
+        "start": 0.15,
+        "end": 0.72
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        6,
+        7,
+        8
+      ]
+    }
+  ]
+}

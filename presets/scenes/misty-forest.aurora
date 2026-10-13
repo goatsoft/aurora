@@ -1,0 +1,45 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Misty forest",
+  "palette": [
+    "oklch(0.72 0.05 230)",
+    "oklch(0.84 0.05 200)",
+    "oklch(0.93 0.05 95)",
+    "oklch(0.2 0.04 165)",
+    "oklch(0.55 0.04 190)",
+    "oklch(0.9 0.04 120)"
+  ],
+  "layers": [
+    {
+      "type": "linear-gradient",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "angle": 180,
+        "stops": 3,
+        "stop2": 0.55
+      }
+    },
+    {
+      "type": "treeline",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "height": 0.6,
+        "density": 7,
+        "rows": 3,
+        "variation": 0.55,
+        "mist": 0.6,
+        "seed": 8
+      }
+    }
+  ]
+}

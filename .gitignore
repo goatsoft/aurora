@@ -7,3 +7,8 @@ coverage/
 .env*
 !.env.example
 *.tsbuildinfo
+*.actual.png
+dist-server/
+assets/brand/badges/v1/
+# Copied from the root LICENSE when a package is packed (scripts/prepack.ts).
+packages/*/LICENSE

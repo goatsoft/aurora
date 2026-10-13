@@ -1,0 +1,5 @@
+export { default as AuroraBackground } from './AuroraBackground.vue'
+export { default as AuroraScene } from './AuroraScene.vue'
+export { useAuroraScene } from './scene'
+export { useAurora } from './use-aurora'
+export type { UseAurora, UseAuroraOptions } from './use-aurora'

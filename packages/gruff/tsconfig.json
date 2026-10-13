@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"], "~/*": ["../../*"] },
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "outDir": "../../node_modules/.cache/tsc/gruff",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "test", "client.d.ts"],
+  "references": [{ "path": "../format" }]
+}

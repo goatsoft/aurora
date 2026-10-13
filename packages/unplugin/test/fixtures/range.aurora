@@ -1,0 +1,2 @@
+{ "format": "aurora", "version": 1, "name": "Range", "palette": ["#fff"],
+  "layers": [{ "type": "aurora-fbm", "params": { "intensity": 5 } }] }

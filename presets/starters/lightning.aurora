@@ -1,0 +1,15 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Lightning starter",
+  "palette": [
+    "oklch(0.82 0.06 255)",
+    "oklch(0.98 0.03 250)"
+  ],
+  "layers": [
+    {
+      "type": "lightning"
+    }
+  ]
+}

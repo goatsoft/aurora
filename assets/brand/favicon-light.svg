@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  
+  <defs><linearGradient id="aurora-spectrum" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient></defs>
+  <g stroke="url(#aurora-spectrum)" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="14"><path d="M21 104 59.4 23.2Q64 13 68.6 23.2L107 104M54 81H74"/></g></g>
+</svg>

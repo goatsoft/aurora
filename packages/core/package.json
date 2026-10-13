@@ -1,0 +1,78 @@
+{
+  "name": "@goatsoft/aurora",
+  "version": "0.0.0",
+  "description": "WebGPU animated backgrounds with a generated CSS fallback.",
+  "keywords": [
+    "aurora",
+    "webgpu",
+    "wgsl",
+    "background",
+    "animated-background",
+    "gradient",
+    "shader",
+    "custom-element"
+  ],
+  "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/runtime",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
+  "type": "module",
+  "sideEffects": [
+    "./src/element.ts",
+    "./dist/element.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goatsoft/aurora.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "@goatsoft/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./element": {
+      "@goatsoft/source": "./src/element.ts",
+      "types": "./dist/element.d.ts",
+      "import": "./dist/element.js"
+    },
+    "./load": {
+      "@goatsoft/source": "./src/load.ts",
+      "types": "./dist/load.d.ts",
+      "import": "./dist/load.js"
+    },
+    "./poster": {
+      "@goatsoft/source": "./src/poster.ts",
+      "types": "./dist/poster.d.ts",
+      "import": "./dist/poster.js"
+    },
+    "./roles": {
+      "@goatsoft/source": "./src/generators/roles.ts",
+      "types": "./dist/generators/roles.d.ts",
+      "import": "./dist/roles.js"
+    },
+    "./badge": {
+      "@goatsoft/source": "./src/badge.ts",
+      "types": "./dist/badge.d.ts",
+      "import": "./dist/badge.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
+  },
+  "dependencies": {
+    "@goatsoft/aurora-format": "workspace:^",
+    "@goatsoft/color": "workspace:^",
+    "@webgpu/types": "^0.1.74"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

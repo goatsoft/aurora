@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"], "~/*": ["../../*"] },
+    "types": ["vite/client"],
+    "allowImportingTsExtensions": true,
+    "outDir": "../../node_modules/.cache/tsc/format",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "test"],
+  "references": [{ "path": "../color" }]
+}

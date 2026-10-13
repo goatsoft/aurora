@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"], "~/*": ["../../*"] },
+    "types": ["@webgpu/types", "vite/client"],
+    "allowImportingTsExtensions": true,
+    "outDir": "../../node_modules/.cache/tsc/vue",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "src/**/*.vue", "test"],
+  "references": [{ "path": "../core" }, { "path": "../format" }]
+}

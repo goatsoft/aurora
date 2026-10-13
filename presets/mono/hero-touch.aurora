@@ -1,0 +1,33 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "GOATsoft mono hero (touch)",
+  "canvas": {
+    "fade": "y"
+  },
+  "palette": [
+    "color(srgb 0.86 0.88 0.93)",
+    "color(srgb 0.72 0.75 0.82)",
+    "color(srgb 0.96 0.97 1)"
+  ],
+  "layers": [
+    {
+      "type": "aurora-fbm",
+      "blend": "normal",
+      "params": {
+        "intensity": 0.5,
+        "scale": 1.1,
+        "speed": 0.09,
+        "seed": 3,
+        "stretch": 0.45
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "srgb"
+    }
+  ]
+}

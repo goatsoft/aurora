@@ -1,0 +1,8 @@
+export { AuroraSchema, BLEND_MODES, FADES, FORMAT_ID, FORMAT_VERSION, MAX_COLORS, MAX_LAYERS, MIX_SPACES, REDUCED_MOTION, SCHEMA_URL } from './schema'
+export type { AuroraDocument, AuroraInput, AuroraLayer, BlendMode, MixSpace } from './schema'
+export { assertAurora, defineAurora, parseAurora, stringifyAurora } from './document'
+export type { ParseResult } from './document'
+export { AuroraFormatError, jsonPath, suggest } from './issues'
+export type { FormatIssue } from './issues'
+export { migrate, MIGRATIONS } from './migrate'
+export type { MigrateResult, Migration } from './migrate'

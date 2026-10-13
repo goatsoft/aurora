@@ -1,0 +1,31 @@
+# Path-based PR labels, applied by .github/workflows/labels.yml (actions/labeler).
+
+"pkg: color":
+  - changed-files:
+      - any-glob-to-any-file: packages/color/**
+"pkg: format":
+  - changed-files:
+      - any-glob-to-any-file: packages/format/**
+"pkg: core":
+  - changed-files:
+      - any-glob-to-any-file: packages/core/**
+"pkg: vue":
+  - changed-files:
+      - any-glob-to-any-file: packages/vue/**
+"pkg: unplugin":
+  - changed-files:
+      - any-glob-to-any-file: packages/unplugin/**
+"pkg: workspace":
+  - changed-files:
+      - any-glob-to-any-file:
+          - package.json
+          - pnpm-lock.yaml
+          - pnpm-workspace.yaml
+          - tsconfig*.json
+          - "*.config.ts"
+          - vite.library.ts
+          - .nvmrc
+          - .github/workflows/**
+"type: docs":
+  - changed-files:
+      - any-glob-to-any-file: [docs/**, README.md, PLAN.md, AGENTS.md, "packages/*/README.md"]

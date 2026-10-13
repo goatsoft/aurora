@@ -1,0 +1,45 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Blue hour",
+  "palette": [
+    "oklch(0.2 0.06 265)",
+    "oklch(0.36 0.1 285)",
+    "oklch(0.62 0.12 330)",
+    "oklch(0.8 0.1 55)",
+    "oklch(0.17 0.04 270)",
+    "oklch(0.5 0.08 280)",
+    "oklch(0.9 0.08 60)"
+  ],
+  "layers": [
+    {
+      "type": "linear-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "params": {
+        "stops": 4,
+        "stop2": 0.4,
+        "stop3": 0.72
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        4,
+        5,
+        6
+      ],
+      "params": {
+        "height": 0.85,
+        "ridges": 3,
+        "rim": 0.8,
+        "haze": 0.7
+      }
+    }
+  ]
+}

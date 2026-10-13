@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": { "~/*": ["../../*"] },
+    "composite": false,
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["node", "vite/client", "@goatsoft/aurora-unplugin/client"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src", "src/**/*.vue", "test", "prerender.ts", "vite.config.ts"]
+}

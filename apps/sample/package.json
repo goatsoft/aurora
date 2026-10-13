@@ -1,0 +1,23 @@
+{
+  "name": "aurora-sample",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --configLoader runner",
+    "build": "vite build --configLoader runner --outDir dist/client && vite build --configLoader runner --ssr src/entry-server.ts --outDir dist/server && node prerender.ts",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@goatsoft/aurora": "workspace:^",
+    "@goatsoft/aurora-unplugin": "workspace:^",
+    "@goatsoft/aurora-vue": "workspace:^",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.4",
+    "vue-tsc": "^3.3.13"
+  }
+}

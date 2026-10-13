@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker.ImportScripts"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "customConditions": ["@goatsoft/source"],
+    "paths": { "~/*": ["./*"] },
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+    "skipLibCheck": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "files": ["./types/vitest.d.ts", "./types/subset-font.d.ts"]
+}

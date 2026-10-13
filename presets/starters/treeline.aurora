@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Treeline starter",
+  "palette": [
+    "oklch(0.06 0.01 250)",
+    "oklch(0.13 0.03 245)",
+    "oklch(0.45 0.1 165)"
+  ],
+  "layers": [
+    {
+      "type": "treeline"
+    }
+  ]
+}

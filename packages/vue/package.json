@@ -1,0 +1,58 @@
+{
+  "name": "@goatsoft/aurora-vue",
+  "version": "0.0.0",
+  "description": "Vue 3 bindings for Aurora: <AuroraBackground>, useAurora() and <AuroraScene>, with SSR fallback.",
+  "keywords": [
+    "aurora",
+    "vue",
+    "webgpu",
+    "background",
+    "animated-background",
+    "ssr"
+  ],
+  "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/getting-started",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goatsoft/aurora.git",
+    "directory": "packages/vue"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "@goatsoft/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./badge": {
+      "@goatsoft/source": "./src/badge.ts",
+      "types": "./dist/badge.d.ts",
+      "import": "./dist/badge.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build --config ../../vite.library.ts && vue-tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
+  },
+  "dependencies": {
+    "@goatsoft/aurora": "workspace:^"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@goatsoft/aurora-format": "workspace:^",
+    "vue": "^3.5.43"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Clouds starter",
+  "palette": [
+    "oklch(0.58 0.13 248)",
+    "oklch(0.7 0.05 255)",
+    "oklch(0.99 0.01 85)"
+  ],
+  "layers": [
+    {
+      "type": "clouds"
+    }
+  ]
+}

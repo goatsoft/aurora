@@ -1,0 +1,46 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Lagoon",
+  "palette": [
+    "oklch(0.36 0.08 230)",
+    "oklch(0.5 0.11 200)",
+    "oklch(0.62 0.12 180)",
+    "oklch(0.45 0.1 215)",
+    "oklch(0.3 0.07 225)",
+    "oklch(0.55 0.11 195)",
+    "oklch(0.96 0.07 170)"
+  ],
+  "layers": [
+    {
+      "type": "mesh-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "params": {
+        "speed": 0.08
+      }
+    },
+    {
+      "type": "water",
+      "blend": "screen",
+      "opacity": 0.85,
+      "colors": [
+        4,
+        5,
+        6
+      ],
+      "params": {
+        "scale": 2.4,
+        "speed": 0.22,
+        "caustics": 1,
+        "depth": 0.5,
+        "seed": 6
+      }
+    }
+  ]
+}

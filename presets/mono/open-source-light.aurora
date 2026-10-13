@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "GOATsoft mono open source (light)",
+  "palette": [
+    "color(srgb 0.17 0.18 0.23)",
+    "color(srgb 0.3 0.32 0.38)",
+    "color(srgb 0.1 0.11 0.15)"
+  ],
+  "layers": [
+    {
+      "type": "aurora-fbm",
+      "blend": "normal",
+      "params": {
+        "intensity": 0.12,
+        "scale": 1.4,
+        "speed": 0.07,
+        "seed": 7,
+        "stretch": 0.6,
+        "sweep": 0.6
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "srgb"
+    }
+  ]
+}
