@@ -47,6 +47,7 @@ const commands = computed<Command[]>(() => [
   { id: 'page', label: ui.page === 'dark' ? 'Preview on a light page' : 'Preview on a dark page', group: 'View', keys: 'L', run: () => (ui.page = ui.page === 'dark' ? 'light' : 'dark') },
   { id: 'play', label: ui.playing ? 'Pause' : 'Play', group: 'View', keys: 'Space', run: () => (ui.playing = !ui.playing) },
   { id: 'reduced', label: ui.reducedMotion ? 'Stop previewing reduced motion' : 'Preview reduced motion', group: 'View', run: () => (ui.reducedMotion = !ui.reducedMotion) },
+  { id: 'docs', label: 'Open the Studio guide', group: 'Help', run: () => window.open('/docs/studio', '_blank', 'noopener') },
 ])
 
 /** Subsequence match: every typed character in order, earlier and denser matches first. */

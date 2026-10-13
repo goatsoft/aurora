@@ -63,6 +63,10 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
   } else if (k === ' ') {
     event.preventDefault()
     ui.playing = !ui.playing
+  } else if (k === 'f') {
+    ui.focus = !ui.focus
+  } else if (k === 'escape' && ui.focus) {
+    ui.focus = false
   } else if (k === 'g') {
     ui.gallery = true
   } else if (k === 'l') {
@@ -76,10 +80,9 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
     event.preventDefault()
     const to = ui.layer + (event.key === 'ArrowUp' ? 1 : -1)
     if (to >= 0 && to < studio.doc.value.layers.length) studio.layers.move(ui.layer, to)
-  } else if (k === 'm' || k === 's') {
+  } else if (k === 'm') {
     const id = studio.layerIds.value[ui.layer]!
-    if (k === 's') ui.solo = ui.solo === id ? undefined : id
-    else if (ui.muted.has(id)) ui.muted.delete(id)
+    if (ui.muted.has(id)) ui.muted.delete(id)
     else ui.muted.add(id)
   } else if (k === 'r') {
     const layer = studio.rendered.value.layers[ui.layer]
@@ -131,6 +134,21 @@ useEventListener(window, 'drop', (e: DragEvent) => {
       <LayersPanel />
       <Inspector />
       <MotionBar />
+      <MobileBar />
+      <Transition
+        enter-from-class="opacity-0 -translate-y-2"
+        leave-to-class="opacity-0"
+        enter-active-class="transition duration-300"
+        leave-active-class="transition duration-150"
+      >
+        <Button
+          v-if="ui.focus"
+          class="absolute top-3 right-3 z-30 glass"
+          @click="ui.focus = false"
+        >
+          <IHgArrowShrink02 />Show panels <Kbd class="max-md:hidden">F</Kbd>
+        </Button>
+      </Transition>
       <Notices />
       <Gallery />
       <CommandPalette :actions="actions" />

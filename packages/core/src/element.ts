@@ -122,6 +122,8 @@ export class AuroraBackgroundElement extends HTMLElement {
         this.setState(mode)
         this.dispatchEvent(new CustomEvent('aurora-mode', { detail: { mode } }))
       },
+      // The background stays on its CSS fallback; the event says why.
+      onError: (error) => this.dispatchEvent(new CustomEvent('aurora-error', { detail: { error } })),
     })
     if (documentOf(source).canvas.fixed) this.style.position ||= 'fixed'
   }

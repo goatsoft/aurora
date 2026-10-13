@@ -21,7 +21,7 @@ watch(() => props.entries, () => nextTick(update))
 <template>
   <aside
     v-if="props.entries.length"
-    class="sticky top-28 max-h-[calc(100dvh-8rem)] self-start overflow-y-auto"
+    class="sticky top-28 max-h-[calc(100dvh-7rem)] self-start overflow-y-auto overscroll-contain pb-8"
   >
     <p class="mb-3 font-mono text-[11px] tracking-[0.18em] text-muted-foreground/80 uppercase">
       On this page

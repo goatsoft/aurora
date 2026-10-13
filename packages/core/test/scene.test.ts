@@ -26,6 +26,18 @@ describe('scenes', () => {
     expect(joinScene('landing', a, 9000).origin).toBe(9000)
   })
 
+  it('tells the other members when one resizes, and not the one that did', () => {
+    const a = member(0, 0, 400, 300)
+    const b = member(400, 0, 400, 300)
+    const sa = joinScene('resize', a, 0)
+    joinScene('resize', b, 0)
+    a.changed.mockClear()
+    b.changed.mockClear()
+    sa.notify()
+    expect(b.changed).toHaveBeenCalledOnce()
+    expect(a.changed).not.toHaveBeenCalled()
+  })
+
   it('treats a surface outside any scene as its own scene', () => {
     expect(sceneGeometry('none', member(10, 20, 100, 50))).toEqual({ width: 100, height: 50, rect: [0, 0, 1, 1] })
   })

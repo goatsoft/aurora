@@ -5,17 +5,17 @@ import { defineGenerator } from './define'
 export const wind = defineGenerator({
   id: 'wind',
   label: 'Wind',
-  description: 'Air in motion: silky streaks flowing across the canvas, bent by gusts.',
+  description: 'Air in motion: thin streaks that flow across the canvas and bend in gusts.',
   colors: 3,
   palette: ['oklch(0.86 0.05 225)', 'oklch(0.68 0.1 240)', 'oklch(0.97 0.02 210)'],
   requires: ['curl', 'simplex'],
   params: {
     angle: { default: 75, min: 0, max: 360, step: 1, label: 'Angle', description: 'Direction the wind blows, CSS convention (90 = left to right).', unit: 'deg' },
     speed: { default: 0.22, min: 0, max: 2, step: 0.01, label: 'Speed', description: 'How fast the streaks travel.' },
-    stretch: { default: 6, min: 1, max: 20, step: 0.1, label: 'Stretch', description: 'How long the streaks are.' },
+    stretch: { default: 6, min: 1, max: 20, step: 0.1, label: 'Stretch', description: 'Higher gives longer streaks.' },
     gust: { default: 0.55, min: 0, max: 2, step: 0.01, label: 'Gust', description: 'How much the flow bends.' },
     density: { default: 0.45, min: 0, max: 1, step: 0.01, label: 'Density', description: 'How much of the sky the streaks fill.' },
-    scale: { default: 2.5, min: 0.5, max: 8, step: 0.05, label: 'Scale', description: 'Size of the streaks.' },
+    scale: { default: 2.5, min: 0.5, max: 8, step: 0.05, label: 'Scale', description: 'Higher gives smaller, finer streaks.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different sky.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `

@@ -16,7 +16,7 @@ export default mergeConfig(studio, defineConfig({
       enabled: true,
       headless: true,
       screenshotFailures: false,
-      provider: playwright({ launchOptions: { args: ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-angle=swiftshader', '--use-webgpu-adapter=swiftshader'] } }),
+      provider: playwright({ launchOptions: { args: ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-angle=swiftshader', '--use-webgpu-adapter=swiftshader'], ...(process.env['AURORA_CHROME'] ? { channel: 'chrome' } : {}) } }),
       instances: [{ browser: 'chromium' }],
     },
   },

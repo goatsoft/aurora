@@ -8,7 +8,7 @@ import { defineGenerator } from './define'
 export const strata = defineGenerator({
   id: 'strata',
   label: 'Strata',
-  description: 'Earth: flowing sandstone layers, folded and carved by wind.',
+  description: 'Earth: folded sandstone layers that drift slowly.',
   colors: 3,
   palette: ['oklch(0.46 0.11 34)', 'oklch(0.67 0.13 50)', 'oklch(0.9 0.05 78)'],
   requires: ['fbm', 'hash'],
@@ -18,7 +18,7 @@ export const strata = defineGenerator({
     detail: { default: 0.35, min: 0, max: 1, step: 0.01, label: 'Detail', description: 'Fine bedding lines inside each layer.' },
     angle: { default: -12, min: -90, max: 90, step: 1, label: 'Angle', description: 'Tilt of the layers.', unit: 'deg' },
     speed: { default: 0.02, min: 0, max: 0.3, step: 0.005, label: 'Speed', description: 'Geological drift: how fast the layers flow.' },
-    scale: { default: 1, min: 0.3, max: 4, step: 0.05, label: 'Scale', description: 'Size of the folds.' },
+    scale: { default: 1, min: 0.3, max: 4, step: 0.05, label: 'Scale', description: 'Higher gives smaller, tighter folds.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'A different rock face.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `

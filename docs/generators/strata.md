@@ -1,6 +1,10 @@
+---
+order: 14
+---
+
 # Strata (`strata`)
 
-Earth: flowing sandstone layers, folded and carved by wind.
+Earth: folded sandstone layers that drift slowly.
 
 ```aurora
 {
@@ -21,9 +25,21 @@ Earth: flowing sandstone layers, folded and carved by wind.
 }
 ```
 
-The starter above is [`presets/starters/strata.aurora`](/presets/starters/strata.aurora). It reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
+This is [`presets/starters/strata.aurora`](/presets/starters/strata.aurora): the generator alone, with its defaults.
+
+## Colours
+
+A layer's `colors` picks 3 palette colours, in the order below. To recolour part of the background, change the palette colour in that position.
+
+| Position | Paints | Default |
+|---|---|---|
+| 0 | Darkest layers | `oklch(0.46 0.11 34)` |
+| 1 | Middle layers | `oklch(0.67 0.13 50)` |
+| 2 | Lightest layers | `oklch(0.9 0.05 78)` |
 
 ## Parameters
+
+Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
@@ -32,11 +48,9 @@ The starter above is [`presets/starters/strata.aurora`](/presets/starters/strata
 | `detail` | Detail | 0.35 | 0 to 1 | Fine bedding lines inside each layer. |
 | `angle` | Angle | -12 deg | -90 to 90 | Tilt of the layers. |
 | `speed` | Speed | 0.02 | 0 to 0.3 | Geological drift: how fast the layers flow. |
-| `scale` | Scale | 1 | 0.3 to 4 | Size of the folds. |
+| `scale` | Scale | 1 | 0.3 to 4 | Higher gives smaller, tighter folds. |
 | `seed` | Seed | 0 | 0 to 100 | A different rock face. |
 
-## Default palette
+## Implementation note
 
-- `oklch(0.46 0.11 34)`
-- `oklch(0.67 0.13 50)`
-- `oklch(0.9 0.05 78)`
+Built on the shared noise library: `fbm`, `hash`.

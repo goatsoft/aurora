@@ -24,7 +24,7 @@ export default defineConfig({
     tailwindcss(),
     // VueUse is listed by name (its preset resolves from the working directory, which breaks under the root Vitest).
     AutoImport({
-      imports: ['vue', VueRouterAutoImports, { '@vueuse/core': ['refDebounced', 'useElementSize', 'useEventListener', 'useIntervalFn', 'watchDebounced'] }],
+      imports: ['vue', VueRouterAutoImports, { '@vueuse/core': ['refDebounced', 'useElementSize', 'useEventListener', 'useIntervalFn', 'useLocalStorage', 'watchDebounced'] }],
       dts: `${here}src/auto-imports.d.ts`,
       vueTemplate: true,
     }),

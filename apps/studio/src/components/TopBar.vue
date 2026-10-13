@@ -31,7 +31,9 @@ watchDebounced([() => studio.rendered.value, () => ui.page, comparing], async ()
 
 const exporting = ref(false)
 const copied = ref<string>()
-const code = computed(() => snippets(studio.fileName.value, studio.rendered.value))
+/** Tailwind classes in the Vue and HTML snippets instead of an inline style; remembered per browser. */
+const tailwind = useLocalStorage('aurora-studio:tailwind', false)
+const code = computed(() => snippets(studio.fileName.value, studio.rendered.value, { tailwind: tailwind.value }))
 async function copy(id: string, text: string) {
   await navigator.clipboard.writeText(text)
   copied.value = id
@@ -54,8 +56,7 @@ async function save() {
 }
 function downloadFile() {
   exporting.value = false
-  download(studio.fileName.value, studio.file.value)
-  studio.notify(`Downloaded ${studio.fileName.value}`)
+  studio.downloadDocument()
 }
 const project = studio.project
 const browsing = ref(false)
@@ -110,7 +111,9 @@ async function poster() {
   }
 }
 async function share() {
-  await navigator.clipboard.writeText(await studio.shareLink())
+  const link = await studio.shareLink()
+  if (!link) return
+  await navigator.clipboard.writeText(link)
   studio.notify('Link copied: it holds the whole document, no account needed')
 }
 /** ⇧⌘S: a new file in the open folder or project, or anywhere via the system picker. */
@@ -122,22 +125,42 @@ defineExpose({ save: () => void save(), share, saveAs })
 </script>
 
 <template>
-  <header class="pointer-events-none absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4">
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_350ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-2.5 rounded-2xl glass pr-3 pl-2.5">
+  <header
+    v-show="!ui.focus"
+    class="pointer-events-none absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4 max-md:inset-x-2 max-md:top-2 max-md:gap-2"
+  >
+    <div class="pointer-events-auto flex h-11 min-w-0 animate-[rise-in_350ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-2.5 rounded-2xl glass pr-3 pl-2.5 max-md:gap-1.5 max-md:pr-1.5">
       <!-- The compact mark below 48 px (assets/brand/README.md); Studio's chrome is always dark. -->
-      <img
-        :src="mark"
-        alt=""
-        width="24"
-        height="24"
-        class="size-6"
-      >
-      <span class="text-xs font-semibold tracking-tight">Aurora Studio</span>
-      <span class="h-4 w-px bg-panel-border" />
+      <!-- The mark goes back to the site; Studio is served under it at /studio/. -->
+      <Tip label="Back to the Aurora site">
+        <a
+          href="/"
+          class="group flex shrink-0 items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Aurora home"
+        >
+          <img
+            :src="mark"
+            alt=""
+            width="24"
+            height="24"
+            class="size-6 transition-transform duration-300 group-hover:scale-110"
+          >
+          <span class="text-xs font-semibold tracking-tight transition-opacity group-hover:opacity-80 max-lg:hidden">Aurora Studio</span>
+        </a>
+      </Tip>
+      <Tip label="Studio guide">
+        <a
+          href="/docs/studio"
+          target="_blank"
+          rel="noopener"
+          class="rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring max-md:hidden"
+        >Docs</a>
+      </Tip>
+      <span class="h-4 w-px bg-panel-border max-lg:hidden" />
       <input
         :value="studio.doc.value.name"
         aria-label="Document name"
-        class="w-44 truncate rounded-md bg-transparent px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:bg-input focus:bg-input focus:text-foreground"
+        class="w-44 min-w-0 truncate rounded-md bg-transparent px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:bg-input focus:bg-input focus:text-foreground max-md:w-full"
         @change="(e) => { studio.apply(studio.ops.rename, (e.target as HTMLInputElement).value.trim() || 'Untitled'); studio.seal() }"
         @keydown.enter="(e) => (e.target as HTMLInputElement).blur()"
       >
@@ -277,7 +300,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       </Popover>
     </div>
 
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1.5 rounded-2xl glass px-1.5">
+    <div class="pointer-events-auto flex h-11 animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1.5 rounded-2xl glass px-1.5 max-md:hidden">
       <Segmented
         v-model="ui.viewport"
         :options="viewports"
@@ -341,7 +364,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       </Transition>
     </div>
 
-    <div class="pointer-events-auto flex h-11 animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-0.5 rounded-2xl glass px-1.5">
+    <div class="pointer-events-auto flex h-11 shrink-0 animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-0.5 rounded-2xl glass px-1.5">
       <Tip
         label="Undo"
         keys="⌘ Z"
@@ -361,6 +384,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       >
         <Button
           size="icon"
+          class="max-md:hidden"
           aria-label="Redo"
           :disabled="!studio.history.canRedo"
           @click="studio.redo()"
@@ -368,13 +392,27 @@ defineExpose({ save: () => void save(), share, saveAs })
           <IHgArrowTurnForward />
         </Button>
       </Tip>
-      <span class="mx-1 h-5 w-px bg-panel-border" />
+      <span class="mx-1 h-5 w-px bg-panel-border max-md:hidden" />
+      <Tip
+        label="Focus: hide the panels"
+        keys="F"
+      >
+        <Button
+          size="icon"
+          class="max-md:hidden"
+          aria-label="Hide the panels"
+          @click="ui.focus = true"
+        >
+          <IHgArrowExpand01 />
+        </Button>
+      </Tip>
       <Tip
         label="Presets"
         keys="G"
       >
         <Button
           size="icon"
+          class="max-md:hidden"
           aria-label="Presets"
           @click="ui.gallery = true"
         >
@@ -405,14 +443,15 @@ defineExpose({ save: () => void save(), share, saveAs })
       <Popover
         v-model:open="exporting"
         align="end"
-        class="w-[380px] p-2"
+        class="w-[min(380px,calc(100vw-1rem))] p-2"
       >
         <template #trigger>
           <Button
             variant="default"
-            class="ml-1"
+            class="ml-1 max-md:px-2.5"
+            aria-label="Export"
           >
-            <IHgDownload04 />Export
+            <IHgDownload04 /><span class="max-md:hidden">Export</span>
           </Button>
         </template>
         <button
@@ -466,6 +505,13 @@ defineExpose({ save: () => void save(), share, saveAs })
           </div>
         </button>
         <div class="mt-1 flex flex-col gap-1.5 border-t border-panel-border p-1 pt-2">
+          <label class="flex items-center justify-between px-1 py-0.5 text-[11px] text-muted-foreground">
+            Use Tailwind classes
+            <Switch
+              v-model="tailwind"
+              label="Use Tailwind classes"
+            />
+          </label>
           <div
             v-for="snippet in code"
             :key="snippet.id"

@@ -1,4 +1,5 @@
 import type { AuroraDocument, AuroraInput, FormatIssue } from '@goatsoft/aurora-format'
+import { checkDocument } from '@goatsoft/aurora'
 import { FORMAT_ID, FORMAT_VERSION, parseAurora, stringifyAurora } from '@goatsoft/aurora-format'
 
 /**
@@ -31,9 +32,16 @@ export function newLayer(type: string, colors: number[]): LayerInput {
   return { type, blend: 'normal', params: {}, colors, mix: 'oklab' }
 }
 
-/** Validates for rendering. Studio keeps showing the last good document while this fails. */
+/**
+ * Validates for rendering and saving, as strictly as the build plugin: the format, then every
+ * generator id, parameter name and range (against the loaded generators; Studio loads them all at
+ * start). Studio keeps showing the last valid document while this fails.
+ */
 export function resolve(doc: Doc): { ok: true, doc: AuroraDocument } | { ok: false, issues: FormatIssue[] } {
-  return parseAurora(doc)
+  const parsed = parseAurora(doc)
+  if (!parsed.ok) return parsed
+  const issues = checkDocument(parsed.doc)
+  return issues.length ? { ok: false, issues } : parsed
 }
 
 /** The `.aurora` file for a document. */
@@ -41,11 +49,7 @@ export function serialize(doc: Doc): string {
   return stringifyAurora(doc)
 }
 
-/** Rounds a value to the precision of a control's step, so 0.1 + 0.2 saves as 0.3. */
-export function snap(value: number, step: number): number {
-  const decimals = Math.max(0, Math.ceil(-Math.log10(step)) + 1)
-  return Number((Math.round(value / step) * step).toFixed(decimals))
-}
+export { snap } from '@goatsoft/aurora-editor-ui'
 
 function edit(doc: Doc, change: (draft: Doc) => void): Doc {
   const draft = structuredClone(doc)
@@ -57,6 +61,15 @@ const layerAt = (doc: Doc, i: number) => {
   const layer = doc.layers[i]
   if (!layer) throw new RangeError(`There is no layer ${i}; the document has ${doc.layers.length}.`)
   return layer
+}
+
+/**
+ * The palette indices a layer reads, one per generator colour. A layer without `colors` cycles
+ * through the whole palette, so what it reads depends on the palette's length.
+ */
+export function layerColors(layer: LayerInput, paletteLength: number, count: number): number[] {
+  const source = layer.colors?.length ? layer.colors : Array.from({ length: paletteLength }, (_, k) => k)
+  return Array.from({ length: count }, (_, k) => source[k % source.length]!)
 }
 
 export const ops = {
@@ -97,6 +110,24 @@ export const ops = {
     for (const layer of d.layers) {
       if (layer.colors) layer.colors = layer.colors.map((c) => (c === index ? fallback : c > index ? c - 1 : c))
     }
+  }),
+
+  /**
+   * Gives one colour slot of a layer its own copy of the palette colour it reads, so editing it
+   * changes only that slot. Layers that cycle through the whole palette would start reading the new
+   * colour too, so every layer's current colours are written out first. `count` gives a generator's
+   * number of colours.
+   */
+  ownColor: (doc: Doc, i: number, slot: number, count: (type: string) => number) => edit(doc, (d) => {
+    const length = d.palette.length
+    for (const layer of d.layers) {
+      if (!layer.colors?.length) layer.colors = layerColors(layer, length, count(layer.type))
+    }
+    const layer = layerAt(d, i)
+    const colors = layerColors(layer, length, count(layer.type))
+    d.palette.push(d.palette[colors[slot]!]!)
+    colors[slot] = length
+    layer.colors = colors
   }),
 
   addLayer: (doc: Doc, layer: LayerInput, at = doc.layers.length) => edit(doc, (d) => {

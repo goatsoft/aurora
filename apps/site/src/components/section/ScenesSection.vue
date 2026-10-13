@@ -3,9 +3,9 @@ import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { goldenHour, northernLights, polarNight } from '@/lib/scenes'
 
 const scenes = [
-  { scene: polarNight, name: 'Polar night', body: 'Stars, an aurora, and the ridge.' },
-  { scene: northernLights, name: 'Northern lights', body: 'A curtain of green over the sky.' },
-  { scene: goldenHour, name: 'Golden hour', body: 'Clouds in the last light.' },
+  { scene: polarNight, name: 'Polar night', body: 'A teal and violet aurora over a mountain ridge.' },
+  { scene: northernLights, name: 'Northern lights', body: 'Green curtains with rays rising into violet.' },
+  { scene: goldenHour, name: 'Golden hour', body: 'Clouds lit by a low sun.' },
 ]
 </script>
 
@@ -22,26 +22,35 @@ const scenes = [
         Scenes
       </p>
       <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        Start from something beautiful.
+        Ready-made scenes
       </h2>
       <p class="mt-4 text-lg text-pretty text-muted-foreground">
-        Studio ships with art-directed scenes and a starter for every generator. Open one, make it yours.
+        Studio includes multi-layer scenes and a starter file for every generator. Open one and change it.
       </p>
     </div>
     <div class="mt-12 grid gap-4 sm:grid-cols-3">
-      <a
+      <div
         v-for="(item, i) in scenes"
         :key="item.name"
         v-reveal="i * 80"
-        href="/studio/"
-        class="group overflow-hidden rounded-2xl border border-white/10 bg-surface/50 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        class="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/50"
       >
-        <div class="relative aspect-4/5 overflow-hidden"><AuroraBackground :src="item.scene" /></div>
-        <div class="p-4">
-          <h3 class="font-semibold">{{ item.name }}</h3>
-          <p class="mt-0.5 text-sm text-muted-foreground">{{ item.body }}</p>
+        <div class="relative aspect-4/5 overflow-hidden">
+          <AuroraBackground :src="item.scene" />
         </div>
-      </a>
+        <div class="p-4">
+          <h3 class="font-semibold">
+            {{ item.name }}
+          </h3>
+          <p class="mt-0.5 text-sm text-muted-foreground">
+            {{ item.body }}
+          </p>
+        </div>
+        <EditInStudio
+          :src="item.scene"
+          :label="item.name"
+        />
+      </div>
     </div>
   </section>
 </template>

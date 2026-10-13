@@ -8,7 +8,7 @@ search: true
 
 ## Generator
 
-A built-in WGSL program that draws one kind of background, such as an aurora, clouds or fire, from typed parameters. A layer's `type` names its generator.
+Draws one kind of background, such as clouds or an aurora. A layer's `type` names its generator, and its parameters tune it. Each generator is a built-in WGSL shader.
 
 ## Layer
 
@@ -22,7 +22,7 @@ A document's colours, referenced by index from each layer's `colors`.
 
 ## CSS fallback
 
-The background as plain CSS gradients, compiled from the same layers. It paints first, and stays where WebGPU isn't available.
+CSS gradients that approximate the background, compiled from the same layers. It shows until WebGPU's first frame, and stays where WebGPU isn't available.
 
 Aliases: fallback
 
@@ -36,7 +36,7 @@ A perceptual colour space: lightness, chroma and hue. Aurora's palettes are writ
 
 ## OKLab
 
-The perceptual space OKLCH is the polar form of. Aurora blends colours in it, so mixes stay vivid.
+The perceptual space OKLCH is the polar form of. Aurora blends colours in it.
 
 ## ΔE-OK
 

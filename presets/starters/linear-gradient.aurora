@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Linear gradient starter",
+  "palette": [
+    "oklch(0.16 0.05 275)",
+    "oklch(0.32 0.11 295)",
+    "oklch(0.55 0.16 330)",
+    "oklch(0.78 0.13 60)"
+  ],
+  "layers": [
+    {
+      "type": "linear-gradient"
+    }
+  ]
+}

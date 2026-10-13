@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ParamSpec } from '@goatsoft/aurora'
-import { BLEND_MODES, REDUCED_MOTION } from '@goatsoft/aurora-format'
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
+import { BLEND_MODES, MAX_COLORS, REDUCED_MOTION } from '@goatsoft/aurora-format'
+import { COLOR_ROLES } from '@goatsoft/aurora/roles'
 import { useStudio } from '@/editor/studio'
 import { generatorIcon } from '@/lib/generators'
 
@@ -58,6 +60,29 @@ function pointColor(slot: number, paletteIndex: number) {
   setLayer('colors', colors)
   end()
 }
+/** What each colour paints, for the built-ins; registered generators just number them. */
+const roles = computed(() => (layer.value ? COLOR_ROLES[layer.value.type] : undefined) ?? [])
+/** How many other layers read each palette colour, so editing a shared one says so. */
+const sharedWith = computed(() => {
+  const counts = new Map<number, number>()
+  studio.rendered.value.layers.forEach((l, i) => {
+    if (i === index.value) return
+    const n = studio.generator(l.type)?.colors ?? 0
+    const source = l.colors.length ? l.colors : studio.rendered.value.palette.map((_, k) => k)
+    for (const p of new Set(Array.from({ length: n }, (_, k) => source[k % source.length]!))) counts.set(p, (counts.get(p) ?? 0) + 1)
+  })
+  return counts
+})
+/** Gives this layer its own copy of a shared colour, so editing it changes only this layer. */
+function ownColor(slot: number) {
+  if (studio.doc.value.palette.length >= MAX_COLORS) {
+    studio.notify('A palette holds up to 16 colours.', 'error')
+    return
+  }
+  studio.commit(studio.ops.ownColor(studio.doc.value, index.value, slot, (type) => studio.generator(type)?.colors ?? 0))
+  end()
+}
+const colorEditing = ref<number>()
 
 // Masks.
 const maskType = computed(() => layer.value?.mask?.type ?? 'none')
@@ -80,7 +105,7 @@ function setColor(i: number, css: string) {
   set(`color:${i}`, studio.ops.color(studio.doc.value, i, css))
 }
 function addColor(css = 'oklch(0.7 0.15 250)') {
-  if (studio.doc.value.palette.length >= 16) {
+  if (studio.doc.value.palette.length >= MAX_COLORS) {
     studio.notify('A palette holds up to 16 colours.', 'error')
     return
   }
@@ -93,7 +118,12 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
 </script>
 
 <template>
-  <aside class="absolute top-20 right-4 bottom-24 z-20 flex w-[316px] animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass">
+  <!-- A floating panel on the right; on phones, a sheet above the bottom bar. -->
+  <aside
+    v-show="!ui.focus"
+    class="absolute top-20 right-4 bottom-24 z-20 flex w-[316px] animate-[rise-in_450ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass max-md:inset-x-2 max-md:top-auto max-md:bottom-19 max-md:h-[58svh] max-md:w-auto"
+    :class="ui.sheet !== 'inspector' && 'max-md:hidden'"
+  >
     <div class="shrink-0 p-1.5">
       <Segmented
         v-model="tab"
@@ -203,39 +233,81 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
           </Row>
         </Section>
 
+        <!-- Each colour this layer reads, named for what it paints. Editing one edits the palette
+             colour it points at; if other layers use that colour too, it says so and offers a copy. -->
         <Section title="Colours">
-          <div class="flex flex-wrap gap-1.5">
-            <Popover
+          <div class="-mx-1 space-y-0.5">
+            <div
               v-for="(paletteIndex, slot) in colorSlots"
               :key="slot"
-              side="left"
-              align="start"
-              class="w-auto p-2"
+              class="flex items-center gap-2.5 rounded-lg p-1 transition-colors hover:bg-input/60"
             >
-              <template #trigger>
-                <button
-                  class="group relative size-9 rounded-xl ring-1 ring-panel-border transition-transform outline-none hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring"
-                  :style="{ background: doc.palette[paletteIndex] }"
-                  :aria-label="`Colour ${slot + 1}: palette ${paletteIndex + 1}`"
-                >
-                  <span class="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full bg-[oklch(0.2_0.02_270)] text-[9px] font-semibold text-muted-foreground ring-1 ring-panel-border">{{ paletteIndex + 1 }}</span>
-                </button>
-              </template>
-              <p class="mb-1.5 px-0.5 text-[11px] text-muted-foreground">
-                Colour {{ slot + 1 }} uses palette
-              </p>
-              <div class="grid grid-cols-6 gap-1">
-                <button
-                  v-for="(css, i) in doc.palette"
-                  :key="i"
-                  class="size-7 rounded-lg ring-1 transition-transform hover:scale-110"
-                  :class="i === paletteIndex ? 'ring-2 ring-primary' : 'ring-panel-border'"
-                  :style="{ background: css }"
-                  :aria-label="`Palette colour ${i + 1}`"
-                  @click="pointColor(slot, i)"
+              <Popover
+                side="left"
+                align="start"
+                class="w-auto"
+                :open="colorEditing === slot"
+                @update:open="(open) => (colorEditing = open ? slot : undefined)"
+              >
+                <template #trigger>
+                  <button
+                    class="size-8 shrink-0 rounded-lg ring-1 ring-panel-border transition-transform outline-none hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring"
+                    :style="{ background: doc.palette[paletteIndex] }"
+                    :aria-label="`Edit ${roles[slot] ?? `colour ${slot + 1}`}`"
+                  />
+                </template>
+                <p class="mb-2 max-w-[232px] text-[11px] leading-snug text-muted-foreground">
+                  <span class="font-medium text-foreground">{{ roles[slot] ?? `Colour ${slot + 1}` }}</span>
+                  · palette colour {{ paletteIndex + 1 }}<template v-if="sharedWith.get(paletteIndex)">
+                    , also used by {{ sharedWith.get(paletteIndex) }} other layer{{ sharedWith.get(paletteIndex) === 1 ? '' : 's' }}
+                  </template>
+                </p>
+                <ColorPicker
+                  :model-value="authoredDoc.palette[paletteIndex] ?? doc.palette[paletteIndex]!"
+                  :page="ui.page"
+                  @update:model-value="(v) => setColor(paletteIndex, v)"
+                  @end="end"
+                  @add="(c) => addColor(c)"
                 />
+                <div class="mt-2.5 border-t border-panel-border pt-2">
+                  <p class="mb-1.5 text-[11px] text-muted-foreground">
+                    Use another palette colour
+                  </p>
+                  <div class="flex flex-wrap gap-1">
+                    <button
+                      v-for="(css, i) in doc.palette"
+                      :key="i"
+                      class="size-6 rounded-md ring-1 transition-transform hover:scale-110"
+                      :class="i === paletteIndex ? 'ring-2 ring-primary' : 'ring-panel-border'"
+                      :style="{ background: css }"
+                      :aria-label="`Use palette colour ${i + 1}`"
+                      @click="pointColor(slot, i)"
+                    />
+                  </div>
+                  <Button
+                    v-if="sharedWith.get(paletteIndex)"
+                    size="sm"
+                    class="mt-2 w-full justify-start"
+                    @click="ownColor(slot)"
+                  >
+                    <IHgCopy01 />Give this layer its own copy
+                  </Button>
+                </div>
+              </Popover>
+              <div class="min-w-0 flex-1">
+                <p
+                  class="truncate text-xs"
+                  :title="roles[slot]"
+                >
+                  {{ roles[slot] ?? `Colour ${slot + 1}` }}
+                </p>
+                <p class="truncate text-[10px] text-muted-foreground">
+                  Palette {{ paletteIndex + 1 }}<template v-if="sharedWith.get(paletteIndex)">
+                    · shared with {{ sharedWith.get(paletteIndex) }} other layer{{ sharedWith.get(paletteIndex) === 1 ? '' : 's' }}
+                  </template>
+                </p>
               </div>
-            </Popover>
+            </div>
           </div>
         </Section>
 
@@ -394,7 +466,10 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
           </Row>
         </Section>
 
-        <Section title="Palette">
+        <Section
+          title="Palette"
+          hint="Every layer takes its colours from this palette. Changing a colour here changes it in every layer that uses it."
+        >
           <template #action>
             <Tip label="Add colour">
               <Button

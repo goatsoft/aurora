@@ -7,7 +7,7 @@ import { generatorThumb, layerThumb } from '@/lib/thumb'
 
 /**
  * Layers, top first like every design tool (the file lists them bottom first). Drag a row to
- * reorder; hover for mute, solo and more. Thumbnails are each layer's CSS fallback: instant.
+ * reorder; hover (or select) a row to hide or delete it. Thumbnails are each layer's CSS fallback: instant.
  */
 const studio = useStudio()
 const { ui } = studio
@@ -64,9 +64,6 @@ function toggleMute(id: number) {
   if (ui.muted.has(id)) ui.muted.delete(id)
   else ui.muted.add(id)
 }
-function toggleSolo(id: number) {
-  ui.solo = ui.solo === id ? undefined : id
-}
 
 const picker = ref(false)
 /** "Earth: flowing sandstone…" → "Flowing sandstone…": the group already says which element. */
@@ -96,7 +93,12 @@ function add(generator: Generator) {
 </script>
 
 <template>
-  <aside class="absolute top-20 left-4 z-20 flex max-h-[calc(100%-11rem)] w-[268px] animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass">
+  <!-- A floating panel on the left; on phones, a sheet above the bottom bar. -->
+  <aside
+    v-show="!ui.focus"
+    class="absolute top-20 left-4 z-20 flex max-h-[calc(100%-11rem)] w-[268px] animate-[rise-in_400ms_cubic-bezier(0.2,0.9,0.1,1)] flex-col overflow-hidden rounded-2xl glass max-md:inset-x-2 max-md:top-auto max-md:bottom-19 max-md:max-h-[55svh] max-md:w-auto"
+    :class="ui.sheet !== 'layers' && 'max-md:hidden'"
+  >
     <header class="flex h-11 shrink-0 items-center justify-between pr-1.5 pl-3.5">
       <h2 class="flex items-center gap-2 text-xs font-semibold">
         <IHgLayers01 class="size-4 text-muted-foreground" />Layers
@@ -171,7 +173,7 @@ function add(generator: Generator) {
         :class="[
           ui.layer === row.index ? 'bg-accent shadow-[0_0_0_1px_oklch(1_0_0/0.08)_inset]' : 'hover:bg-[oklch(1_0_0/0.04)]',
           drag.id === row.id ? 'z-10 shadow-xl' : 'transition-transform duration-200 ease-[cubic-bezier(0.2,0.9,0.1,1)]',
-          (ui.muted.has(row.id) || (ui.solo !== undefined && ui.solo !== row.id)) && 'opacity-45',
+          ui.muted.has(row.id) && 'opacity-45',
         ]"
         :style="{ top: `${position * ROW}px`, transform: `translateY(${offset(position, row.id)}px)` }"
         @pointerdown="down($event, row)"
@@ -195,33 +197,34 @@ function add(generator: Generator) {
           </p>
         </div>
         <div
-          class="flex items-center opacity-0 transition-opacity group-hover:opacity-100"
-          :class="(ui.muted.has(row.id) || ui.solo === row.id) && 'opacity-100'"
+          class="flex items-center opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 max-md:opacity-100"
+          :class="(ui.muted.has(row.id) || ui.layer === row.index) && 'opacity-100'"
         >
-          <Tip
-            label="Solo"
-            keys="S"
-          >
-            <Button
-              size="icon-sm"
-              :class="ui.solo === row.id && 'text-primary'"
-              aria-label="Solo layer"
-              @click="toggleSolo(row.id)"
-            >
-              <IHgHeadphones />
-            </Button>
-          </Tip>
           <Tip
             :label="ui.muted.has(row.id) ? 'Show' : 'Hide'"
             keys="M"
           >
             <Button
               size="icon-sm"
-              aria-label="Hide layer"
+              :aria-label="`${ui.muted.has(row.id) ? 'Show' : 'Hide'} ${row.label}`"
               @click="toggleMute(row.id)"
             >
               <IHgViewOffSlash v-if="ui.muted.has(row.id)" />
               <IHgEye v-else />
+            </Button>
+          </Tip>
+          <Tip
+            label="Delete"
+            keys="⌫"
+          >
+            <Button
+              size="icon-sm"
+              class="hover:text-[oklch(0.75_0.15_25)]"
+              :aria-label="`Delete ${row.label}`"
+              :disabled="rows.length === 1"
+              @click="studio.layers.remove(row.index)"
+            >
+              <IHgDelete02 />
             </Button>
           </Tip>
         </div>

@@ -153,14 +153,30 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
   }
 }
 
+/** How long the main-thread renderer stays warm after its last surface goes, for a quick remount. */
+export const IDLE_RELEASE_MS = 10_000
+
 /**
  * Main-thread rendering for browsers without WebGPU in workers (some Safari versions). The renderer
- * is loaded on demand, so pages that never need it don't pay for it.
+ * is loaded on demand, so pages that never need it don't pay for it. When the last surface is
+ * released it stays warm for `IDLE_RELEASE_MS` (a route change usually mounts the next background
+ * straight away), then its GPU device and pipeline cache are destroyed.
  */
 export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => number, generators: (id: string) => Generator | undefined): Backend {
   const listeners = new Map<number, LeaseListener>()
   let renderer: Promise<Renderer | undefined> | undefined
   let nextId = 0
+  let idle: ReturnType<typeof setTimeout> | undefined
+
+  function releaseWhenIdle() {
+    clearTimeout(idle)
+    idle = setTimeout(() => {
+      const current = renderer
+      if (listeners.size || !current) return
+      renderer = undefined
+      void current.then((r) => r?.fail())
+    }, IDLE_RELEASE_MS)
+  }
 
   function start(): Promise<Renderer | undefined> {
     return import('./renderer').then(({ Renderer }) => Renderer.create(gpu(), {
@@ -174,6 +190,7 @@ export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => n
 
   return {
     acquire(listener) {
+      clearTimeout(idle)
       renderer ??= start()
       const current = renderer
       const id = ++nextId
@@ -199,6 +216,7 @@ export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => n
           released = true
           listeners.delete(id)
           instance?.detach(id)
+          if (!listeners.size) releaseWhenIdle()
         },
       }
     },

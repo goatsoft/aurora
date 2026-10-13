@@ -1,0 +1,37 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Solar winds",
+  "canvas": {
+    "fade": "y"
+  },
+  "motion": {
+    "speed": 2.33
+  },
+  "palette": [
+    "oklch(0.68 0.16 245)",
+    "oklch(0.56 0.22 285)",
+    "oklch(0.58 0.25 310)",
+    "oklch(0.5 0.28 246.5)"
+  ],
+  "layers": [
+    {
+      "type": "wind",
+      "blend": "normal",
+      "params": {
+        "speed": 0.69,
+        "density": 0.36,
+        "scale": 0.5,
+        "angle": 88
+      },
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "mix": "oklab",
+      "opacity": 1
+    }
+  ]
+}

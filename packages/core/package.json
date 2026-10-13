@@ -36,6 +36,11 @@
       "@goatsoft/source": "./src/poster.ts",
       "types": "./dist/poster.d.ts",
       "import": "./dist/poster.js"
+    },
+    "./roles": {
+      "@goatsoft/source": "./src/generators/roles.ts",
+      "types": "./dist/generators/roles.d.ts",
+      "import": "./dist/roles.js"
     }
   },
   "scripts": {

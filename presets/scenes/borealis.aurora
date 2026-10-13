@@ -1,0 +1,94 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Borealis",
+  "palette": [
+    "oklch(0.07 0.025 290)",
+    "oklch(0.14 0.045 275)",
+    "oklch(0.95 0.02 300)",
+    "oklch(0.78 0.2 150)",
+    "oklch(0.58 0.23 355)",
+    "oklch(0.45 0.2 310)",
+    "oklch(0.04 0.01 260)",
+    "oklch(0.08 0.02 250)",
+    "oklch(0.4 0.12 150)",
+    "oklch(0.07 0.02 275)",
+    "oklch(0.17 0.045 290)",
+    "oklch(0.62 0.14 155)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "seed": 5,
+        "density": 0.14,
+        "milkyway": 0,
+        "meteors": 0.03,
+        "brightness": 0.5
+      }
+    },
+    {
+      "type": "curtain",
+      "blend": "screen",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "intensity": 1.15,
+        "base": 0.97,
+        "height": 0.75,
+        "wave": 0.3,
+        "rays": 0.45,
+        "rise": 0.06,
+        "speed": 0.06,
+        "folds": 3,
+        "cover": 0.4,
+        "glow": 0.7,
+        "tilt": 0.15,
+        "seed": 21
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        9,
+        10,
+        11
+      ],
+      "params": {
+        "height": 0.34,
+        "ridges": 2,
+        "peaks": 2.5,
+        "roughness": 0.5,
+        "haze": 0.8,
+        "mist": 0.25,
+        "rim": 0.3,
+        "seed": 4
+      }
+    },
+    {
+      "type": "treeline",
+      "colors": [
+        6,
+        7,
+        8
+      ],
+      "params": {
+        "height": 0.22,
+        "density": 9,
+        "rows": 2,
+        "variation": 0.6,
+        "mist": 0.1,
+        "seed": 3
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ export interface AuroraConfig {
   fps: number
   /** Cap on canvas size per axis, in device pixels. */
   maxPixels: number
-  /** Fraction of devicePixelRatio to render at. Backgrounds are soft, so 0.5 is indistinguishable. */
+  /** Fraction of devicePixelRatio to render at, up to 1 (full resolution). Backgrounds are soft, so 0.5 is indistinguishable. */
   pixelRatio: number
   /** Use WebGPU on touch devices when available, or force the CSS fallback there. */
   touch: 'webgpu' | 'css'
@@ -21,4 +21,13 @@ export function configureAurora(options: Partial<AuroraConfig>): AuroraConfig {
 
 export function getConfig(): Readonly<AuroraConfig> {
   return config
+}
+
+/**
+ * Canvas pixels per CSS pixel for a surface `width` × `height` CSS pixels big: `pixelRatio` of the
+ * device pixel ratio, never above the device's own resolution, and within `maxPixels` per axis.
+ */
+export function renderRatio(dpr: number, width: number, height: number, { pixelRatio, maxPixels }: Pick<AuroraConfig, 'pixelRatio' | 'maxPixels'> = config): number {
+  const device = dpr || 1
+  return Math.min(device * pixelRatio, device, maxPixels / Math.max(1, width), maxPixels / Math.max(1, height))
 }

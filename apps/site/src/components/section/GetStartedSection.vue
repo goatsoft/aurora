@@ -13,12 +13,16 @@ import { northernLights } from '@/lib/scenes'
       <div class="absolute inset-0 -z-10">
         <AuroraBackground :src="northernLights" />
       </div>
+      <EditInStudio
+        :src="northernLights"
+        position="top-4 right-4"
+      />
       <div class="absolute inset-0 -z-10 bg-background/40" />
       <h2 class="mx-auto max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        Give your next page some light.
+        Try it on your site
       </h2>
       <p class="mx-auto mt-4 max-w-xl text-lg text-pretty text-white/80">
-        Free and open source. Design in the browser, ship to any framework or none.
+        MIT licensed. Works with Vue or plain HTML.
       </p>
       <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Button

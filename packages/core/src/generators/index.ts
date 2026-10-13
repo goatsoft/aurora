@@ -3,19 +3,33 @@ import { auroraFbm } from './aurora-fbm'
 
 export { auroraFbm }
 
-/** The flagship ships eagerly; every other built-in is its own chunk, loaded the first time a document uses it. */
+/**
+ * The flagship ships eagerly; every other built-in is its own chunk, loaded the first time a document uses it.
+ * The order here is the catalogue order: Studio's menus, the docs and the starters list them in it.
+ */
 const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
-  'mesh-gradient': () => import('./mesh-gradient').then((m) => m.meshGradient as Generator),
+  // Aurora and night sky (aurora-fbm, the flagship, is always first).
+  'curtain': () => import('./curtain').then((m) => m.curtain as Generator),
+  'starfield': () => import('./starfield').then((m) => m.starfield as Generator),
+  // Gradients.
+  'linear-gradient': () => import('./linear-gradient').then((m) => m.linearGradient as Generator),
   'linear-sweep': () => import('./linear-sweep').then((m) => m.linearSweep as Generator),
   'conic': () => import('./conic').then((m) => m.conic as Generator),
-  'grain': () => import('./grain').then((m) => m.grain as Generator),
-  'strata': () => import('./strata').then((m) => m.strata as Generator),
-  'mountains': () => import('./mountains').then((m) => m.mountains as Generator),
+  'mesh-gradient': () => import('./mesh-gradient').then((m) => m.meshGradient as Generator),
+  // Weather.
   'clouds': () => import('./clouds').then((m) => m.clouds as Generator),
   'wind': () => import('./wind').then((m) => m.wind as Generator),
-  'fire': () => import('./fire').then((m) => m.fire as Generator),
+  'rain': () => import('./rain').then((m) => m.rain as Generator),
+  'lightning': () => import('./lightning').then((m) => m.lightning as Generator),
+  // Landscape.
+  'mountains': () => import('./mountains').then((m) => m.mountains as Generator),
+  'treeline': () => import('./treeline').then((m) => m.treeline as Generator),
+  'strata': () => import('./strata').then((m) => m.strata as Generator),
+  // Water and fire.
   'water': () => import('./water').then((m) => m.water as Generator),
-  'starfield': () => import('./starfield').then((m) => m.starfield as Generator),
+  'fire': () => import('./fire').then((m) => m.fire as Generator),
+  // Texture, laid over the rest.
+  'grain': () => import('./grain').then((m) => m.grain as Generator),
 }
 
 const registry: Record<string, Generator> = { [auroraFbm.id]: auroraFbm }

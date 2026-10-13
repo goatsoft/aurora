@@ -9,10 +9,17 @@ export function download(name: string, text: string | Blob, type = 'application/
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-/** Ready-to-paste usage for each binding. */
-export function snippets(fileName: string, doc: AuroraDocument): { id: string, label: string, code: string }[] {
-  const name = fileName.replace(/\.aurora$/, '').replace(/-(\w)/g, (_, c: string) => c.toUpperCase())
+/**
+ * Ready-to-paste usage for each binding. The Vue import is always called `background`: a name made
+ * from the file name could be a number (`123.aurora`) or a reserved word (`default.aurora`).
+ * With `tailwind`, the wrapper uses Tailwind classes instead of an inline style; the CSS-only
+ * snippet is a stylesheet either way.
+ */
+export function snippets(fileName: string, doc: AuroraDocument, { tailwind = false } = {}): { id: string, label: string, code: string }[] {
+  const name = 'background'
   const css = compileCss(doc)
+  // The background fills its nearest positioned ancestor.
+  const wrapper = tailwind ? 'class="relative"' : 'style="position: relative"'
   return [
     {
       id: 'vue',
@@ -23,7 +30,7 @@ import ${name} from './${fileName}'
 </script>
 
 <template>
-  <section class="relative">
+  <section ${wrapper}>
     <AuroraBackground :src="${name}" />
     <!-- your content -->
   </section>
@@ -35,7 +42,7 @@ import ${name} from './${fileName}'
       label: 'HTML',
       code: `<script type="module">import '@goatsoft/aurora/element'</script>
 
-<section style="position: relative">
+<section ${wrapper}>
   <aurora-bg src="/${fileName}"></aurora-bg>
   <!-- your content -->
 </section>

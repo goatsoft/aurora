@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** A titled group of inspector rows, with an optional action on the right of the title. */
-defineProps<{ title: string }>()
+defineProps<{ title: string, hint?: string }>()
 </script>
 
 <template>
@@ -11,6 +11,12 @@ defineProps<{ title: string }>()
       </h3>
       <slot name="action" />
     </header>
+    <p
+      v-if="hint"
+      class="-mt-1 mb-2 text-[11px] leading-snug text-muted-foreground"
+    >
+      {{ hint }}
+    </p>
     <div class="flex flex-col gap-1.5">
       <slot />
     </div>

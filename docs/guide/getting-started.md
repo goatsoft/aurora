@@ -6,11 +6,26 @@ order: 1
 
 # Getting started
 
-Aurora's packages publish to GitHub Packages under the `@goatsoft` scope. Point the scope at it once, in your project's `.npmrc`:
+## Before you install
 
-```ini [.npmrc]
-@goatsoft:registry=https://npm.pkg.github.com
-```
+Aurora's packages are on GitHub Packages under the `@goatsoft` scope, and GitHub Packages needs a token even for public packages.
+
+1. On GitHub, create a personal access token (classic) with the `read:packages` scope.
+2. Add it to your user `~/.npmrc` (not the project's, so it isn't committed):
+
+   ```ini [~/.npmrc]
+   //npm.pkg.github.com/:_authToken=YOUR_TOKEN
+   ```
+
+3. Point the scope at GitHub Packages in your project's `.npmrc`:
+
+   ```ini [.npmrc]
+   @goatsoft:registry=https://npm.pkg.github.com
+   ```
+
+## Your first file
+
+Open [Aurora Studio](/studio/), pick a scene, and save it into your project as `src/hero.aurora`. Or copy one of the [starters](../../presets/starters/aurora-fbm.aurora), one for each generator. The examples below import that file.
 
 ## With Vue and Vite
 
@@ -52,7 +67,7 @@ For typed imports, add the client types to your `tsconfig.json`:
 }
 ```
 
-Then import a file and give it a positioned parent. The background fills it:
+Then import the file. The background fills its nearest positioned parent, so give that element `position: relative` (or `absolute` or `fixed`):
 
 ```vue [Hero.vue]
 <script setup lang="ts">
@@ -61,22 +76,34 @@ import hero from './hero.aurora'
 </script>
 
 <template>
-  <section class="relative">
+  <section style="position: relative">
     <AuroraBackground :src="hero" />
     <h1>Your headline</h1>
   </section>
 </template>
 ```
 
-On the server, `<AuroraBackground>` renders the CSS fallback, so the first paint already has the background. In the browser, WebGPU takes over without a flash once its first frame is ready.
+On the server, `<AuroraBackground>` renders the CSS fallback, so the first paint already has the background. In the browser, WebGPU replaces it once its first frame is ready, with a short crossfade.
 
-::: tip One background across panels
-Wrap separate sections in `<AuroraScene name="landing">` and their backgrounds share one clock and one continuous field, so they read as a single sky.
+::: tip Using Tailwind
+The examples use inline styles so they work anywhere. With Tailwind, use classes instead:
+
+| Inline style | Tailwind |
+|---|---|
+| `position: relative` | `relative` |
+| `position: fixed; inset: 0; z-index: -1; pointer-events: none` (a full-page background) | `fixed inset-0 -z-1 pointer-events-none` |
+| `position: relative; overflow: hidden` (a card) | `relative overflow-hidden` |
+
+The background sizes itself to that element, so it needs no classes of its own. Studio's **Export** menu can also give you its snippets with Tailwind classes.
 :::
 
-## Any page, no framework
+::: tip One background across panels
+Wrap separate sections in `<AuroraScene name="landing">` and their backgrounds share their timing and position, so they line up as one background. See [Shared backgrounds](shared-backgrounds.md).
+:::
 
-The custom element works anywhere, including plain HTML:
+## Without a framework
+
+The custom element works with any framework, or none. This example imports the package by name, so the page needs a bundler such as Vite, or an import map that points `@goatsoft/aurora/element` at the package's file:
 
 ```html [index.html]
 <script type="module">
@@ -87,6 +114,8 @@ The custom element works anywhere, including plain HTML:
   <aurora-bg src="/hero.aurora"></aurora-bg>
 </section>
 ```
+
+`src` is a URL, so the file has to be served with the page: in Vite, put it in `public/`. The element fetches it after the script runs, so the background appears once the file has loaded; until then the section shows its own background colour. For a background in the first paint, render the Vue component on the server or pre-render the page.
 
 Style it per mode with `aurora-bg:state(webgpu)` and `aurora-bg:state(css)`, and listen for the `aurora-mode` and `aurora-error` events.
 
@@ -99,7 +128,3 @@ import hero from './hero.aurora'
 const surface = mountAurora(document.querySelector('#hero')!, hero)
 // Later: surface.update(other), or surface.dispose().
 ```
-
-## Your first file
-
-Open [Aurora Studio](/studio/), pick a scene, and save. Or start from a starter in [`presets/starters`](../../presets/starters/aurora-fbm.aurora), one for each generator.

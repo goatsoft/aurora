@@ -12,7 +12,7 @@ export const linearSweep = defineGenerator({
     angle: { default: 135, min: 0, max: 360, step: 1, label: 'Angle', description: 'Direction of the gradient, CSS convention.', unit: 'deg' },
     spin: { default: 0, min: -90, max: 90, step: 0.5, label: 'Spin', description: 'Turns the gradient over time.', unit: 'deg/s' },
     speed: { default: 0.05, min: 0, max: 1, step: 0.005, label: 'Speed', description: 'How fast the colours flow along the gradient.' },
-    scale: { default: 1, min: 0.25, max: 4, step: 0.05, label: 'Scale', description: 'Colour cycles across the canvas.' },
+    scale: { default: 1, min: 0.25, max: 4, step: 0.05, label: 'Scale', description: 'How many times the colours repeat across the canvas; higher repeats more.' },
   },
   wgsl: /* wgsl */ `
 fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {

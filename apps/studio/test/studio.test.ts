@@ -1,7 +1,11 @@
+import { loadGenerators } from '@goatsoft/aurora'
+import { MAX_LAYERS } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { newLayer } from '@/editor/document'
 import { useStudio } from '@/editor/studio'
 
+// Studio loads every generator when it starts; documents are checked against them.
+await loadGenerators()
 const studio = useStudio()
 
 describe('Studio store', () => {
@@ -28,15 +32,12 @@ describe('Studio store', () => {
     expect(studio.doc.value).toBe(before)
   })
 
-  it('hides muted layers in the preview only, and solo shows one layer', () => {
-    const [grain, aurora] = studio.layerIds.value
+  it('hides muted layers in the preview only', () => {
+    const [grain] = studio.layerIds.value
     studio.ui.muted.add(grain!)
     expect(studio.preview.value.layers.map((l) => l.opacity)).toEqual([0, 1])
     expect(studio.file.value).not.toContain('"opacity"')
     studio.ui.muted.clear()
-    studio.ui.solo = aurora
-    expect(studio.preview.value.layers.map((l) => l.opacity)).toEqual([0, 1])
-    studio.ui.solo = undefined
   })
 
   it('pauses by freezing time in the preview, without touching the document', () => {
@@ -58,6 +59,36 @@ describe('Studio store', () => {
     expect(studio.rendered.value).toBe(good)
     studio.undo()
     expect(studio.issues.value).toEqual([])
+  })
+
+  it('checks generators and parameters as strictly as the build plugin', () => {
+    const good = studio.rendered.value
+    studio.commit({ ...studio.doc.value, layers: [{ ...studio.doc.value.layers[0]!, type: 'nebula' }] })
+    expect(studio.issues.value[0]).toMatchObject({ path: '$.layers[0].type' })
+    expect(studio.rendered.value).toBe(good)
+    studio.undo()
+    studio.commit(studio.ops.param(studio.doc.value, 1, 'speed', 99))
+    expect(studio.issues.value[0]?.path).toBe('$.layers[1].params.speed')
+    studio.undo()
+    expect(studio.open({ ...studio.doc.value, layers: [{ type: 'nebula' }] })).toBe(false)
+    expect(studio.issues.value).toEqual([])
+  })
+
+  it('never lets an invalid document out: no download, no link, and no 17th layer', async () => {
+    studio.commit(studio.ops.color(studio.doc.value, 0, 'not a colour'))
+    expect(studio.exportProblem()).toContain('$.palette[0]')
+    expect(studio.downloadDocument()).toBe(false)
+    expect(await studio.shareLink()).toBeUndefined()
+    studio.undo()
+    expect(studio.exportProblem()).toBeUndefined()
+
+    const before = studio.doc.value.layers.length
+    for (let i = before; i < 20; i++) studio.layers.duplicate(0)
+    expect(studio.doc.value.layers).toHaveLength(MAX_LAYERS)
+    expect(studio.exportProblem()).toBeUndefined()
+    expect(studio.ui.notices.at(-1)?.message).toContain(`at most ${MAX_LAYERS} layers`)
+    for (let i = MAX_LAYERS; i > before; i--) studio.undo()
+    expect(studio.doc.value.layers).toHaveLength(before)
   })
 
   it('derives a file name from the document name', () => {

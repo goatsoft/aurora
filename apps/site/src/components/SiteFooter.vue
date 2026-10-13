@@ -13,11 +13,13 @@ const year = new Date().getFullYear()
           <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
         </div>
         <p class="mt-3 max-w-xs text-sm text-pretty text-muted-foreground">
-          WebGPU backgrounds that feel alive, and a CSS fallback for everyone else. Made by GOATsoft, in the open.
+          Animated WebGPU backgrounds with a CSS fallback. Made by GOATsoft.
         </p>
         <p class="mt-3 max-w-xs text-xs/relaxed text-muted-foreground">
           Code, docs and presets: MIT. The Aurora name and mark have <a
             :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+            target="_blank"
+            rel="noopener"
             class="underline underline-offset-2 hover:text-foreground"
           >separate terms</a>.
         </p>
@@ -35,7 +37,7 @@ const year = new Date().getFullYear()
           </li>
           <li>
             <RouterLink
-              to="/#elements"
+              to="/#generators"
               class="hover:text-foreground"
             >
               Generators
@@ -75,12 +77,16 @@ const year = new Date().getFullYear()
           <li>
             <a
               href="/schema/v1.json"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >JSON Schema</a>
           </li>
           <li>
             <a
               :href="SITE.repo"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >GitHub</a>
           </li>
@@ -94,18 +100,24 @@ const year = new Date().getFullYear()
           <li>
             <a
               href="https://goatsoft.io"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >goatsoft.io</a>
           </li>
           <li>
             <a
-              href="mailto:bleet@goatsoft.io"
+              href="https://goatsoft.io/#contact"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >Contact</a>
           </li>
           <li>
             <a
               :href="`${SITE.repo}/issues`"
+              target="_blank"
+              rel="noopener"
               class="hover:text-foreground"
             >Issues</a>
           </li>
@@ -115,9 +127,13 @@ const year = new Date().getFullYear()
     <div class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-border/60 p-6 text-xs text-muted-foreground md:flex-row md:justify-between">
       <span>© {{ year }} GOATsoft. <a
         :href="`${SITE.repo}/blob/develop/LICENSE`"
+        target="_blank"
+        rel="noopener"
         class="hover:text-foreground"
       >MIT licence</a> · <a
         :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+        target="_blank"
+        rel="noopener"
         class="hover:text-foreground"
       >Artwork licence</a></span>
       <span>Built with Aurora and gruff.</span>

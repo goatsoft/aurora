@@ -38,10 +38,20 @@ const fallback = computed(() => {
   if (typeof src === 'string') return undefined
   return `position:absolute;inset:-10%;${(isAuroraModule(src) ? src.css : compileCss(src)).style}`
 })
-// mountAurora paints its own fallback synchronously, so ours goes in the same task.
+// An imported module's surface paints its precompiled fallback at once, so ours goes in the same
+// task. For a plain document, the surface's fallback waits for its generators to load, so the
+// server-rendered one stays until then: never none, never two.
 const hydrated = ref(false)
 onMounted(() => {
-  hydrated.value = true
+  if (typeof props.src !== 'string' && isAuroraModule(props.src)) {
+    hydrated.value = true
+    return
+  }
+  watch(surface, (current) => {
+    void current?.ready.then(() => {
+      if (surface.value === current) hydrated.value = true
+    })
+  }, { immediate: true })
 })
 </script>
 

@@ -1,6 +1,10 @@
+---
+order: 7
+---
+
 # Mesh gradient (`mesh-gradient`)
 
-Four soft colour fields drifting into each other.
+Four colours that drift and blend into each other.
 
 ```aurora
 {
@@ -12,30 +16,32 @@ Four soft colour fields drifting into each other.
     "oklch(0.6 0.2 262)",
     "oklch(0.52 0.25 300)",
     "oklch(0.74 0.15 198)",
-    "oklch(0.62 0.23 350)",
-    "oklch(1 0 0)"
+    "oklch(0.62 0.23 350)"
   ],
   "layers": [
     {
       "type": "mesh-gradient"
-    },
-    {
-      "type": "grain",
-      "blend": "overlay",
-      "colors": [
-        4
-      ],
-      "params": {
-        "amount": 0.06
-      }
     }
   ]
 }
 ```
 
-The starter above is [`presets/starters/mesh-gradient.aurora`](/presets/starters/mesh-gradient.aurora). It reads 4 palette colours, in order. Uses the noise library: `simplex`.
+This is [`presets/starters/mesh-gradient.aurora`](/presets/starters/mesh-gradient.aurora): the generator alone, with its defaults.
+
+## Colours
+
+A layer's `colors` picks 4 palette colours, in the order below. To recolour part of the background, change the palette colour in that position.
+
+| Position | Paints | Default |
+|---|---|---|
+| 0 | First drifting colour point | `oklch(0.6 0.2 262)` |
+| 1 | Second colour point | `oklch(0.52 0.25 300)` |
+| 2 | Third colour point | `oklch(0.74 0.15 198)` |
+| 3 | Fourth colour point | `oklch(0.62 0.23 350)` |
 
 ## Parameters
+
+Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
@@ -45,9 +51,6 @@ The starter above is [`presets/starters/mesh-gradient.aurora`](/presets/starters
 | `spread` | Spread | 0.36 | 0.05 to 0.6 | How far the colour points travel from the centre. |
 | `seed` | Seed | 0 | 0 to 100 | Changes the paths. |
 
-## Default palette
+## Implementation note
 
-- `oklch(0.6 0.2 262)`
-- `oklch(0.52 0.25 300)`
-- `oklch(0.74 0.15 198)`
-- `oklch(0.62 0.23 350)`
+Built on the shared noise library: `simplex`.

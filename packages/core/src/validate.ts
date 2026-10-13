@@ -9,6 +9,15 @@ import { generatorIds, GENERATORS, loadGenerators } from './generators/index'
  */
 export async function validateDocument(doc: AuroraDocument): Promise<FormatIssue[]> {
   await loadGenerators(doc.layers.map((layer) => layer.type))
+  return checkDocument(doc)
+}
+
+/**
+ * `validateDocument` without loading anything: checks against the generators loaded so far, so a
+ * built-in that hasn't loaded yet counts as unknown. For editors that have loaded every generator
+ * and need an answer on every keystroke.
+ */
+export function checkDocument(doc: AuroraDocument): FormatIssue[] {
   const issues: FormatIssue[] = []
   const ids = generatorIds()
   doc.layers.forEach((layer, i) => {

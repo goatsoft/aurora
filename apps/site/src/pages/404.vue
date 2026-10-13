@@ -16,10 +16,10 @@ useHead({ title: 'Not found', description: 'There is nothing at this address.' }
         404
       </p>
       <h1 class="mt-4 text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
-        Lost in the dark.
+        Page not found
       </h1>
       <p class="mx-auto mt-4 max-w-md text-lg text-pretty text-white/75">
-        There's nothing at this address, only stars. Head back and try again.
+        Nothing lives at this address. Try the home page or the docs.
       </p>
       <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
         <Button as-child>

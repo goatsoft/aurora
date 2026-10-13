@@ -3,9 +3,9 @@ import { RouterLink } from 'vue-router'
 import Install from '@/content/install.md'
 
 const steps = [
-  { n: '01', title: 'Design it', body: 'Open Aurora Studio, start from a scene, and save a .aurora file. It\'s plain, declarative JSON.' },
-  { n: '02', title: 'Import it', body: 'The unplugin validates it at build time, with errors at file:line:column, and types it.' },
-  { n: '03', title: 'Drop it in', body: 'One component, or one custom element. The CSS fallback is in your HTML before any script runs.' },
+  { n: '01', title: 'Design it', body: 'Open Aurora Studio, start from a scene or a blank canvas, and save a .aurora file. The file is plain JSON.' },
+  { n: '02', title: 'Import it', body: 'The bundler plugin checks the file when you build, reports mistakes with a line and column, and gives the import a type.' },
+  { n: '03', title: 'Add it to a page', body: 'Use the Vue component or the custom element.' },
 ]
 </script>
 
@@ -17,10 +17,10 @@ const steps = [
     <div class="grid items-start gap-12 lg:grid-cols-[1fr_1.15fr]">
       <div v-reveal>
         <p class="eyebrow">
-          Three steps
+          Workflow
         </p>
         <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-          From idea to <span class="text-spectrum">live background</span> in minutes.
+          From Studio to <span class="text-spectrum">your site</span>
         </h2>
         <ol class="mt-10 space-y-6">
           <li

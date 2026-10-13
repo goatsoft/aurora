@@ -8,15 +8,15 @@ import { defineGenerator } from './define'
 export const auroraFbm = defineGenerator({
   id: 'aurora-fbm',
   label: 'Aurora',
-  description: 'Drifting aurora ribbons from domain-warped fractal noise.',
+  description: 'Drifting ribbons of light.',
   colors: 3,
   palette: ['oklch(0.68 0.16 245)', 'oklch(0.56 0.22 285)', 'oklch(0.58 0.25 310)'],
   params: {
-    intensity: { default: 1, min: 0, max: 2, step: 0.01, label: 'Intensity', description: 'Overall opacity of the ribbons. Above 1 overdrives the glow.' },
-    scale: { default: 1.6, min: 0.1, max: 5, step: 0.01, label: 'Scale', description: 'Noise zoom: smaller gives broader ribbons.' },
+    intensity: { default: 1, min: 0, max: 2, step: 0.01, label: 'Intensity', description: 'How strongly the ribbons show. Above 1 the brightest parts saturate.' },
+    scale: { default: 1.6, min: 0.1, max: 5, step: 0.01, label: 'Scale', description: 'Higher gives smaller, busier ribbons; lower gives broader ones.' },
     speed: { default: 0.06, min: 0, max: 1, step: 0.005, label: 'Speed', description: 'How fast the field drifts.' },
     seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'Offsets the field so neighbours look different.', ui: 'seed' },
-    stretch: { default: 0.55, min: 0.05, max: 3, step: 0.01, label: 'Stretch', description: 'Horizontal stretch: smaller gives longer, wispier ribbons.' },
+    stretch: { default: 0.55, min: 0.05, max: 3, step: 0.01, label: 'Stretch', description: 'Lower gives longer, wispier ribbons; higher gives shorter ones.' },
     sweep: { default: 0, min: 0, max: 1, step: 0.01, label: 'Sweep', description: 'Blend toward a left-to-right gradient from the first to the last colour.' },
   },
   wgsl: /* wgsl */ `
