@@ -1,14 +1,12 @@
 import type { RenderResult } from '@goatsoft/gruff'
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
+import { readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { prerender } from '@goatsoft/gruff'
-import { searchForWorkspaceRoot } from 'vite'
 import { SITE } from './src/head.ts'
 
 // After `vite build` (client) and `vite build --ssr` (dist-server): static HTML for every route.
 const here = import.meta.dirname
-const root = searchForWorkspaceRoot(here)
 const server = readdirSync(join(here, 'dist-server')).find((f) => /^entry-server\.m?js$/.test(f))!
 const entry = await import(pathToFileURL(join(here, 'dist-server', server)).href) as {
   render: (url: string) => Promise<RenderResult>
@@ -41,10 +39,7 @@ const files = await prerender({
   subsetFonts: { axes: { wght: { min: 400, max: 700 } } },
 })
 
-// The format's JSON Schema, at the URL every .aurora file's $schema points to.
-mkdirSync(join(here, 'dist/schema'), { recursive: true })
-copyFileSync(join(root, 'packages/format/schema/v1.json'), join(here, 'dist/schema/v1.json'))
 // Every page, for search engines (robots.txt points here).
 const urls = routes.map((path) => `  <url><loc>${SITE.url}${path === '/' ? '/' : `${path}/`}</loc></url>`)
 writeFileSync(join(here, 'dist/sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`)
-console.log(`Prerendered ${files.length} pages, the sitemap and the schema.`)
+console.log(`Prerendered ${files.length} pages and the sitemap.`)

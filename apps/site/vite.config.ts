@@ -1,4 +1,5 @@
-import { readdirSync, statSync } from 'node:fs'
+import type { Plugin } from 'vite'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import aurora from '@goatsoft/aurora-unplugin/vite'
@@ -37,8 +38,30 @@ function pages(dir = docs): { file: string, route: string }[] {
   })
 }
 
+/**
+ * The format's JSON Schema at /schema/v1.json, the URL every .aurora file's `$schema` points to:
+ * served by the dev server and emitted with the client build.
+ */
+function schema(): Plugin {
+  const file = join(root, 'packages/format/schema/v1.json')
+  return {
+    name: 'aurora-site:schema',
+    configureServer(server) {
+      server.watcher.add(file)
+      server.middlewares.use('/schema/v1.json', (_req, res) => {
+        res.setHeader('Content-Type', 'application/schema+json')
+        res.end(readFileSync(file))
+      })
+    },
+    generateBundle() {
+      if (this.environment.name === 'client') this.emitFile({ type: 'asset', fileName: 'schema/v1.json', source: readFileSync(file) })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
+    schema(),
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
     VueRouter({
       root: here,
