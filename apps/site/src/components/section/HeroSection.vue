@@ -20,10 +20,10 @@ import { borealis } from '@/lib/scenes'
     <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-background" />
 
     <h1 class="max-w-5xl animate-rise text-4xl leading-[1.05] font-semibold tracking-[-0.03em] text-balance [animation-delay:120ms] [text-shadow:0_2px_30px_oklch(0_0_0/0.5)] sm:text-6xl lg:text-7xl">
-      Animated backgrounds <span class="text-spectrum">for your site</span>
+      Give your site <span class="text-spectrum">atmosphere</span>.
     </h1>
     <p class="mx-auto mt-6 max-w-xl animate-rise text-base text-pretty text-foreground/80 [animation-delay:240ms] [text-shadow:0_1px_12px_oklch(0_0_0/0.6)] sm:text-lg">
-      Create a background in Studio, then use it with Vue or HTML.
+      Beautiful backgrounds that move with you.
     </p>
 
     <div class="mt-8 flex animate-rise flex-wrap items-center justify-center gap-3 [animation-delay:360ms]">
