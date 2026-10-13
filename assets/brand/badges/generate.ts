@@ -26,7 +26,7 @@ export function generateBadges(root: string) {
           const name = `${key}${inline ? '-inline' : ''}-${theme}${animated ? '-animated' : ''}.svg`
           const favicon = readFileSync(join(root, `assets/brand/favicon-${theme === 'dark' ? 'dark' : 'light'}.svg`), 'utf8')
           const artwork = favicon.slice(favicon.indexOf('>') + 1, favicon.lastIndexOf('</svg>')).trim()
-          const mark = `<svg x="${inline ? 6 : 10}" y="${inline ? 4 : 8}" width="${inline ? 24 : 32}" height="${inline ? 24 : 32}" viewBox="0 0 128 128" fill="none" aria-hidden="true">${artwork}</svg>`
+          const mark = `<svg x="${inline ? 8 : 10}" y="${inline ? 6 : 8}" width="${inline ? 20 : 32}" height="${inline ? 20 : 32}" viewBox="0 0 128 128" fill="none" aria-hidden="true">${artwork}</svg>`
           let css = colors[theme === 'dark' ? 'dark' : 'light']
           if (theme === 'auto') css += `@media(prefers-color-scheme:dark){${colors.dark}.s0{stop-color:#43f4dc}.s1{stop-color:#8c83ff}.s2{stop-color:#ee82ed}}`
           if (animated) css += '@media(prefers-reduced-motion:no-preference){.breathe{animation:aurora-breathe 6s ease-in-out infinite}}@keyframes aurora-breathe{0%,100%{opacity:.16}50%{opacity:.5}}'

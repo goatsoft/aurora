@@ -38,7 +38,7 @@ The Aurora mark and every file in `assets/` are Brand Assets under the [Aurora a
 
 ## Attribution badges
 
-`badges/badge.svg` is the shared template. `badges/generate.ts` combines it with the approved favicon artwork to generate single-file inline (32 px tall, the default) and stacked (168 × 48) SVGs for `made-with`, `powered-by` and `enabled`, each in `auto`, `light` and `dark`, with a static default and an optional `-animated` suffix. Embed as a linked image; the compact mark is reproduced unchanged at 24 px inline or 32 px stacked. The slow animation affects only the card's inset glow and honours reduced motion.
+`badges/badge.svg` is the shared template. `badges/generate.ts` combines it with the approved favicon artwork to generate single-file inline (32 px tall, the default) and stacked (168 × 48) SVGs for `made-with`, `powered-by` and `enabled`, each in `auto`, `light` and `dark`, with a static default and an optional `-animated` suffix. Embed as a linked image; the compact mark is reproduced unchanged at 20 px inline or 32 px stacked. The slow animation affects only the card's inset glow and honours reduced motion.
 
 Use the attribution docs page for live examples, downloads and copyable Vue/HTML/Markdown snippets. Generated files in `badges/v1/` are ignored by Git; site and Studio configs generate them automatically, or run `pnpm badges:generate`. Inline URLs are `/badges/v1/{label}-inline-{theme}[-animated].svg`; stacked cards retain `/badges/v1/{label}-{theme}[-animated].svg`; the site's Vite plugin serves generated SVGs in development and emits them at those stable paths for production. The package helpers reference these URLs and contain no artwork. See `docs/guide/attribution.md` for HTML, Markdown, Vue and self-hosting examples.
 
