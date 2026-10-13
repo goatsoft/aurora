@@ -18,7 +18,8 @@ watch(here, () => (menu.value = false))
 
 <template>
   <div class="mx-auto grid max-w-7xl gap-10 px-6 pt-28 pb-24 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
-    <aside class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto lg:pb-8">
+    <!-- Sticks below the nav and runs to the bottom of the window, scrolling on its own. -->
+    <aside class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pb-8">
       <SearchDialog />
       <button
         class="mt-3 flex w-full items-center justify-between rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground lg:hidden"
@@ -64,7 +65,8 @@ watch(here, () => (menu.value = false))
       </nav>
     </aside>
 
-    <main class="min-w-0">
+    <!-- At least as tall as the sidebar can be, so a short page doesn't push the sticky sidebar up and cut it off. -->
+    <main class="min-w-0 lg:min-h-[calc(100dvh-7rem)]">
       <article><slot /></article>
       <nav
         v-if="prev || next"

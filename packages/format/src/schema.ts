@@ -13,6 +13,9 @@ export const BLEND_MODES = ['normal', 'screen', 'add', 'multiply', 'overlay'] as
 export const MIX_SPACES = ['oklab', 'srgb'] as const
 export const FADES = ['none', 'x', 'y'] as const
 export const REDUCED_MOTION = ['still', 'slow', 'css'] as const
+/** The most layers, and the most palette colours, a document can have. */
+export const MAX_LAYERS = 16
+export const MAX_COLORS = 16
 
 const range = (min: number, max: number, description: string) =>
   v.pipe(
@@ -162,13 +165,13 @@ export const AuroraSchema = v.pipe(
     palette: v.pipe(
       v.array(Color),
       v.minLength(1, 'must have at least one colour'),
-      v.maxLength(16, 'must have 16 colours or fewer'),
+      v.maxLength(MAX_COLORS, `must have ${MAX_COLORS} colours or fewer`),
       v.description('Colours referenced by layers, by index.'),
     ),
     layers: v.pipe(
       v.array(Layer),
       v.minLength(1, 'must have at least one layer'),
-      v.maxLength(16, 'must have 16 layers or fewer'),
+      v.maxLength(MAX_LAYERS, `must have ${MAX_LAYERS} layers or fewer`),
       v.description('Layer stack, bottom first.'),
     ),
     fallback: v.optional(Fallback, { mode: 'auto' }),

@@ -54,8 +54,7 @@ async function save() {
 }
 function downloadFile() {
   exporting.value = false
-  download(studio.fileName.value, studio.file.value)
-  studio.notify(`Downloaded ${studio.fileName.value}`)
+  studio.downloadDocument()
 }
 const project = studio.project
 const browsing = ref(false)
@@ -110,7 +109,9 @@ async function poster() {
   }
 }
 async function share() {
-  await navigator.clipboard.writeText(await studio.shareLink())
+  const link = await studio.shareLink()
+  if (!link) return
+  await navigator.clipboard.writeText(link)
   studio.notify('Link copied: it holds the whole document, no account needed')
 }
 /** ⇧⌘S: a new file in the open folder or project, or anywhere via the system picker. */

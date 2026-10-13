@@ -2,6 +2,7 @@ import type { Doc, LayerInput } from './document'
 import type { Generator } from '@goatsoft/aurora'
 import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
 import { GENERATORS, loadGenerators } from '@goatsoft/aurora'
+import { MAX_LAYERS } from '@goatsoft/aurora-format'
 import { computed, reactive, shallowRef, watch } from 'vue'
 import { ops, resolve, serialize, starter } from './document'
 
@@ -10,6 +11,7 @@ interface Entry {
   ids: number[]
 }
 import type { Workspace } from './workspace'
+import { download } from './export'
 import { History } from './history'
 import { forgetConnection, takeConnection } from './project'
 import { decodeShare, encodeShare } from './share'
@@ -164,10 +166,18 @@ function createStudio() {
     commit(op(history.present.doc, ...args))
   }
 
+  /** A document holds at most MAX_LAYERS layers; adding past that would make it invalid. */
+  function full(): boolean {
+    if (history.present.doc.layers.length < MAX_LAYERS) return false
+    notify(`A background can have at most ${MAX_LAYERS} layers. Delete one to add another.`, 'error')
+    return true
+  }
+
   /** Layer-list edits that keep every surviving layer's id. */
   const layers = {
     /** Inserts a layer; `base` lets the same step also add the colours it brings. */
     add(layer: LayerInput, at = history.present.doc.layers.length, base = history.present.doc) {
+      if (full()) return
       const ids = [...history.present.ids]
       ids.splice(at, 0, ++nextId)
       commit(ops.addLayer(base, layer, at), undefined, ids)
@@ -178,6 +188,7 @@ function createStudio() {
       commit(ops.removeLayer(history.present.doc, i), undefined, history.present.ids.filter((_, k) => k !== i))
     },
     duplicate(i: number) {
+      if (full()) return
       const ids = [...history.present.ids]
       ids.splice(i + 1, 0, ++nextId)
       commit(ops.duplicateLayer(history.present.doc, i), undefined, ids)
@@ -318,10 +329,31 @@ function createStudio() {
     }
   }
 
+  /**
+   * Why the document can't leave Studio as it is, or undefined when it can. Every way out (saving,
+   * Save as, Download, share links) checks this, so no path produces a file that wouldn't load.
+   */
+  function exportProblem(): string | undefined {
+    const result = resolve(history.present.doc)
+    return result.ok ? undefined : `${result.issues[0]!.path} ${result.issues[0]!.message}`
+  }
+
+  /** Downloads the `.aurora` file, unless it's invalid. Returns whether it did. */
+  function downloadDocument(): boolean {
+    const problem = exportProblem()
+    if (problem) {
+      notify(`Not downloaded: ${problem}`, 'error')
+      return false
+    }
+    download(fileName.value, file.value)
+    notify(`Downloaded ${fileName.value}`)
+    return true
+  }
+
   async function write(ws: Workspace, path: string, text: string) {
     // Never write a file that wouldn't load (the dev-server API checks this too).
-    const result = resolve(history.present.doc)
-    if (!result.ok) throw new Error(`Not saved: ${result.issues[0]!.path} ${result.issues[0]!.message}`)
+    const problem = exportProblem()
+    if (problem) throw new Error(`Not saved: ${problem}`)
     await ws.write(path, text)
     project.saved = text
     notify(`Saved ${path}`)
@@ -359,6 +391,9 @@ function createStudio() {
         return true
       }
       if (!canUseDisk()) return false
+      // Say so before the picker, rather than after the user has chosen where.
+      const problem = exportProblem()
+      if (problem) throw new Error(`Not saved: ${problem}`)
       const handle = await pickSaveTarget(fileName.value)
       if (!handle) return true
       const next = fileWorkspace(handle)
@@ -377,7 +412,13 @@ function createStudio() {
     useWorkspace(undefined)
   }
 
-  async function shareLink(): Promise<string> {
+  /** A link holding the whole document, or undefined (with a notice) when it's invalid. */
+  async function shareLink(): Promise<string | undefined> {
+    const problem = exportProblem()
+    if (problem) {
+      notify(`No link made: ${problem}`, 'error')
+      return undefined
+    }
     const url = new URL(location.href)
     url.hash = await encodeShare(doc.value)
     return url.toString()
@@ -447,6 +488,8 @@ function createStudio() {
     open,
     openFile,
     shareLink,
+    downloadDocument,
+    exportProblem,
     project,
     dirty,
     refreshFiles,

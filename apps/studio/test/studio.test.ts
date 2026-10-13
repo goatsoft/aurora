@@ -1,4 +1,5 @@
 import { loadGenerators } from '@goatsoft/aurora'
+import { MAX_LAYERS } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { newLayer } from '@/editor/document'
 import { useStudio } from '@/editor/studio'
@@ -71,6 +72,23 @@ describe('Studio store', () => {
     studio.undo()
     expect(studio.open({ ...studio.doc.value, layers: [{ type: 'nebula' }] })).toBe(false)
     expect(studio.issues.value).toEqual([])
+  })
+
+  it('never lets an invalid document out: no download, no link, and no 17th layer', async () => {
+    studio.commit(studio.ops.color(studio.doc.value, 0, 'not a colour'))
+    expect(studio.exportProblem()).toContain('$.palette[0]')
+    expect(studio.downloadDocument()).toBe(false)
+    expect(await studio.shareLink()).toBeUndefined()
+    studio.undo()
+    expect(studio.exportProblem()).toBeUndefined()
+
+    const before = studio.doc.value.layers.length
+    for (let i = before; i < 20; i++) studio.layers.duplicate(0)
+    expect(studio.doc.value.layers).toHaveLength(MAX_LAYERS)
+    expect(studio.exportProblem()).toBeUndefined()
+    expect(studio.ui.notices.at(-1)?.message).toContain(`at most ${MAX_LAYERS} layers`)
+    for (let i = MAX_LAYERS; i > before; i--) studio.undo()
+    expect(studio.doc.value.layers).toHaveLength(before)
   })
 
   it('derives a file name from the document name', () => {
