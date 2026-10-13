@@ -17,9 +17,11 @@ watch(here, () => (menu.value = false))
 </script>
 
 <template>
-  <div class="mx-auto grid max-w-7xl gap-10 px-6 pt-28 pb-24 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
+  <!-- The grid runs to the footer (its top margin is cancelled here and given back as the main
+       column's padding), so the sticky sidebar stays put until the footer actually arrives. -->
+  <div class="mx-auto -mb-24 grid max-w-7xl gap-10 px-6 pt-28 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
     <!-- Sticks below the nav and runs to the bottom of the window, scrolling on its own. -->
-    <aside class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pb-8">
+    <aside class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:mask-b-from-[calc(100%-2.5rem)] lg:mask-b-to-100% lg:pb-10">
       <SearchDialog />
       <button
         class="mt-3 flex w-full items-center justify-between rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground lg:hidden"
@@ -66,7 +68,7 @@ watch(here, () => (menu.value = false))
     </aside>
 
     <!-- At least as tall as the sidebar can be, so a short page doesn't push the sticky sidebar up and cut it off. -->
-    <main class="min-w-0 lg:min-h-[calc(100dvh-7rem)]">
+    <main class="min-w-0 pb-48 lg:min-h-[calc(100dvh-7rem)]">
       <article><slot /></article>
       <nav
         v-if="prev || next"
