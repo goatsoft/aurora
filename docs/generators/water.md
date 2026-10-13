@@ -2,9 +2,26 @@
 
 Water: sunlight caustics rippling over deep, clear water.
 
-![Water with its defaults](/packages/core/test/golden/water.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Water starter",
+  "palette": [
+    "oklch(0.3 0.08 245)",
+    "oklch(0.55 0.12 220)",
+    "oklch(0.95 0.07 185)"
+  ],
+  "layers": [
+    {
+      "type": "water"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `worley`, `simplex`.
+The starter above is [`presets/starters/water.aurora`](/presets/starters/water.aurora). It reads 3 palette colours, in order. Uses the noise library: `worley`, `simplex`.
 
 ## Parameters
 
@@ -23,26 +40,3 @@ Reads 3 palette colours, in order. Uses the noise library: `worley`, `simplex`.
 - `oklch(0.3 0.08 245)`
 - `oklch(0.55 0.12 220)`
 - `oklch(0.95 0.07 185)`
-
-## Starter
-
-[`presets/starters/water.aurora`](/presets/starters/water.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Water starter",
-  "palette": [
-    "oklch(0.3 0.08 245)",
-    "oklch(0.55 0.12 220)",
-    "oklch(0.95 0.07 185)"
-  ],
-  "layers": [
-    {
-      "type": "water"
-    }
-  ]
-}
-```

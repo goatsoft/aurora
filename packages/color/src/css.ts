@@ -1,5 +1,5 @@
-import { oklabToOklch, oklchToOklab, rgbToOklab } from './oklab'
 import type { Oklab, RgbSpace } from './oklab'
+import { oklabToOklch, oklchToOklab, rgbToOklab } from './oklab'
 
 export type ColorParseResult = { ok: true, color: Oklab } | { ok: false, message: string }
 

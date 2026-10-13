@@ -1,9 +1,9 @@
+import type { FormatIssue } from './issues'
+import type { AuroraDocument, AuroraInput } from './schema'
 import * as v from 'valibot'
 import { AuroraFormatError, jsonPath, toFormatIssue } from './issues'
-import type { FormatIssue } from './issues'
 import { migrate } from './migrate'
 import { AuroraSchema, SCHEMA_URL } from './schema'
-import type { AuroraDocument, AuroraInput } from './schema'
 
 export type ParseResult
   = | { ok: true, doc: AuroraDocument, sourceVersion: number }

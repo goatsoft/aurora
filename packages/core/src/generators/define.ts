@@ -1,5 +1,5 @@
-import type { Oklab } from '@goatsoft/color'
 import type { NoiseModule } from './noise'
+import type { Oklab } from '@goatsoft/color'
 
 /** A numeric generator parameter. Studio builds its inspector controls from these. */
 export interface ParamSpec {

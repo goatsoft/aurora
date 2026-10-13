@@ -1,7 +1,7 @@
+import type { CanvasInput, Doc, LayerInput, MotionInput } from '@/editor/document'
 import { readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, inject, it } from 'vitest'
 import { newLayer, ops, resolve, serialize, snap, starter } from '@/editor/document'
-import type { CanvasInput, Doc, LayerInput, MotionInput } from '@/editor/document'
 
 const root = inject('root')
 const read = (pack: string) => readdirSync(`${root}/presets/${pack}`).filter((f) => f.endsWith('.aurora')).map((f) => [f, readFileSync(`${root}/presets/${pack}/${f}`, 'utf8')] as const)
@@ -33,8 +33,8 @@ function recreate(target: Doc): Doc {
   return doc
 }
 
-describe('Phase 5: Studio recreates every GOAT preset from scratch', () => {
-  it.each(read('goat'))('%s', (_, text) => {
+describe('Studio recreates every classic and mono preset from scratch', () => {
+  it.each([...read('classic'), ...read('mono')])('%s', (_, text) => {
     const doc = recreate(JSON.parse(text) as Doc)
     expect(resolve(doc).ok).toBe(true)
     expect(serialize(doc)).toBe(text)
@@ -42,7 +42,7 @@ describe('Phase 5: Studio recreates every GOAT preset from scratch', () => {
 })
 
 describe('serialize', () => {
-  it.each([...read('goat'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
+  it.each([...read('classic'), ...read('mono'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
     expect(serialize(JSON.parse(text) as Doc)).toBe(text)
   })
 })

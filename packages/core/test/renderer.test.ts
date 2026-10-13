@@ -1,6 +1,6 @@
+import type { SurfaceState } from '@/protocol'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { SurfaceState } from '@/protocol'
 import { generatorSpec } from '@/generators/define'
 import { GENERATORS } from '@/generators/index'
 import { Renderer } from '@/renderer'

@@ -1,5 +1,5 @@
-import type { AuroraDocument } from '@goatsoft/aurora-format'
 import type { CssFallback } from './css'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
 
 /** What `import hero from './hero.aurora'` gives you with @goatsoft/aurora-unplugin. */
 export interface AuroraModule {

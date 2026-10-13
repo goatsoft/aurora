@@ -1,15 +1,15 @@
-import { assertAurora } from '@goatsoft/aurora-format'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import '@/element'
-import { AuroraBackgroundElement, loadAurora } from '@/element'
 import type { AuroraErrorEvent, AuroraModeEvent } from '@/element'
-import { compileCss } from '@/css'
-import { hotUpdate } from '@/module'
 import type { Backend, LeaseListener } from '@/pool'
 import type { SurfaceState } from '@/protocol'
+import { assertAurora } from '@goatsoft/aurora-format'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { compileCss } from '@/css'
+import { AuroraBackgroundElement, loadAurora } from '@/element'
+import { hotUpdate } from '@/module'
 import { setBackends } from '@/surface'
+import '@/element'
 
-const HERO = '/presets/goat/hero.aurora'
+const HERO = '/presets/classic/hero.aurora'
 const leases: { listener: LeaseListener, states: SurfaceState[] }[] = []
 const backend: Backend = {
   acquire(listener) {
@@ -61,7 +61,7 @@ describe('<aurora-bg>', () => {
     el.addEventListener('aurora-mode', (e: AuroraModeEvent) => modes.push(e.detail.mode))
     await until(() => leases.length === 1 && leases[0]!.states.length > 0)
     expect(el.querySelector('[data-aurora]')).not.toBeNull()
-    expect(leases[0]!.states[0]!.doc.name).toBe('GOAT hero')
+    expect(leases[0]!.states[0]!.doc.name).toBe('Classic hero')
     leases[0]!.listener.frame()
     expect(el.mode).toBe('webgpu')
     expect(el.matches(':state(webgpu)')).toBe(true)
@@ -126,9 +126,9 @@ describe('<aurora-bg>', () => {
 
   it('ignores a stale load when src changes again', async () => {
     const el = element(`<aurora-bg src="${HERO}"></aurora-bg>`)
-    el.src = '/presets/goat/stack-tile.aurora'
+    el.src = '/presets/classic/stack-tile.aurora'
     await until(() => (leases[0]?.states.length ?? 0) > 0)
     await new Promise((resolve) => setTimeout(resolve, 100))
-    expect(leases.map((l) => l.states[0]!.doc.name)).toEqual(['GOAT stack tile'])
+    expect(leases.map((l) => l.states[0]!.doc.name)).toEqual(['Classic stack tile'])
   })
 })

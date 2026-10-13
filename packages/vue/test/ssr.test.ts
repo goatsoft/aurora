@@ -1,5 +1,5 @@
-import { compileCss } from '@goatsoft/aurora'
 import type { AuroraSource } from '@goatsoft/aurora'
+import { compileCss } from '@goatsoft/aurora'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { describe, expect, it } from 'vitest'
 import { createSSRApp, h } from 'vue'

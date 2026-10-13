@@ -8,14 +8,15 @@ const { ui } = studio
 
 const stats = ref<{ fps: number, ms: number, surfaces: number }>()
 let last: { frames: number, at: number } | undefined
-useIntervalFn(async () => {
+async function sample() {
   const s = await auroraStats()
   if (!s) return
   const now = performance.now()
   const fps = last ? ((s.frames - last.frames) * 1000) / (now - last.at) : 0
   last = { frames: s.frames, at: now }
   stats.value = { fps: Math.round(fps), ms: s.frameMs, surfaces: s.surfaces }
-}, 1000)
+}
+useIntervalFn(() => void sample(), 1000)
 
 const speed = computed(() => studio.rendered.value.motion.speed)
 function setSpeed(v: number | undefined) {
@@ -35,9 +36,18 @@ function shuffle() {
 </script>
 
 <template>
-  <footer class="glass absolute bottom-4 left-1/2 z-30 flex h-12 -translate-x-1/2 items-center gap-1 rounded-2xl px-1.5 animate-[rise-in_500ms_cubic-bezier(0.2,0.9,0.1,1)]">
-    <Tip :label="ui.playing ? 'Pause' : 'Play'" keys="Space" side="top">
-      <Button size="icon" variant="subtle" :aria-label="ui.playing ? 'Pause' : 'Play'" @click="ui.playing = !ui.playing">
+  <footer class="absolute bottom-4 left-1/2 z-30 flex h-12 -translate-x-1/2 animate-[rise-in_500ms_cubic-bezier(0.2,0.9,0.1,1)] items-center gap-1 rounded-2xl glass px-1.5">
+    <Tip
+      :label="ui.playing ? 'Pause' : 'Play'"
+      keys="Space"
+      side="top"
+    >
+      <Button
+        size="icon"
+        variant="subtle"
+        :aria-label="ui.playing ? 'Pause' : 'Play'"
+        @click="ui.playing = !ui.playing"
+      >
         <IHgPause v-if="ui.playing" />
         <IHgPlay v-else />
       </Button>
@@ -59,15 +69,39 @@ function shuffle() {
         @end="studio.seal()"
       />
     </div>
-    <Tip label="Shuffle seed" keys="R" side="top">
-      <Button size="icon" aria-label="Shuffle seed" :disabled="!seedName" @click="shuffle"><IHgShuffle /></Button>
+    <Tip
+      label="Shuffle seed"
+      keys="R"
+      side="top"
+    >
+      <Button
+        size="icon"
+        aria-label="Shuffle seed"
+        :disabled="!seedName"
+        @click="shuffle"
+      >
+        <IHgShuffle />
+      </Button>
     </Tip>
-    <Tip label="Preview reduced motion" side="top">
-      <Button size="icon" aria-label="Preview reduced motion" :data-state="ui.reducedMotion ? 'on' : 'off'" @click="ui.reducedMotion = !ui.reducedMotion"><IHgDashboardSpeed01 /></Button>
+    <Tip
+      label="Preview reduced motion"
+      side="top"
+    >
+      <Button
+        size="icon"
+        aria-label="Preview reduced motion"
+        :data-state="ui.reducedMotion ? 'on' : 'off'"
+        @click="ui.reducedMotion = !ui.reducedMotion"
+      >
+        <IHgDashboardSpeed01 />
+      </Button>
     </Tip>
     <span class="mx-1 h-5 w-px bg-panel-border" />
     <div class="flex min-w-36 items-center gap-2 px-2 font-mono text-[11px] text-muted-foreground tabular">
-      <span class="size-1.5 rounded-full" :class="stats && stats.fps > 0 ? 'bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400' : 'bg-muted-foreground/50'" />
+      <span
+        class="size-1.5 rounded-full"
+        :class="stats && stats.fps > 0 ? 'bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400' : 'bg-muted-foreground/50'"
+      />
       <template v-if="stats && stats.surfaces">
         <span>{{ stats.fps }} fps</span>
         <span>{{ stats.ms.toFixed(1) }} ms</span>

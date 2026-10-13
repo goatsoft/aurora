@@ -1,5 +1,5 @@
-import { inject } from 'vue'
 import type { InjectionKey } from 'vue'
+import { inject } from 'vue'
 
 export const SCENE: InjectionKey<() => string | undefined> = Symbol('aurora-scene')
 

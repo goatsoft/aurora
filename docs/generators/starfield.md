@@ -2,9 +2,26 @@
 
 A night sky: twinkling stars, a faint milky way and the odd shooting star.
 
-![Starfield with its defaults](/packages/core/test/golden/starfield.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Starfield starter",
+  "palette": [
+    "oklch(0.12 0.03 268)",
+    "oklch(0.26 0.07 288)",
+    "oklch(0.97 0.02 245)"
+  ],
+  "layers": [
+    {
+      "type": "starfield"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
+The starter above is [`presets/starters/starfield.aurora`](/presets/starters/starfield.aurora). It reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 
 ## Parameters
 
@@ -24,26 +41,3 @@ Reads 3 palette colours, in order. Uses the noise library: `fbm`, `hash`.
 - `oklch(0.12 0.03 268)`
 - `oklch(0.26 0.07 288)`
 - `oklch(0.97 0.02 245)`
-
-## Starter
-
-[`presets/starters/starfield.aurora`](/presets/starters/starfield.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Starfield starter",
-  "palette": [
-    "oklch(0.12 0.03 268)",
-    "oklch(0.26 0.07 288)",
-    "oklch(0.97 0.02 245)"
-  ],
-  "layers": [
-    {
-      "type": "starfield"
-    }
-  ]
-}
-```

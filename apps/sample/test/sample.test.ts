@@ -25,8 +25,8 @@ describe('sample app (PLAN.md Phase 3)', () => {
   })
 
   it('builds for the browser with the .aurora files compiled in, and no absolute paths', () => {
-    expect(result.code).toContain('GOAT hero')
-    expect(result.code).toContain('GOAT pillar, violet')
+    expect(result.code).toContain('Classic hero')
+    expect(result.code).toContain('Classic pillar, violet')
     expect(result.code).not.toContain(result.root)
   })
 })

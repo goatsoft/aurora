@@ -1,16 +1,16 @@
-import { assertAurora } from '@goatsoft/aurora-format'
-import type { AuroraInput } from '@goatsoft/aurora-format'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { auroraStats, configureAurora, mountAurora } from '@/index'
 import type { AuroraMode } from '@/index'
-import { createMainThreadBackend, createWorkerBackend } from '@/pool'
 import type { Backend, LeaseListener } from '@/pool'
 import type { SurfaceState } from '@/protocol'
+import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora } from '@goatsoft/aurora-format'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { GENERATORS } from '@/generators/index'
+import { auroraStats, configureAurora, mountAurora } from '@/index'
+import { createMainThreadBackend, createWorkerBackend } from '@/pool'
 import { setBackends } from '@/surface'
 import AuroraWorker from '@/worker?worker'
-import { GENERATORS } from '@/generators/index'
 
-const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/goat/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
+const hero = assertAurora(Object.values(import.meta.glob<string>('~/presets/classic/hero.aurora', { query: '?raw', import: 'default', eager: true }))[0])
 const doc = (extra: Partial<AuroraInput> = {}) => assertAurora({ ...hero, ...extra })
 
 let host: HTMLDivElement

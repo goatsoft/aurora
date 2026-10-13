@@ -16,7 +16,7 @@ const open = defineModel<boolean>('open', { default: false })
         :align="align ?? 'center'"
         :side-offset="8"
         :collision-padding="12"
-        class="glass z-50 rounded-xl p-3 outline-none data-[state=open]:animate-[pop-in_160ms_cubic-bezier(0.2,0.9,0.1,1)]"
+        class="z-50 rounded-xl glass p-3 outline-none data-[state=open]:animate-[pop-in_160ms_cubic-bezier(0.2,0.9,0.1,1)]"
         :class="$props.class"
       >
         <slot />

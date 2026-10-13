@@ -4,11 +4,11 @@ Status: accepted · 12 October 2026
 
 ## Context
 
-Studio is how most people will meet Aurora, so it carries the north star more than any package: it has to feel immediate, never lose work, and save files that are exactly what a hand-written preset would be. Phase 5 is done when it can recreate every GOAT preset from scratch and export files identical to the pack.
+Studio is how most people will meet Aurora, so it carries the north star more than any package: it has to feel immediate, never lose work, and save files that are exactly what a hand-written preset would be. Phase 5 is done when it can recreate every classic preset from scratch and export files identical to the pack.
 
 ## Decision
 
-- **Studio edits documents as authored**, not with defaults filled in. A value you set is written even when it equals its default (the GOAT pack spells some out); resetting a value (double-click a field) removes it. New layers are written in the pack's house style (`type`, `blend`, `params`, `colors`, `mix`). Opening and saving a file changes nothing, and a test rebuilds all fifteen GOAT presets from Studio's starting document using only the editor's operations and checks the saved bytes. The pack's three `1.0`s became `1`, the form JSON writes.
+- **Studio edits documents as authored**, not with defaults filled in. A value you set is written even when it equals its default (the classic presets spell some out); resetting a value (double-click a field) removes it. New layers are written in the pack's house style (`type`, `blend`, `params`, `colors`, `mix`). Opening and saving a file changes nothing, and a test rebuilds all fifteen classic presets from Studio's starting document using only the editor's operations and checks the saved bytes. The pack's three `1.0`s became `1`, the form JSON writes.
 - **Every edit is a pure operation** (`editor/document.ts`) committed to an immutable history. Continuous gestures share a group key and undo as one step. Layers carry ids in each history entry, so lists animate reorders and mute/solo survive undo. While a document is invalid (a half-typed colour), the canvas keeps the last valid one and the inspector says what's wrong.
 - **The canvas is the real runtime**: `<AuroraBackground>` for WebGPU and the compiled CSS fallback beside it, in viewport frames or a scrolling full page, on a dark or light page. Split view compares the two, scored by the mean ΔE-OK between the WebGPU frame (`@goatsoft/aurora/poster`'s `renderFrame`) and the fallback as the browser paints it (rasterised through an SVG `foreignObject`).
 - **Nothing needs a server.** Autosave is IndexedDB; share links deflate the document into the URL hash with `CompressionStream`; posters are rendered on the GPU in the browser.

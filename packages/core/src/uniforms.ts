@@ -1,8 +1,8 @@
-import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
-import type { Oklab, RgbSpace } from '@goatsoft/color'
-import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { ComposedShader } from './compose'
 import type { GeneratorSpec } from './generators/define'
+import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
+import type { Oklab, RgbSpace } from '@goatsoft/color'
+import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 
 /** Per-frame inputs. Sizes are in device pixels of the whole scene (just the surface when alone). */
 export interface FrameState {
@@ -45,7 +45,7 @@ function oklab(color: string): Oklab {
 }
 
 /**
- * A palette colour as the shader wants it: gamma-encoded sRGB for `mix: "srgb"` (exact, for GOAT
+ * A palette colour as the shader wants it: gamma-encoded sRGB for `mix: "srgb"` (exact, for classic
  * parity), or OKLab gamut-mapped into the output space for `mix: "oklab"`.
  */
 export function shaderColor(color: string, mix: AuroraLayer['mix'], output: RgbSpace): [number, number, number] {

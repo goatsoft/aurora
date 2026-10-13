@@ -1,7 +1,7 @@
+import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { compileCss } from '@goatsoft/aurora'
 import { renderFrame } from '@goatsoft/aurora/poster'
 import { deltaEOK, gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
-import type { AuroraDocument } from '@goatsoft/aurora-format'
 
 const W = 96
 const H = 54

@@ -1,8 +1,8 @@
-import { assertAurora, stringifyAurora } from '@goatsoft/aurora-format'
+import type { Generator } from '@/generators/define'
 import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora, stringifyAurora } from '@goatsoft/aurora-format'
 import { describe, expect, inject, it } from 'vitest'
 import { GENERATORS, loadGenerators } from '@/generators/index'
-import type { Generator } from '@/generators/define'
 import { validateDocument } from '@/validate'
 
 /**
@@ -35,9 +35,11 @@ function markdown(g: Generator): string {
 
 ${g.description}
 
-![${g.label} with its defaults](/packages/core/test/golden/${g.id}.png)
+\`\`\`aurora
+${stringifyAurora(starter(g)).trim()}
+\`\`\`
 
-Reads ${g.colors} palette colour${g.colors === 1 ? '' : 's'}, in order.${g.requires?.length ? ` Uses the noise library: ${g.requires.map((m) => `\`${m}\``).join(', ')}.` : ''}
+The starter above is [\`presets/starters/${g.id}.aurora\`](/presets/starters/${g.id}.aurora). It reads ${g.colors} palette colour${g.colors === 1 ? '' : 's'}, in order.${g.requires?.length ? ` Uses the noise library: ${g.requires.map((m) => `\`${m}\``).join(', ')}.` : ''}
 
 ## Parameters
 
@@ -48,14 +50,6 @@ ${rows.join('\n')}
 ## Default palette
 
 ${g.palette.map((c) => `- \`${c}\``).join('\n')}
-
-## Starter
-
-[\`presets/starters/${g.id}.aurora\`](/presets/starters/${g.id}.aurora)
-
-\`\`\`json
-${stringifyAurora(starter(g)).trim()}
-\`\`\`
 `
 }
 

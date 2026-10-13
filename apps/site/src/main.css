@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Aurora tokens: a polar night ground, and the mark's own spectrum
+  (cyan #43f4dc → violet #8c83ff → orchid #ee82ed, assets/brand).
+*/
+:root {
+  --background: oklch(0.13 0.025 272);
+  --surface: oklch(0.18 0.03 272);
+  --foreground: oklch(0.95 0.012 270);
+  --muted-foreground: oklch(0.7 0.025 270);
+  --border: oklch(0.75 0.03 270 / 0.14);
+  --input: oklch(0.75 0.03 270 / 0.18);
+  --primary: oklch(0.84 0.13 182);
+  --primary-foreground: oklch(0.18 0.04 220);
+  --spectrum-1: oklch(0.86 0.14 180);
+  --spectrum-2: oklch(0.7 0.16 285);
+  --spectrum-3: oklch(0.78 0.17 330);
+  --ring: oklch(0.84 0.13 182 / 0.6);
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-spectrum-1: var(--spectrum-1);
+  --color-spectrum-2: var(--spectrum-2);
+  --color-spectrum-3: var(--spectrum-3);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 12px);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground font-sans antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: color-mix(in oklab, var(--spectrum-2) 45%, transparent); }
+}
+
+/* The mark's spectrum as headline ink. */
+@utility text-spectrum {
+  background-image: linear-gradient(100deg, var(--foreground) 0%, var(--spectrum-1) 35%, var(--spectrum-2) 70%, var(--spectrum-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The wordmark: the spectrum drifting slowly through the letters. */
+@utility text-brand {
+  background-image: linear-gradient(95deg, var(--spectrum-1), var(--spectrum-2) 33%, var(--spectrum-3) 66%, var(--spectrum-1));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: brand-cycle 16s linear infinite;
+}
+@keyframes brand-cycle { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+
+@utility glass {
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  backdrop-filter: saturate(160%) blur(18px);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  border: 1px solid var(--border);
+}
+
+@utility mark-glow {
+  filter: drop-shadow(0 0 28px oklch(0.75 0.14 200 / 0.55)) drop-shadow(0 0 80px oklch(0.65 0.2 300 / 0.35));
+}
+
+@utility eyebrow {
+  @apply font-mono text-xs tracking-[0.2em] text-primary uppercase;
+}
+
+/* Documentation prose (gruff output), as components so utilities on components inside it win. */
+@layer components {
+  .prose { @apply max-w-none text-[15px] leading-7 text-foreground/90; }
+  .prose h1 { @apply mb-6 text-4xl font-semibold tracking-tight text-foreground text-balance; }
+  .prose h2 { @apply mt-14 mb-4 scroll-mt-24 border-t border-border pt-8 text-2xl font-semibold tracking-tight text-foreground; }
+  .prose h3 { @apply mt-8 mb-3 scroll-mt-24 text-lg font-semibold text-foreground; }
+  .prose p, .prose ul, .prose ol { @apply my-4; }
+  .prose ul { @apply list-disc pl-6 marker:text-muted-foreground; }
+  .prose ol { @apply list-decimal pl-6 marker:text-muted-foreground; }
+  .prose li { @apply my-1.5; }
+  .prose a { @apply font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary; }
+  .prose strong { @apply font-semibold text-foreground; }
+  .prose :not(pre) > code { @apply rounded-md bg-surface px-1.5 py-0.5 font-mono text-[0.85em] text-foreground; }
+  .prose img { @apply my-6 w-full rounded-xl border border-border; }
+  .prose table { @apply my-6 w-full border-collapse text-sm; }
+  .prose th { @apply border-b border-border py-2 pr-4 text-left font-semibold text-foreground; }
+  .prose td { @apply border-b border-border/60 py-2 pr-4 align-top; }
+  .prose blockquote { @apply border-l-2 border-spectrum-2 pl-4 text-muted-foreground; }
+  .prose hr { @apply my-10 border-border; }
+  .prose .heading-anchor { @apply absolute -ml-6 w-5 text-muted-foreground/0 no-underline transition-colors; }
+  .prose :is(h2, h3):hover .heading-anchor { @apply text-muted-foreground; }
+  .prose .callout { @apply my-6 rounded-xl border border-border bg-surface/60 px-4 py-3; }
+  .prose .callout > :first-child { @apply mt-0; }
+  .prose .callout > :last-child { @apply mb-0; }
+  .prose .callout-title { @apply mb-1 text-sm font-semibold; }
+  .prose .callout-tip { @apply border-spectrum-1/40; }
+  .prose .callout-tip .callout-title { @apply text-spectrum-1; }
+  .prose .callout-warning { @apply border-amber-400/40; }
+  .prose .callout-warning .callout-title { @apply text-amber-300; }
+  .prose .callout-danger { @apply border-rose-400/40; }
+  .prose .callout-danger .callout-title { @apply text-rose-300; }
+  .prose .callout-note .callout-title { @apply text-spectrum-2; }
+  .prose details > summary { @apply cursor-pointer font-medium text-foreground; }
+  .prose .code-block { @apply relative my-6 overflow-hidden rounded-xl border border-border bg-[oklch(0.1_0.02_272)]; }
+  .prose .code-title { @apply border-b border-border px-4 py-2 font-mono text-xs text-muted-foreground; }
+  .prose .code-block pre { @apply overflow-x-auto p-4 font-mono text-[13px] leading-6; }
+  .prose h1 .heading-anchor { @apply hidden; }
+}
+/* Shiki dual themes: dark is the default here. */
+.shiki, .shiki span { color: var(--shiki-dark); background-color: transparent !important; }
+.shiki .line.highlighted { @apply -mx-4 inline-block w-[calc(100%+2rem)] bg-spectrum-2/12 px-4; }
+.shiki .line.diff.add { @apply -mx-4 inline-block w-[calc(100%+2rem)] bg-emerald-400/10 px-4; }
+.shiki .line.diff.remove { @apply -mx-4 inline-block w-[calc(100%+2rem)] bg-rose-400/10 px-4 opacity-70; }
+.shiki.has-focused .line:not(.focused) { @apply opacity-40 blur-[0.5px]; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Hero entrance: CSS only, so the prerendered page animates before (and without) JavaScript. */
+@keyframes mark-in { from { opacity: 0; transform: scale(0.7); filter: blur(14px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes rise { from { opacity: 0; transform: translateY(22px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@utility animate-mark-in { animation: mark-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@utility animate-rise { animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }

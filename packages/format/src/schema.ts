@@ -1,5 +1,5 @@
-import * as v from 'valibot'
 import { COLOR_SYNTAX, parseColor } from '@goatsoft/color'
+import * as v from 'valibot'
 
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
 export const FORMAT_VERSION = 1
@@ -118,7 +118,7 @@ const Layer = v.strictObject({
   mix: v.optional(
     v.pipe(
       v.picklist(MIX_SPACES),
-      v.description('Colour space for blending this layer\'s colours. "srgb" exists for bit-exact GOAT parity.'),
+      v.description('Colour space for blending this layer\'s colours. "srgb" exists for bit-exact parity with the classic presets.'),
     ),
     'oklab',
   ),

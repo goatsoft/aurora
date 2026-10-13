@@ -6,8 +6,16 @@ const id = useId()
 
 <template>
   <div class="grid min-h-7 grid-cols-[5.5rem_1fr] items-center gap-2">
-    <span :id="id" class="truncate text-xs text-muted-foreground" :title="hint">{{ label }}</span>
-    <div role="group" :aria-labelledby="id" :aria-description="hint">
+    <span
+      :id="id"
+      class="truncate text-xs text-muted-foreground"
+      :title="hint"
+    >{{ label }}</span>
+    <div
+      role="group"
+      :aria-labelledby="id"
+      :aria-description="hint"
+    >
       <slot />
     </div>
   </div>

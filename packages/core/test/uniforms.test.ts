@@ -1,9 +1,9 @@
-import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
-import { assertAurora } from '@goatsoft/aurora-format'
 import type { AuroraInput } from '@goatsoft/aurora-format'
+import { assertAurora } from '@goatsoft/aurora-format'
+import { gamutMap, parseColor, rgbToOklab } from '@goatsoft/color'
 import { describe, expect, it } from 'vitest'
-import { compose } from '@/shader'
 import { auroraFbm } from '@/generators/index'
+import { compose } from '@/shader'
 import { colorIndices, packUniforms, paramValue, shaderColor } from '@/uniforms'
 
 const doc = (layers: AuroraInput['layers'], extra: Partial<AuroraInput> = {}) =>

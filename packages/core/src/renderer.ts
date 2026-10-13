@@ -1,7 +1,7 @@
-import { compose } from './compose'
 import type { ComposedShader } from './compose'
 import type { GeneratorLookup, GeneratorSpec } from './generators/define'
 import type { RendererStats, SurfaceState } from './protocol'
+import { compose } from './compose'
 import { packUniforms } from './uniforms'
 
 type Canvas = OffscreenCanvas | HTMLCanvasElement

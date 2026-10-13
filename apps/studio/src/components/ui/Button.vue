@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
-import { Primitive } from 'reka-ui'
 import type { PrimitiveProps } from 'reka-ui'
+import { cva } from 'class-variance-authority'
+import { Primitive } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const button = cva(
@@ -15,9 +15,9 @@ const button = cva(
         subtle: 'bg-input text-foreground hover:bg-accent',
       },
       size: {
-        default: 'h-8 px-3',
-        sm: 'h-7 px-2.5 text-xs',
-        icon: 'size-8',
+        'default': 'h-8 px-3',
+        'sm': 'h-7 px-2.5 text-xs',
+        'icon': 'size-8',
         'icon-sm': 'size-7 [&_svg]:size-3.5',
       },
     },
@@ -34,7 +34,11 @@ const props = withDefaults(defineProps<PrimitiveProps & {
 </script>
 
 <template>
-  <Primitive :as="props.as" :as-child="props.asChild" :class="cn(button({ variant: props.variant, size: props.size }), props.class || undefined)">
+  <Primitive
+    :as="props.as"
+    :as-child="props.asChild"
+    :class="cn(button({ variant: props.variant, size: props.size }), props.class || undefined)"
+  >
     <slot />
   </Primitive>
 </template>

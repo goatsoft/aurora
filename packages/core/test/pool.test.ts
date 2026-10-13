@@ -1,8 +1,8 @@
+import type { SurfaceState, WorkerRequest, WorkerResponse } from '@/protocol'
 import { assertAurora } from '@goatsoft/aurora-format'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { PROBE_TIMEOUT, createMainThreadBackend, createWorkerBackend } from '@/pool'
-import type { SurfaceState, WorkerRequest, WorkerResponse } from '@/protocol'
 import { GENERATORS } from '@/generators/index'
+import { createMainThreadBackend, createWorkerBackend, PROBE_TIMEOUT } from '@/pool'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 
 installGpuGlobals()

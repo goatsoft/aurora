@@ -1,5 +1,5 @@
-import { AuroraFormatError, parseAurora } from '@goatsoft/aurora-format'
 import type { AuroraDocument } from '@goatsoft/aurora-format'
+import { AuroraFormatError, parseAurora } from '@goatsoft/aurora-format'
 import { validateDocument } from './validate'
 
 /** Loads and validates a `.aurora` file, with every problem named against its URL. */

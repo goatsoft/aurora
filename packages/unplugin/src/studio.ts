@@ -1,9 +1,9 @@
-import { randomBytes, timingSafeEqual } from 'node:crypto'
-import { readFile, readdir, realpath, writeFile } from 'node:fs/promises'
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { parseAurora } from '@goatsoft/aurora-format'
+import { randomBytes, timingSafeEqual } from 'node:crypto'
+import { readdir, readFile, realpath, writeFile } from 'node:fs/promises'
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { validateDocument } from '@goatsoft/aurora'
+import { parseAurora } from '@goatsoft/aurora-format'
 
 /**
  * Studio's dev-tool mode: a tiny HTTP API that lets Aurora Studio (hosted or local) open a

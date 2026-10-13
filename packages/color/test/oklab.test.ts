@@ -1,3 +1,4 @@
+import type { Oklab, RgbSpace } from '@/index'
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import {
@@ -11,7 +12,6 @@ import {
   rgbToOklab,
   srgbToLinear,
 } from '@/index'
-import type { Oklab, RgbSpace } from '@/index'
 
 const unit = fc.double({ min: 0, max: 1, noNaN: true })
 const rgb = fc.record({ r: unit, g: unit, b: unit, alpha: unit })

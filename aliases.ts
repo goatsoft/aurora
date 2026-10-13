@@ -1,12 +1,12 @@
+import type { Alias, Plugin } from 'vite'
 import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { searchForWorkspaceRoot } from 'vite'
-import type { Alias, Plugin } from 'vite'
 
 /** The repository root, found from wherever this runs (no `../` counting). */
 export const ROOT = searchForWorkspaceRoot(process.cwd())
 
-/** `~/presets/goat/hero.aurora` → `<repo>/presets/goat/hero.aurora`. Works in imports and `import.meta.glob`. */
+/** `~/presets/classic/hero.aurora` → `<repo>/presets/classic/hero.aurora`. Works in imports and `import.meta.glob`. */
 export const rootAlias: Alias = { find: /^~\//, replacement: `${ROOT}/` }
 
 function packageRoot(file: string): string | undefined {

@@ -1,7 +1,7 @@
+import type { Generator } from './generators/define'
 import type { RendererStats, SurfaceState, WorkerRequest, WorkerResponse } from './protocol'
 import type { Renderer } from './renderer'
 import { generatorSpec } from './generators/define'
-import type { Generator } from './generators/define'
 
 export interface LeaseListener {
   /** The surface rendered its first frame. */

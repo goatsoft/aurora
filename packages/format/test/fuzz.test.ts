@@ -1,6 +1,6 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { BLEND_MODES, FADES, MIX_SPACES, REDUCED_MOTION, SCHEMA_URL, assertAurora, parseAurora, stringifyAurora } from '@/index'
+import { assertAurora, BLEND_MODES, FADES, MIX_SPACES, parseAurora, REDUCED_MOTION, SCHEMA_URL, stringifyAurora } from '@/index'
 
 // JSON has no -0, so documents never contain it.
 const double = (constraints: fc.DoubleConstraints) => fc.double({ noNaN: true, noDefaultInfinity: true, ...constraints }).map((n) => n || 0)

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { renderFrame, renderPoster } from '@/poster'
 import { compose } from '@/shader'
 import { packUniforms } from '@/uniforms'
-import hero from '~/presets/goat/hero.aurora?raw'
+import hero from '~/presets/classic/hero.aurora?raw'
 import { device, render } from './gpu'
 
 const doc = assertAurora(hero)

@@ -1,7 +1,7 @@
-import { mountAurora } from '@goatsoft/aurora'
 import type { AuroraMode, AuroraSource, AuroraSurface } from '@goatsoft/aurora'
-import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
+import { mountAurora } from '@goatsoft/aurora'
+import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, watch } from 'vue'
 import { useAuroraScene } from './scene'
 
 export interface UseAuroraOptions {

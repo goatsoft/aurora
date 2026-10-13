@@ -1,5 +1,5 @@
-import { commands } from 'vitest/browser'
 import { expect, inject } from 'vitest'
+import { commands } from 'vitest/browser'
 
 /**
  * Golden images: PNGs under packages/core/test/golden, rendered on the SwiftShader adapter, so

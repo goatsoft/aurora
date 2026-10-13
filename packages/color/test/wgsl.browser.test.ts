@@ -1,6 +1,6 @@
+import type { Oklab } from '@/index'
 import { describe, expect, it } from 'vitest'
 import { COLOR_WGSL, oklabToRgb, rgbToOklab, srgbToLinear } from '@/index'
-import type { Oklab } from '@/index'
 
 /** Runs `expr(input)` for each input vec3 on the GPU and returns the results. */
 async function run(expr: string, inputs: readonly (readonly [number, number, number])[]) {

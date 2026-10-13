@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: {
     // Use workspace sources directly, like every package in this repo.
     conditions: ['@goatsoft/source'],
-    // `~/presets/goat/hero.aurora` is the repo's GOAT pack (tsconfig `paths` mirrors this).
+    // `~/presets/classic/hero.aurora` is one of the repo's classic presets (tsconfig `paths` mirrors this).
     alias: [{ find: /^~\//, replacement: `${searchForWorkspaceRoot(import.meta.dirname)}/` }],
   },
   ssr: { resolve: { conditions: ['@goatsoft/source'] }, noExternal: [/^@goatsoft\//] },

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="Aurora">
+  <style>@media(prefers-color-scheme:dark){.s0{stop-color:#43f4dc}.s1{stop-color:#8c83ff}.s2{stop-color:#ee82ed}.halo{opacity:.28}.core{opacity:.8}}</style>
+  <defs><linearGradient id="aurora-spectrum" x1="22" y1="100" x2="104" y2="31" gradientUnits="userSpaceOnUse"><stop class="s0" offset="0" stop-color="#007f91"/><stop class="s1" offset="0.5" stop-color="#5145cd"/><stop class="s2" offset="1" stop-color="#a72fa6"/></linearGradient><filter id="aurora-glow" x="-50%" y="-40%" width="200%" height="180%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3"/></filter></defs>
+  <g stroke="url(#aurora-spectrum)" stroke-linecap="round" stroke-linejoin="round"><g class="halo" opacity="0.07" filter="url(#aurora-glow)" stroke-width="16"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g stroke-width="12"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g><g class="core" stroke="#fff" stroke-width="2" opacity="0.42"><path d="M25 102 59.4 26.2Q64 16 68.6 26.2L103 102M53 80H75"/></g></g>
+</svg>

@@ -2,9 +2,26 @@
 
 Air: soft, sunlit clouds drifting across an open sky.
 
-![Clouds with its defaults](/packages/core/test/golden/clouds.png)
+```aurora
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Clouds starter",
+  "palette": [
+    "oklch(0.58 0.13 248)",
+    "oklch(0.7 0.05 255)",
+    "oklch(0.99 0.01 85)"
+  ],
+  "layers": [
+    {
+      "type": "clouds"
+    }
+  ]
+}
+```
 
-Reads 3 palette colours, in order. Uses the noise library: `fbm`, `worley`.
+The starter above is [`presets/starters/clouds.aurora`](/presets/starters/clouds.aurora). It reads 3 palette colours, in order. Uses the noise library: `fbm`, `worley`.
 
 ## Parameters
 
@@ -24,26 +41,3 @@ Reads 3 palette colours, in order. Uses the noise library: `fbm`, `worley`.
 - `oklch(0.58 0.13 248)`
 - `oklch(0.7 0.05 255)`
 - `oklch(0.99 0.01 85)`
-
-## Starter
-
-[`presets/starters/clouds.aurora`](/presets/starters/clouds.aurora)
-
-```json
-{
-  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
-  "format": "aurora",
-  "version": 1,
-  "name": "Clouds starter",
-  "palette": [
-    "oklch(0.58 0.13 248)",
-    "oklch(0.7 0.05 255)",
-    "oklch(0.99 0.01 85)"
-  ],
-  "layers": [
-    {
-      "type": "clouds"
-    }
-  ]
-}
-```

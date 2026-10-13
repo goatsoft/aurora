@@ -1,8 +1,8 @@
+import type { AuroraSource } from './module'
+import type { AuroraMode, AuroraSurface } from './surface'
 import { loadAurora } from './load'
 import { documentOf } from './module'
-import type { AuroraSource } from './module'
 import { mountAurora } from './surface'
-import type { AuroraMode, AuroraSurface } from './surface'
 
 export type AuroraModeEvent = CustomEvent<{ mode: AuroraMode }>
 export type AuroraErrorEvent = CustomEvent<{ error: Error }>

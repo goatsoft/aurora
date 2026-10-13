@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { Preview, Viewport } from '@/editor/studio'
 import type { Component } from 'vue'
 import { DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { newLayer, starter } from '@/editor/document'
-import { VIEWPORTS, useStudio } from '@/editor/studio'
-import type { Preview, Viewport } from '@/editor/studio'
+import { useStudio, VIEWPORTS } from '@/editor/studio'
 import { generatorIcon } from '@/lib/generators'
 
 export interface Command {
@@ -91,14 +91,28 @@ function key(event: KeyboardEvent) {
   <DialogRoot v-model:open="ui.palette">
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-40 bg-[oklch(0.08_0.02_270/0.4)] backdrop-blur-[2px]" />
-      <DialogContent class="glass fixed top-[18vh] left-1/2 z-50 w-[min(560px,90vw)] -translate-x-1/2 overflow-hidden rounded-2xl outline-none data-[state=open]:animate-[rise-in_220ms_cubic-bezier(0.2,0.9,0.1,1)]" @keydown="key">
-        <DialogTitle class="sr-only">Commands</DialogTitle>
+      <DialogContent
+        class="fixed top-[18vh] left-1/2 z-50 w-[min(560px,90vw)] -translate-x-1/2 overflow-hidden rounded-2xl glass outline-none data-[state=open]:animate-[rise-in_220ms_cubic-bezier(0.2,0.9,0.1,1)]"
+        @keydown="key"
+      >
+        <DialogTitle class="sr-only">
+          Commands
+        </DialogTitle>
         <div class="flex items-center gap-2.5 border-b border-panel-border px-4">
           <IHgSearch01 class="size-4 text-muted-foreground" />
-          <input v-model="query" placeholder="Type a command…" aria-label="Search commands" class="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground">
+          <input
+            v-model="query"
+            placeholder="Type a command…"
+            aria-label="Search commands"
+            class="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          >
           <Kbd>esc</Kbd>
         </div>
-        <ul ref="list" class="max-h-[46vh] overflow-y-auto p-1.5" role="listbox">
+        <ul
+          ref="list"
+          class="max-h-[46vh] overflow-y-auto p-1.5"
+          role="listbox"
+        >
           <li
             v-for="(command, i) in results"
             :key="command.id"
@@ -110,13 +124,31 @@ function key(event: KeyboardEvent) {
             @pointermove="active = i"
             @click="run(command)"
           >
-            <component :is="command.icon" v-if="command.icon" class="size-4" />
-            <span v-else class="size-4" />
+            <component
+              :is="command.icon"
+              v-if="command.icon"
+              class="size-4"
+            />
+            <span
+              v-else
+              class="size-4"
+            />
             <span class="flex-1">{{ command.label }}</span>
             <span class="text-[10px] text-muted-foreground/70">{{ command.group }}</span>
-            <span v-if="command.keys" class="flex gap-0.5"><Kbd v-for="k in command.keys.split(' ')" :key="k">{{ k }}</Kbd></span>
+            <span
+              v-if="command.keys"
+              class="flex gap-0.5"
+            ><Kbd
+              v-for="k in command.keys.split(' ')"
+              :key="k"
+            >{{ k }}</Kbd></span>
           </li>
-          <li v-if="!results.length" class="px-3 py-6 text-center text-xs text-muted-foreground">Nothing matches “{{ query }}”</li>
+          <li
+            v-if="!results.length"
+            class="px-3 py-6 text-center text-xs text-muted-foreground"
+          >
+            Nothing matches “{{ query }}”
+          </li>
         </ul>
       </DialogContent>
     </DialogPortal>
