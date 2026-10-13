@@ -213,9 +213,51 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/docs/guide/studio': RouteRecordInfo<
-      '/docs/guide/studio',
-      '/docs/guide/studio',
+    '/docs/studio/': RouteRecordInfo<
+      '/docs/studio/',
+      '/docs/studio',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/colours': RouteRecordInfo<
+      '/docs/studio/colours',
+      '/docs/studio/colours',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/layers': RouteRecordInfo<
+      '/docs/studio/layers',
+      '/docs/studio/layers',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/mobile': RouteRecordInfo<
+      '/docs/studio/mobile',
+      '/docs/studio/mobile',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/preview': RouteRecordInfo<
+      '/docs/studio/preview',
+      '/docs/studio/preview',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/saving': RouteRecordInfo<
+      '/docs/studio/saving',
+      '/docs/studio/saving',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/studio/shortcuts': RouteRecordInfo<
+      '/docs/studio/shortcuts',
+      '/docs/studio/shortcuts',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -441,9 +483,57 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    '../../docs/guide/studio.md': {
+    '../../docs/studio/index.md': {
       routes:
-        | '/docs/guide/studio'
+        | '/docs/studio/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/colours.md': {
+      routes:
+        | '/docs/studio/colours'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/layers.md': {
+      routes:
+        | '/docs/studio/layers'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/mobile.md': {
+      routes:
+        | '/docs/studio/mobile'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/preview.md': {
+      routes:
+        | '/docs/studio/preview'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/saving.md': {
+      routes:
+        | '/docs/studio/saving'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/studio/shortcuts.md': {
+      routes:
+        | '/docs/studio/shortcuts'
       views:
         | never
       pathParamNames:

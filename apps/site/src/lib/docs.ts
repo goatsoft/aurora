@@ -9,6 +9,7 @@ export interface NavGroup {
 /** The docs sidebar: groups by folder, each sorted by frontmatter `order`, then title. */
 const GROUPS: { title: string, match: (route: string) => boolean }[] = [
   { title: 'Get started', match: (r) => r === '/docs' || r.startsWith('/docs/guide/') },
+  { title: 'Studio', match: (r) => r === '/docs/studio' || r.startsWith('/docs/studio/') },
   { title: 'Generators', match: (r) => r.startsWith('/docs/generators') },
   { title: 'Reference', match: (r) => r.startsWith('/docs/reference/') || r === '/docs/glossary' },
 ]

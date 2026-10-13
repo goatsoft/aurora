@@ -6,7 +6,7 @@ order: 0
 
 # Introduction
 
-Aurora draws animated backgrounds for web pages. You design one in [Aurora Studio](guide/studio.md), save it as a `.aurora` file, and add it to a page. WebGPU renders it. Browsers without WebGPU show a CSS gradient that approximates it, compiled from the same file.
+Aurora draws animated backgrounds for web pages. You design one in [Aurora Studio](studio/index.md), save it as a `.aurora` file, and add it to a page. WebGPU renders it. Browsers without WebGPU show a CSS gradient that approximates it, compiled from the same file.
 
 ```aurora
 {
@@ -29,7 +29,7 @@ That file is the whole background, and it's running above. Press **Edit** to cha
 - **The file.** A `.aurora` file is a JSON file containing colours, layers and animation settings. It contains settings, not executable shader code. See [the format](guide/format.md).
 - **The runtime.** `@goatsoft/aurora` renders every background on the page with one GPU device, in a worker where the browser supports it, and pauses backgrounds that are off screen. See [the runtime](guide/runtime.md).
 - **The bindings.** `<AuroraBackground>` for Vue, `<aurora-bg>` for any page, `mountAurora()` for plain TypeScript. With the bundler plugin, files are checked and typed at build time.
-- **Studio.** The editor, for adjusting layers, colours and motion. It opens and saves files on your machine. See [Aurora Studio](guide/studio.md).
+- **Studio.** The editor, for adjusting layers, colours and motion. It opens and saves files on your machine. See [Aurora Studio](studio/index.md).
 
 ## Where next
 

@@ -17,6 +17,10 @@ const emit = defineEmits<{ add: [css: string], end: [] }>()
 const W = 232
 const H = 148
 const C_MAX = 0.37
+/** The plane is drawn at a third of its size and scaled up: it is a smooth gradient, so nothing is lost. */
+const SCALE = 3
+const PW = Math.ceil(W / SCALE)
+const PH = Math.ceil(H / SCALE)
 
 function toLch(css: string): Oklch | undefined {
   const parsed = parseColor(css)
@@ -61,22 +65,24 @@ function typed() {
   emit('end')
 }
 
-// The plane, redrawn when the hue changes.
+// The plane, redrawn at most once a frame when the hue changes.
 const plane = ref<HTMLCanvasElement>()
 const boundary = ref({ srgb: '', p3: '' })
+let drawn = Number.NaN
 function draw() {
   const ctx = plane.value?.getContext('2d')
-  if (!ctx) return
-  const image = ctx.createImageData(W, H)
-  for (let y = 0; y < H; y++) {
-    const l = 1 - y / (H - 1)
+  if (!ctx || lch.h === drawn) return
+  drawn = lch.h
+  const image = ctx.createImageData(PW, PH)
+  for (let y = 0; y < PH; y++) {
+    const l = 1 - y / (PH - 1)
     const edge = maxChroma(l, lch.h)
-    for (let x = 0; x < W; x++) {
-      const c = (x / (W - 1)) * C_MAX
+    for (let x = 0; x < PW; x++) {
+      const c = (x / (PW - 1)) * C_MAX
       const { r, g, b } = gamutMap(oklchToOklab({ l, c, h: lch.h, alpha: 1 }))
       // Past the sRGB edge, show the mapped colour dimmed so the boundary reads.
       const dim = c > edge ? 0.55 : 1
-      const i = (y * W + x) * 4
+      const i = (y * PW + x) * 4
       image.data[i] = r * 255 * dim
       image.data[i + 1] = g * 255 * dim
       image.data[i + 2] = b * 255 * dim
@@ -91,19 +97,43 @@ function draw() {
   boundary.value = { srgb: line('srgb'), p3: line('display-p3') }
 }
 onMounted(draw)
-watch(() => lch.h, () => requestAnimationFrame(draw))
+
+// Pointer moves arrive faster than frames, and each pick re-renders the background, so picks and
+// redraws are batched into one per frame.
+let pending: { x: number, y: number, target: 'plane' | 'hue' } | undefined
+let frame = 0
+function flush() {
+  cancelAnimationFrame(frame)
+  frame = 0
+  if (pending) {
+    const { x, y, target } = pending
+    pending = undefined
+    if (target === 'plane') update({ c: x * C_MAX, l: 1 - y })
+    else update({ h: x * 360 })
+  }
+  draw()
+}
+function schedule() {
+  frame ||= requestAnimationFrame(flush)
+}
+watch(() => lch.h, schedule)
+onBeforeUnmount(() => cancelAnimationFrame(frame))
 
 function pick(event: PointerEvent, target: 'plane' | 'hue') {
-  const el = event.currentTarget as HTMLElement
-  const rect = el.getBoundingClientRect()
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
   const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width))
   const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height))
-  if (target === 'plane') update({ c: x * C_MAX, l: 1 - y })
-  else update({ h: x * 360 })
+  pending = { x, y, target }
+  schedule()
 }
 function drag(event: PointerEvent, target: 'plane' | 'hue') {
   ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
   pick(event, target)
+}
+/** Applies the last pick before the edit closes, so undo captures where the pointer let go. */
+function release() {
+  flush()
+  emit('end')
 }
 
 const oklab = computed(() => oklchToOklab(lch))
@@ -129,12 +159,12 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
       class="relative h-[148px] cursor-crosshair overflow-hidden rounded-lg ring-1 ring-panel-border"
       @pointerdown="drag($event, 'plane')"
       @pointermove="(e) => e.buttons && pick(e, 'plane')"
-      @pointerup="emit('end')"
+      @pointerup="release"
     >
       <canvas
         ref="plane"
-        :width="W"
-        :height="H"
+        :width="PW"
+        :height="PH"
         class="block size-full"
       />
       <svg
@@ -171,7 +201,7 @@ const hueStrip = `linear-gradient(to right in oklch longer hue, oklch(0.72 0.15 
       :style="{ background: hueStrip }"
       @pointerdown="drag($event, 'hue')"
       @pointermove="(e) => e.buttons && pick(e, 'hue')"
-      @pointerup="emit('end')"
+      @pointerup="release"
     >
       <div
         class="pointer-events-none absolute top-1/2 size-3.5 -translate-1/2 rounded-full border-2 border-white shadow-sm"

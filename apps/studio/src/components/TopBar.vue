@@ -133,7 +133,7 @@ defineExpose({ save: () => void save(), share, saveAs })
       <Tip label="Back to the Aurora site">
         <a
           href="/"
-          class="-m-1 flex shrink-0 items-center gap-2.5 rounded-lg p-1 outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+          class="group flex shrink-0 items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Aurora home"
         >
           <img
@@ -141,10 +141,18 @@ defineExpose({ save: () => void save(), share, saveAs })
             alt=""
             width="24"
             height="24"
-            class="size-6"
+            class="size-6 transition-transform duration-300 group-hover:scale-110"
           >
-          <span class="text-xs font-semibold tracking-tight max-lg:hidden">Aurora Studio</span>
+          <span class="text-xs font-semibold tracking-tight transition-opacity group-hover:opacity-80 max-lg:hidden">Aurora Studio</span>
         </a>
+      </Tip>
+      <Tip label="Studio guide">
+        <a
+          href="/docs/studio"
+          target="_blank"
+          rel="noopener"
+          class="rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring max-md:hidden"
+        >Docs</a>
       </Tip>
       <span class="h-4 w-px bg-panel-border max-lg:hidden" />
       <input
