@@ -1,8 +1,22 @@
 {
   "name": "@goatsoft/aurora",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "WebGPU animated backgrounds with a generated CSS fallback.",
+  "keywords": [
+    "aurora",
+    "webgpu",
+    "wgsl",
+    "background",
+    "animated-background",
+    "gradient",
+    "shader",
+    "custom-element"
+  ],
   "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/runtime",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
   "type": "module",
   "sideEffects": [
     "./src/element.ts",
@@ -49,7 +63,8 @@
     }
   },
   "scripts": {
-    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
   },
   "dependencies": {
     "@goatsoft/aurora-format": "workspace:^",
@@ -57,6 +72,7 @@
     "@webgpu/types": "^0.1.74"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "provenance": true
   }
 }

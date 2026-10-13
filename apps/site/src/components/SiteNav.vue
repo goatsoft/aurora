@@ -64,6 +64,18 @@ const links = [
             <ISiGithub />
           </Button>
           <Button
+            variant="ghost"
+            size="icon"
+            as="a"
+            :href="SITE.npm"
+            target="_blank"
+            rel="noopener"
+            aria-label="Aurora on npm"
+            class="hidden md:inline-flex"
+          >
+            <ISiNpm />
+          </Button>
+          <Button
             size="sm"
             as="a"
             href="/studio/"

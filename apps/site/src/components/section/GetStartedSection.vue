@@ -42,6 +42,16 @@ import { northernLights } from '@/lib/scenes'
         >
           <ISiGithub /> View on GitHub
         </Button>
+        <Button
+          size="lg"
+          variant="glass"
+          as="a"
+          :href="SITE.npm"
+          target="_blank"
+          rel="noopener"
+        >
+          <ISiNpm /> View on npm
+        </Button>
       </div>
     </div>
   </section>

@@ -4,7 +4,7 @@ WebGPU animated backgrounds with a CSS fallback, from GOATsoft.
 
 Design a background in **Aurora Studio**, export a `.aurora` file and add it to any site. WebGPU renders it, and browsers without WebGPU get a generated CSS fallback. Colours are authored and blended in OKLab/OKLCH.
 
-> Early development. See [PLAN.md](PLAN.md) for the roadmap. Packages publish to GitHub Packages under `@goatsoft`.
+> Early development. See [PLAN.md](PLAN.md) for the roadmap. Packages are on [npm](https://www.npmjs.com/org/goatsoft) under `@goatsoft`, published with provenance.
 
 ## Use
 
@@ -50,11 +50,11 @@ The classic presets in [`presets/classic`](presets/classic) is the place to star
 
 | Package | What it is |
 |---|---|
-| `@goatsoft/aurora` | WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback. `/element` is `<aurora-bg>` |
-| `@goatsoft/aurora-vue` | `<AuroraBackground>`, `useAurora()`, `<AuroraScene>` |
-| `@goatsoft/aurora-unplugin` | `import hero from './hero.aurora'` for Vite, Rollup, Rolldown, esbuild, webpack, Rspack |
-| `@goatsoft/aurora-format` | The `.aurora` format: schema, validation, migrations, JSON Schema |
-| `@goatsoft/color` | OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing |
+| [`@goatsoft/aurora`](https://www.npmjs.com/package/@goatsoft/aurora) | WebGPU runtime: worker pool, WGSL composer, scenes, CSS fallback. `/element` is `<aurora-bg>` |
+| [`@goatsoft/aurora-vue`](https://www.npmjs.com/package/@goatsoft/aurora-vue) | `<AuroraBackground>`, `useAurora()`, `<AuroraScene>` |
+| [`@goatsoft/aurora-unplugin`](https://www.npmjs.com/package/@goatsoft/aurora-unplugin) | `import hero from './hero.aurora'` for Vite, Rollup, Rolldown, esbuild, webpack, Rspack |
+| [`@goatsoft/aurora-format`](https://www.npmjs.com/package/@goatsoft/aurora-format) | The `.aurora` format: schema, validation, migrations, JSON Schema |
+| [`@goatsoft/color`](https://www.npmjs.com/package/@goatsoft/color) | OKLab/OKLCH, sRGB/P3, gamut mapping, ΔE-OK, CSS colour parsing |
 
 ## Aurora Studio
 
@@ -79,6 +79,7 @@ pnpm verify                             # lint, typecheck, unit + WebGPU browser
 | `pnpm lint:fix` | Fix lint and formatting (ESLint Stylistic) |
 | `pnpm coverage` | Unit tests with V8 coverage |
 | `pnpm changeset` | Record a change for the next release |
+| `pnpm consumers` | Pack the packages and build a fresh project with them in every supported bundler |
 
 Tooling decisions live in [docs/adr](docs/adr). Agent and contributor rules are in [AGENTS.md](AGENTS.md).
 
