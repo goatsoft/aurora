@@ -14,7 +14,7 @@ A neon-tube A built from an upward-facing terminal chevron and a detached unders
 | `aurora-mono.svg` | Single-colour mark; inherits `currentColor` when inlined |
 | `preview.html` | Local comparison and SVG download links |
 | `preview.svg` / `preview.png` | Presentation sheet, including actual 16, 24, 32 and 48 px samples |
-| `social-preview.png` | 1280 × 640 banner: the Borealis scene rendered by Aurora, with the mark and tagline. The repository README header and GitHub social preview; the site's `og.png` is the same composition at 1200 × 630 |
+| `social-preview.png` | 1280 × 640 banner: the Borealis scene rendered by Aurora, with the mark and tagline. The repository's GitHub social preview (uploaded in its settings); the site's `og.png` is the same composition at 1200 × 630 |
 
 All production marks have a square 128-unit viewBox, transparent backgrounds, no fonts, no scripts and no external resources. The word “aurora” and tagline on the presentation sheet are illustrative typography, not part of the exported mark. The mark is static and introduces no motion.
 

@@ -1,10 +1,15 @@
 <div align="center">
 
 <a href="https://aurora.goatsoft.io">
-  <img src="assets/brand/social-preview.png" alt="Aurora: Give your site atmosphere. Aurora curtains over mountains and a treeline, rendered by Aurora's Borealis scene." width="100%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/aurora-dark.svg">
+    <img src="assets/brand/aurora-light.svg" width="112" height="112" alt="Aurora">
+  </picture>
 </a>
 
 # Aurora
+
+**Give your site atmosphere.** Beautiful backgrounds that move with you.
 
 Animated WebGPU backgrounds with a CSS fallback in the first paint. Design one in Aurora Studio, then drop it into any site.
 
