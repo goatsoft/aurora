@@ -45,6 +45,7 @@ declare module 'vue' {
     IHgView: typeof import('~icons/hugeicons/view')['default']
     IHgViewOff: typeof import('~icons/hugeicons/view-off')['default']
     ISiGithub: typeof import('~icons/simple-icons/github')['default']
+    ISiNpm: typeof import('~icons/simple-icons/npm')['default']
     Mark: typeof import('./components/Mark.vue')['default']
     PillarsSection: typeof import('./components/section/PillarsSection.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

@@ -1,9 +1,11 @@
 name: CI
 
+# main runs CI through release.yml, which publishes only after it passes.
 on:
   push:
-    branches: [main, develop]
+    branches: [develop]
   pull_request:
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -42,3 +44,22 @@ jobs:
           name: golden-actual
           path: packages/core/test/golden/*.actual.png
           if-no-files-found: ignore
+
+  # The packages as npm will serve them: packed tarballs, checked, then installed into a fresh
+  # project for each bundler and built (scripts/consumers.ts).
+  consumers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm consumers

@@ -2,7 +2,20 @@
   "name": "@goatsoft/aurora-unplugin",
   "version": "0.0.0",
   "description": "Import .aurora files in Vite, Rollup, Rolldown, esbuild, webpack and Rspack: validated at build time, typed, hot-reloaded.",
+  "keywords": [
+    "aurora",
+    "unplugin",
+    "vite-plugin",
+    "rollup-plugin",
+    "webpack-plugin",
+    "esbuild-plugin",
+    "rspack-plugin"
+  ],
   "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/getting-started",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
   "type": "module",
   "sideEffects": [
     "./src/cli.ts",
@@ -63,17 +76,19 @@
     }
   },
   "scripts": {
-    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
   },
   "dependencies": {
     "@goatsoft/aurora": "workspace:^",
     "@goatsoft/aurora-format": "workspace:^",
     "unplugin": "^3.4.0"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "bin": {
     "aurora": "./dist/cli.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

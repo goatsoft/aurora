@@ -13,7 +13,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **Vite 8** library mode builds each package to `dist/`; `tsc` emits declarations.
 - **Vitest 4**: `unit` project (Node) and `browser` project (Playwright Chromium with real WebGPU via SwiftShader).
 - **ESLint 10** flat config: typescript-eslint strict + stylistic type-checked, eslint-plugin-vue (recommended) for SFCs, perfectionist for import order, better-tailwindcss for classes, and **ESLint Stylistic for formatting**. There is no Prettier; `pnpm lint:fix` fixes order and formatting.
-- **Changesets** for versioning; `@goatsoft/*` publishes to GitHub Packages (after Phase 2).
+- **Changesets** for versioning; `@goatsoft/*` publishes to npm with provenance from `release.yml` (ADR-0010).
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
 - **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
 - **Studio**: vue-router 5 file routes, unplugin-auto-import / -vue-components / -icons (Hugeicons), reka-ui styled shadcn-style with Tailwind 4, motion-v. Its components are tested in the `studio` Vitest project (browser, in `pnpm test:apps`), which extends Studio's Vite config.
@@ -58,6 +58,7 @@ pnpm coverage
 pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json
 pnpm size            # gzip sizes against the PLAN.md §3.2 budgets
 pnpm changeset       # for any user-facing change to a @goatsoft/* package
+pnpm consumers       # pack the packages, check the tarballs, and build a fresh project with them in every bundler
 ```
 
 ## North star
@@ -73,6 +74,14 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 - Never push directly to `main` or `develop`, and never force-push a shared branch.
 - Conventional commits: `feat(core): …`, `fix(format): …`, `chore: …`, `ci: …`, `docs: …`.
 - Don't put model names or identifiers in commits, PRs or code.
+
+### Releasing
+
+- A release is a `release/<version>` branch from `develop`, merged into `main` by PR. `release.yml` runs CI on `main`, then opens a "Version Packages" PR from the pending changesets; merging that PR publishes the `@goatsoft/*` packages to npm with provenance and creates a GitHub Release for each. `pages.yml` deploys the site from the same pushes.
+- After each release, merge `main` back into `develop` (versions, changelogs, consumed changesets).
+- Never publish by hand: only the workflow publishes, so every version carries provenance.
+- The `@goatsoft/source` condition and `src/` are never published. Run `pnpm consumers` after changing a package's `exports`, `files`, `bin`, build config or dependencies: it checks the packed tarballs and builds a fresh project with each supported bundler.
+- The site must be deployed before a release whose packages point at new hosted URLs (badges, schema).
 
 ### Code
 

@@ -2,7 +2,19 @@
   "name": "@goatsoft/aurora-vue",
   "version": "0.0.0",
   "description": "Vue 3 bindings for Aurora: <AuroraBackground>, useAurora() and <AuroraScene>, with SSR fallback.",
+  "keywords": [
+    "aurora",
+    "vue",
+    "webgpu",
+    "background",
+    "animated-background",
+    "ssr"
+  ],
   "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs/guide/getting-started",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "repository": {
@@ -26,7 +38,8 @@
     }
   },
   "scripts": {
-    "build": "vite build --config ../../vite.library.ts && vue-tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && vue-tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
   },
   "dependencies": {
     "@goatsoft/aurora": "workspace:^"
@@ -34,11 +47,12 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "@goatsoft/aurora-format": "workspace:^",
     "vue": "^3.5.43"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

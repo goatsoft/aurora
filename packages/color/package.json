@@ -1,8 +1,21 @@
 {
   "name": "@goatsoft/color",
   "version": "0.0.0",
-  "description": "OKLab and OKLCH colour maths: sRGB and Display P3, CSS Color 4 gamut mapping, \u0394E-OK and CSS colour parsing. Zero dependencies.",
+  "description": "OKLab and OKLCH colour maths: sRGB and Display P3, CSS Color 4 gamut mapping, ΔE-OK and CSS colour parsing. Zero dependencies.",
+  "keywords": [
+    "color",
+    "colour",
+    "oklab",
+    "oklch",
+    "display-p3",
+    "gamut-mapping",
+    "css-color"
+  ],
   "license": "MIT",
+  "homepage": "https://aurora.goatsoft.io/docs",
+  "bugs": {
+    "url": "https://github.com/goatsoft/aurora/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "repository": {
@@ -21,9 +34,11 @@
     }
   },
   "scripts": {
-    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json"
+    "build": "vite build --config ../../vite.library.ts && tsc -p tsconfig.build.json && node ../../scripts/dts-extensions.ts",
+    "prepack": "node ../../scripts/prepack.ts"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "provenance": true
   }
 }
