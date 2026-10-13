@@ -50,9 +50,14 @@ describe('scene presets', () => {
   })
 })
 
+const MAX_LAYERS = 16
+
 describe('all generators together', () => {
-  it('compose into one shader without name clashes, sharing the noise library', async () => {
-    const generators = Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-'))
+  // A document holds at most 16 layers, so with more generators than that, compose the first 16
+  // and the last 16: every generator shares a shader with at least 15 others.
+  const all = Object.values(GENERATORS).filter((g) => !g.id.startsWith('test-'))
+  const batches = all.length <= MAX_LAYERS ? [all] : [all.slice(0, MAX_LAYERS), all.slice(-MAX_LAYERS)]
+  it.each(batches.map((batch, i) => [i, batch] as const))('compose into one shader without name clashes, sharing the noise library (batch %i)', async (_, generators) => {
     const palette = generators.flatMap((g) => g.palette).slice(0, 16)
     const doc = assertAurora({ format: 'aurora', version: 1, name: 'all', palette, layers: generators.map((g) => ({ type: g.id, blend: 'screen', opacity: 0.4 })) })
     const shader = compose(doc)
