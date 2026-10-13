@@ -22,7 +22,7 @@ Animated WebGPU backgrounds with a CSS fallback in the first paint. Design one i
 - **Design it, don't code it.** [Aurora Studio](https://aurora.goatsoft.io/studio/) is a full editor for backgrounds: layers, an OKLCH colour picker with gamut and contrast checks, live WebGPU and CSS previews side by side. It saves a small `.aurora` file you commit with your site.
 - **Looks right from the first frame.** The CSS fallback is compiled from the same layers and server-rendered, so the page paints with its background before any JavaScript runs. WebGPU crossfades in once its first frame is ready, and browsers without WebGPU keep the fallback.
 - **Light on the page.** Rendering runs in a worker where the browser allows it. The runtime is under 8 kB gzipped, and each generator is under 2 kB and loads only when a background uses it. Backgrounds pause off-screen and in hidden tabs, and honour reduced motion.
-- **Seventeen generators.** Auroras, curtains and starfields; linear, conic, sweep and mesh gradients; clouds, wind, rain and lightning; mountains, treelines and strata; water, fire and film grain. Layer them with blend modes and masks.
+- **Every kind of atmosphere.** Auroras, curtains and starfields; linear, conic, sweep and mesh gradients; clouds, wind, rain and lightning; mountains, treelines and strata; water, fire and film grain. Layer them with blend modes and masks.
 - **One background across sections.** Wrap panels in a shared scene and their backgrounds line up as one continuous sky.
 - **A real build step.** The bundler plugin validates every `.aurora` file at build time, with errors at the exact line and column, gives you typed imports, and hot-reloads edits in place. It works with Vite, Rollup, Rolldown, esbuild, webpack and Rspack.
 - **Colour done properly.** Colours are authored and blended in OKLab and OKLCH, with Display P3 output where the browser supports it.
@@ -99,7 +99,7 @@ Everything lives at **[aurora.goatsoft.io/docs](https://aurora.goatsoft.io/docs)
 | [The .aurora format](https://aurora.goatsoft.io/docs/guide/format) | Every field of the file, with live examples |
 | [The runtime](https://aurora.goatsoft.io/docs/guide/runtime) | How Aurora picks a renderer, what shows first, and tuning |
 | [Shared backgrounds](https://aurora.goatsoft.io/docs/guide/shared-backgrounds) | One background across several sections |
-| [Generators](https://aurora.goatsoft.io/docs/generators) | All seventeen generators and their parameters |
+| [Generators](https://aurora.goatsoft.io/docs/generators) | Every generator and its parameters |
 | [Aurora Studio](https://aurora.goatsoft.io/docs/studio) | Layers, colours, previews, saving and shortcuts |
 | [Attribution badges](https://aurora.goatsoft.io/docs/guide/attribution) | An optional "Made with Aurora" badge for your site |
 

@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import type { AuroraModule } from '@goatsoft/aurora'
-import { generatorIds } from '@goatsoft/aurora'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { blueHour, glacierStorm, mistyForest } from '@/lib/scenes'
 
-/** Counted from the runtime, so the heading never goes stale. */
-const count = generatorIds().length
 const starters = import.meta.glob<AuroraModule>('~/presets/starters/*.aurora', { eager: true, import: 'default' })
 const starter = (id: string) => Object.entries(starters).find(([path]) => path.endsWith(`/${id}.aurora`))![1]
 
@@ -45,7 +42,7 @@ const cards = [
         Generators
       </p>
       <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-        {{ count }} generators
+        Every kind of atmosphere
       </h2>
       <p class="mt-4 text-lg text-pretty text-muted-foreground">
         Try the backgrounds below, or combine them in Studio.
