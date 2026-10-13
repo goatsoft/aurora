@@ -49,4 +49,4 @@ The complete, unmodified badges may be used for attribution under the specific p
 
 ## GOATsoft masthead
 
-`goatsoft-masthead.svg` is the supplied monochrome GOATsoft icon, preserved unchanged. The site uses it as a CSS mask beside the GOATsoft name, so both inherit the same theme foreground colour. Link the complete lockup to `https://goatsoft.io`.
+`goatsoft-masthead.svg` is the supplied monochrome GOATsoft icon, preserved unchanged (black, for light backgrounds). The site uses it as a CSS mask beside the GOATsoft name, so both inherit the same theme foreground colour. `goatsoft-masthead-dark.svg` is the same paths with a light stroke (`#eeeef6`), for dark backgrounds where a mask isn't possible, such as the repository README's `<picture>`. Link the complete lockup to `https://goatsoft.io`.

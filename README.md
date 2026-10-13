@@ -16,7 +16,6 @@ Animated WebGPU backgrounds with a CSS fallback in the first paint. Design one i
 [![npm](https://img.shields.io/npm/v/%40goatsoft%2Faurora?label=npm&logo=npm&color=8c83ff)](https://www.npmjs.com/package/@goatsoft/aurora)
 [![CI](https://img.shields.io/github/actions/workflow/status/goatsoft/aurora/ci.yml?branch=develop&label=CI&logo=github)](https://github.com/goatsoft/aurora/actions/workflows/ci.yml)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-43f4dc)](LICENSE)
-[![Made with Aurora](https://aurora.goatsoft.io/badges/v1/made-with-inline-auto.svg)](https://aurora.goatsoft.io)
 
 [**Website**](https://aurora.goatsoft.io) · [**Docs**](https://aurora.goatsoft.io/docs) · [**Aurora Studio**](https://aurora.goatsoft.io/studio/) · [**npm**](https://www.npmjs.com/org/goatsoft) · [**GOATsoft**](https://goatsoft.io)
 
@@ -143,6 +142,13 @@ Source code, documentation, presets and examples are [MIT](LICENSE). The Aurora 
 
 <div align="center">
 <br>
+
+<a href="https://goatsoft.io">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/goatsoft-masthead-dark.svg">
+    <img src="assets/brand/goatsoft-masthead.svg" width="56" height="56" alt="GOATsoft">
+  </picture>
+</a>
 
 Made by **[GOATsoft](https://goatsoft.io)**
 
