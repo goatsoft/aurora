@@ -1,3 +1,5 @@
+import type { LayerTransform } from './interaction-state'
+import type { AuroraInteractions, InteractionController } from './interactions'
 import type { AuroraSource } from './module'
 import type { Backend, Lease } from './pool'
 import type { SurfaceState } from './protocol'
@@ -15,6 +17,10 @@ import { joinScene, sceneGeometry } from './scene'
 export type AuroraMode = 'css' | 'webgpu'
 
 export interface MountOptions {
+  /** Container that receives pointer/touch input; defaults to the host. */
+  interactionTarget?: HTMLElement
+  /** Opt into pointer dragging for Grab & Release; defaults to false to preserve scrolling. */
+  drag?: boolean
   /** Start with the ambient clock paused. Input and document changes can still redraw. */
   paused?: boolean
   /** Join a named scene: members share one clock and one continuous field. */
@@ -33,6 +39,8 @@ export interface MountOptions {
 export interface AuroraSurface {
   readonly mode: AuroraMode
   readonly paused: boolean
+  /** Available after the optional interaction module has loaded. Backgrounds remain aria-hidden. */
+  readonly interactions: AuroraInteractions | undefined
   /** Freeze at the current animation phase, without changing the document. */
   pause: () => void
   /** Continue from the frozen phase. */
@@ -43,8 +51,8 @@ export interface AuroraSurface {
   update: (source: AuroraSource) => void
   dispose: () => void
   /**
-   * Resolves once the generators the first document uses have loaded and the CSS fallback is
-   * painted from them. Server-rendered bindings keep their own fallback on screen until then.
+   * Resolves once the first document's generators and optional interactions have loaded and its
+   * CSS fallback is painted. Server-rendered bindings keep their fallback on screen until then.
    */
   readonly ready: Promise<void>
 }
@@ -158,6 +166,9 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const surfaceId = ++surfaces
   mark('mount', surfaceId)
   let doc = plainDocument(source)
+  let rendered = doc
+  let transforms: LayerTransform[] | undefined
+  let interactions: InteractionController | undefined
   /** An imported module's precompiled fallback: right from the first paint, before generators load. */
   let precompiled = isAuroraModule(source) ? source.css : undefined
   // Hot updates from the module's own watcher apply in place; update() is for a new source.
@@ -223,7 +234,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     const ratio = renderRatio(devicePixelRatio, r.width, r.height)
     const geometry = options.scene ? sceneGeometry(options.scene, member) : { width: r.width, height: r.height, rect: [0, 0, 1, 1] as const }
     return {
-      doc,
+      doc: rendered,
       width: Math.max(2, Math.round(r.width * ratio)),
       height: Math.max(2, Math.round(r.height * ratio)),
       scene: { width: Math.max(2, geometry.width * ratio), height: Math.max(2, geometry.height * ratio), rect: geometry.rect },
@@ -232,6 +243,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       reduced: reduced(),
       origin,
       ...(pausedAt === undefined ? {} : { pausedAt }),
+      ...(transforms ? { transforms } : {}),
       output: output(),
     }
   }
@@ -241,6 +253,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const loaded = () => doc.layers.every((layer) => layer.type in GENERATORS)
 
   function push() {
+    interactions?.setVisible(visible && !document.hidden)
     if (!disposed && loaded()) lease?.update(state())
   }
 
@@ -306,9 +319,36 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       loading = false
     }).then(settled, failed)
   }
-  function settled() {
+  async function settled() {
     if (disposed) return
     mark('generators', surfaceId)
+    const current = doc
+    if (!doc.interactions) {
+      interactions?.dispose()
+      interactions = undefined
+      transforms = undefined
+      rendered = doc
+    } else if (interactions) interactions.configure(doc)
+    else {
+      try {
+        const { InteractionController } = await import('./interactions')
+        if (isDisposed() || current !== doc) return
+        interactions = new InteractionController(doc, {
+          target: options.interactionTarget ?? host,
+          drag: options.drag ?? false,
+          rect: () => state().scene.rect,
+          bounds: () => root.getBoundingClientRect(),
+          render: (next, offsets) => {
+            rendered = next
+            transforms = offsets
+            push()
+          },
+        })
+        interactions.setVisible(visible && !document.hidden)
+      } catch (error) {
+        report('Aurora: interaction modules failed to load.', error)
+      }
+    }
     paintFallback()
     if (!loaded()) {
       const missing = doc.layers.map((l) => l.type).filter((type) => !(type in GENERATORS))
@@ -389,6 +429,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     disposed = true
     clearTimeout(fadeTimer)
     listeners.abort()
+    interactions?.dispose()
     io.disconnect()
     ro.disconnect()
     lease?.release()
@@ -410,6 +451,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   function apply(next: AuroraSource, css?: typeof precompiled) {
     if (disposed) return
     doc = plainDocument(next)
+    rendered = doc
     precompiled = css
     generatorsReady = prepare()
     paintFallback()
@@ -427,6 +469,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   return {
     get mode() { return mode },
     get paused() { return pausedAt !== undefined },
+    get interactions() { return interactions },
     pause,
     resume,
     element: root,

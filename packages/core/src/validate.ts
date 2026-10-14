@@ -47,5 +47,25 @@ export function checkDocument(doc: AuroraDocument): FormatIssue[] {
       }
     }
   })
+  doc.interactions?.forEach((interaction, i) => {
+    interaction.bindings.forEach((binding, j) => {
+      const path = jsonPath(['interactions', i, 'bindings', j])
+      if (binding.parameter.startsWith('signal.')) {
+        if (!doc.modifiers?.signal) issues.push({ path: `${path}.parameter`, message: 'requires a signal modifier in $.modifiers.signal.' })
+        else if (!['amount', 'shake', 'tearSize', 'separation', 'tracking', 'frequency', 'seed'].includes(binding.parameter.slice(7))) issues.push({ path: `${path}.parameter`, message: `is not a signal control: ${JSON.stringify(binding.parameter)}.` })
+        return
+      }
+      const layer = binding.layer === undefined ? undefined : doc.layers[binding.layer]
+      if (!layer) {
+        issues.push({ path: `${path}.layer`, message: `must reference an existing layer (0–${doc.layers.length - 1}).` })
+        return
+      }
+      const generator = GENERATORS[layer.type]
+      if (generator && !['opacity', 'offsetX', 'offsetY', 'time'].includes(binding.parameter) && !(binding.parameter in generator.params)) {
+        const hint = suggest(binding.parameter, Object.keys(generator.params))
+        issues.push({ path: `${path}.parameter`, message: `is not a parameter of ${generator.id}.${hint ? ` Did you mean "${hint}"?` : ''}` })
+      }
+    })
+  })
   return issues
 }

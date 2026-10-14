@@ -129,6 +129,7 @@ export class AuroraBackgroundElement extends HTMLElement {
   private mount(): void {
     const source = this.current!
     this.surface = mountAurora(this, source, {
+      interactionTarget: this.parentElement ?? this,
       paused: this.paused,
       ...(this.scene ? { scene: this.scene } : {}),
       onModeChange: (mode) => {

@@ -19,6 +19,8 @@ export interface SurfaceState {
   origin: number
   /** Frozen epoch time while explicitly paused; omitted while playing. */
   pausedAt?: number
+  /** Transient layer translations and effect clocks, already resolved on the main thread. */
+  transforms?: readonly (readonly [number, number, number, number])[]
   output: RgbSpace
 }
 

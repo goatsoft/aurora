@@ -6,6 +6,20 @@ import { validateDocument } from '@/validate'
 const doc = (layers: AuroraInput['layers']) => assertAurora({ format: 'aurora', version: 1, name: 'T', palette: ['#fff'], layers })
 
 describe('validateDocument', () => {
+  it('checks interaction bindings against existing layers and controls', async () => {
+    const source = doc([{ type: 'aurora-fbm' }])
+    const interaction = (parameter: string, layer?: number) => assertAurora({ ...source, interactions: [{ type: 'follow', bindings: [{ parameter, input: 'x', ...(layer === undefined ? {} : { layer }) }] }] })
+    expect(await validateDocument(interaction('offsetX', 0))).toEqual([])
+    expect(await validateDocument(interaction('intensity', 0))).toEqual([])
+    expect(await validateDocument(interaction('sped', 0))).toEqual([{ path: '$.interactions[0].bindings[0].parameter', message: 'is not a parameter of aurora-fbm. Did you mean "speed"?' }])
+    expect(await validateDocument(interaction('x', 1))).toEqual([{ path: '$.interactions[0].bindings[0].layer', message: 'must reference an existing layer (0–0).' }])
+    expect(await validateDocument(interaction('intensity'))).toEqual([{ path: '$.interactions[0].bindings[0].layer', message: 'must reference an existing layer (0–0).' }])
+    expect(await validateDocument(interaction('signal.amount'))).toEqual([{ path: '$.interactions[0].bindings[0].parameter', message: 'requires a signal modifier in $.modifiers.signal.' }])
+    const signal = assertAurora({ ...interaction('signal.nope'), modifiers: { signal: {} } })
+    expect(await validateDocument(signal)).toEqual([{ path: '$.interactions[0].bindings[0].parameter', message: 'is not a signal control: "signal.nope".' }])
+    expect(await validateDocument(assertAurora({ ...interaction('signal.amount'), modifiers: { signal: {} } }))).toEqual([])
+  })
+
   it('accepts known generators and params', async () => {
     expect(await validateDocument(doc([{ type: 'aurora-fbm', params: { seed: 3, sweep: true } }]))).toEqual([])
   })

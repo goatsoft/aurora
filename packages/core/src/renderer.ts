@@ -274,6 +274,7 @@ export class Renderer {
           reduced: state.reduced !== false,
           scroll: state.scroll,
           rect: state.scene.rect,
+          ...(state.transforms ? { transforms: state.transforms } : {}),
         }, surface.uniforms)
         device.queue.writeBuffer(surface.buffer, 0, surface.uniforms)
         const pass = encoder.beginRenderPass({
