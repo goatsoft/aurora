@@ -25,6 +25,8 @@ describe('gallery', () => {
     expect(galleryGroups.find((group) => group.id === 'tech')!.cards.map((card) => card.id)).toEqual(['digital-rain', 'glitch', 'static', 'radar', 'ping', 'scanlines', 'phosphor'])
     const wrapper = mount(Gallery, { global })
     try {
+      expect(wrapper.get('#modifiers h2').text()).toBe('Modifiers')
+      expect(wrapper.get('#modifiers').text()).not.toContain('Give the whole scene a finishing touch.')
       expect(wrapper.findAll('section').filter((section) => galleryGroups.some((group) => section.attributes('id') === group.id)).reduce((count, section) => count + section.findAll('article').length, 0)).toBe(cards.length)
       expect(wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to'))).toEqual(cards.map((card) => `/docs/generators/${card.id}`))
       for (const group of galleryGroups) {
@@ -81,26 +83,27 @@ describe('gallery', () => {
     const wrapper = mount(ModifiersSection, { global })
     try {
       const cards = wrapper.findAllComponents(ModifierCard)
+      expect(modifierCards[0]!.scene.doc.layers.map((layer) => layer.type)).toEqual(['glitch', 'static', 'scanlines'])
       expect(cards.map((card) => card.props('name'))).toEqual(['Signal distortion', 'Pixelate', 'Vignette'])
       for (const [i, card] of cards.entries()) {
         const scene = modifierCards[i]!.scene
-        const background = card.findComponent(AuroraBackground)
-        const button = card.get('button')
-        expect(button.attributes('disabled')).toBeDefined()
+        const [before, after] = card.findAllComponents(AuroraBackground)
+        expect(card.find('[role="slider"]').exists()).toBe(false)
         expect(card.text()).toContain('CSS fallback')
-        background.vm.$emit('modeChange', 'webgpu')
+        before!.vm.$emit('modeChange', 'webgpu')
         await card.vm.$nextTick()
-        expect(button.attributes('disabled')).toBeUndefined()
-        expect(button.attributes('aria-pressed')).toBe('true')
-        await button.trigger('click')
-        expect(button.attributes('aria-pressed')).toBe('false')
-        expect(card.text()).toContain('Original scene')
-        const original = background.props('src') as AuroraDocument
+        const slider = card.get('[role="slider"]')
+        expect(slider.attributes('aria-valuenow')).toBe('50')
+        await slider.trigger('keydown', { key: 'ArrowRight' })
+        expect(slider.attributes('aria-valuenow')).toBe('52')
+        await slider.trigger('keydown', { key: 'Home' })
+        expect(slider.attributes('aria-valuenow')).toBe('5')
+        expect(card.text()).toContain('Original')
+        const original = before!.props('src') as AuroraDocument
         expect(original.modifiers).toBeUndefined()
         expect(original.layers).toEqual(scene.doc.layers)
         expect(original.palette).toEqual(scene.doc.palette)
-        await button.trigger('click')
-        expect(background.props('src')).toEqual(scene)
+        expect(after!.props('src')).toEqual(scene)
       }
     } finally {
       wrapper.unmount()
