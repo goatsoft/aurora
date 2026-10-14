@@ -18,7 +18,7 @@ import { borealis } from '@/lib/scenes'
     <EditInStudio
       :src="borealis"
       label="this background"
-      position="top-24 right-4 sm:top-auto sm:right-6 sm:bottom-60"
+      position="right-6 bottom-60"
     />
     <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(65%_50%_at_50%_50%,oklch(0.12_0.03_300/0.72),transparent_75%)]" />
     <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-background" />
