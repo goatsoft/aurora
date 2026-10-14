@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @source "../../../packages/editor-ui/src";
+/* One-percent positions for the keyboard/drag modifier comparison. */
+@source inline("left-[{5..95}%] [clip-path:inset(0_0_0_{5..95}%)]");
 
 @custom-variant dark (&:is(.dark *));
 

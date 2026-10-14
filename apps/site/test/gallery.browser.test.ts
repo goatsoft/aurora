@@ -3,7 +3,7 @@ import { generatorIds } from '@goatsoft/aurora'
 import { parseAurora } from '@goatsoft/aurora-format'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { mount, RouterLinkStub } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import GalleryScene from '@/components/GalleryScene.vue'
 import ModifierCard from '@/components/ModifierCard.vue'
 import ModifiersSection from '@/components/section/ModifiersSection.vue'
@@ -12,6 +12,7 @@ import { galleryGroups } from '@/lib/gallery'
 import { sceneGroups } from '@/lib/gallery-scenes'
 import { modifierCards } from '@/lib/modifiers'
 import Gallery from '@/pages/gallery.vue'
+import '@/main.css'
 
 const global = {
   stubs: { AuroraBackground: true, EditInStudio: true, RouterLink: RouterLinkStub },
@@ -80,7 +81,7 @@ describe('gallery', () => {
   })
 
   it('offers scene-wide comparisons only after a real GPU frame, preserving the original layers', async () => {
-    const wrapper = mount(ModifiersSection, { global })
+    const wrapper = mount(ModifiersSection, { global, attachTo: document.body })
     try {
       const cards = wrapper.findAllComponents(ModifierCard)
       expect(modifierCards[0]!.scene.doc.layers.map((layer) => layer.type)).toEqual(['glitch', 'static', 'scanlines'])
@@ -92,18 +93,51 @@ describe('gallery', () => {
         expect(card.text()).toContain('CSS fallback')
         before!.vm.$emit('modeChange', 'webgpu')
         await card.vm.$nextTick()
+        expect(card.find('[role="slider"]').exists()).toBe(false)
+        after!.vm.$emit('modeChange', 'webgpu')
+        await card.vm.$nextTick()
         const slider = card.get('[role="slider"]')
         expect(slider.attributes('aria-valuenow')).toBe('50')
         await slider.trigger('keydown', { key: 'ArrowRight' })
         expect(slider.attributes('aria-valuenow')).toBe('52')
         await slider.trigger('keydown', { key: 'Home' })
         expect(slider.attributes('aria-valuenow')).toBe('5')
+        await slider.trigger('keydown', { key: 'ArrowLeft' })
+        expect(slider.attributes('aria-valuenow')).toBe('5')
+        await slider.trigger('keydown', { key: 'ArrowRight', shiftKey: true })
+        expect(slider.attributes('aria-valuenow')).toBe('15')
+        await slider.trigger('keydown', { key: 'End' })
+        await slider.trigger('keydown', { key: 'ArrowRight' })
+        expect(slider.attributes('aria-valuenow')).toBe('95')
+        const rect = slider.element.parentElement!.getBoundingClientRect()
+        const capture = vi.spyOn(slider.element, 'setPointerCapture').mockImplementation(() => {})
+        const point = async (type: string, clientX: number) => {
+          slider.element.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, clientX }))
+          await card.vm.$nextTick()
+        }
+        try {
+          await point('pointerdown', rect.left + rect.width * 0.95 + 12)
+          await point('pointermove', rect.left + rect.width * 0.75 + 12)
+          expect(slider.attributes('aria-valuenow')).toBe('75')
+          expect(getComputedStyle(slider.element.parentElement!.children[1]!).clipPath).toContain('75%')
+          await point('pointermove', rect.left + rect.width * 2 + 12)
+          expect(slider.attributes('aria-valuenow')).toBe('95')
+          await point('pointerup', rect.left + rect.width * 2 + 12)
+          await point('pointermove', rect.left + 12)
+          expect(slider.attributes('aria-valuenow')).toBe('95')
+        } finally {
+          capture.mockRestore()
+        }
         expect(card.text()).toContain('Original')
         const original = before!.props('src') as AuroraDocument
         expect(original.modifiers).toBeUndefined()
         expect(original.layers).toEqual(scene.doc.layers)
         expect(original.palette).toEqual(scene.doc.palette)
         expect(after!.props('src')).toEqual(scene)
+        after!.vm.$emit('modeChange', 'css')
+        await card.vm.$nextTick()
+        expect(card.find('[role="slider"]').exists()).toBe(false)
+        expect(card.text()).toContain('CSS fallback')
       }
     } finally {
       wrapper.unmount()
