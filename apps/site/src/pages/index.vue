@@ -16,6 +16,7 @@ useHead({})
     </div>
     <PillarsSection />
     <ScenesSection />
+    <ModifiersSection />
     <CodeSection />
     <StudioSection />
     <SharedSection />

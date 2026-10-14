@@ -1,11 +1,16 @@
+import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { generatorIds } from '@goatsoft/aurora'
 import { parseAurora } from '@goatsoft/aurora-format'
+import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import GalleryScene from '@/components/GalleryScene.vue'
+import ModifierCard from '@/components/ModifierCard.vue'
+import ModifiersSection from '@/components/section/ModifiersSection.vue'
 import ScenesSection from '@/components/section/ScenesSection.vue'
 import { galleryGroups } from '@/lib/gallery'
 import { sceneGroups } from '@/lib/gallery-scenes'
+import { modifierCards } from '@/lib/modifiers'
 import Gallery from '@/pages/gallery.vue'
 
 const global = {
@@ -66,6 +71,36 @@ describe('gallery', () => {
       expect(destinations).toContain('/gallery')
       for (const destination of destinations.filter((to) => to !== '/gallery')) {
         expect(galleryGroups.some((group) => destination === `/gallery#${group.id}`)).toBe(true)
+      }
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('offers scene-wide comparisons only after a real GPU frame, preserving the original layers', async () => {
+    const wrapper = mount(ModifiersSection, { global })
+    try {
+      const cards = wrapper.findAllComponents(ModifierCard)
+      expect(cards.map((card) => card.props('name'))).toEqual(['Signal distortion', 'Pixelate', 'Vignette'])
+      for (const [i, card] of cards.entries()) {
+        const scene = modifierCards[i]!.scene
+        const background = card.findComponent(AuroraBackground)
+        const button = card.get('button')
+        expect(button.attributes('disabled')).toBeDefined()
+        expect(card.text()).toContain('CSS fallback')
+        background.vm.$emit('modeChange', 'webgpu')
+        await card.vm.$nextTick()
+        expect(button.attributes('disabled')).toBeUndefined()
+        expect(button.attributes('aria-pressed')).toBe('true')
+        await button.trigger('click')
+        expect(button.attributes('aria-pressed')).toBe('false')
+        expect(card.text()).toContain('Original scene')
+        const original = background.props('src') as AuroraDocument
+        expect(original.modifiers).toBeUndefined()
+        expect(original.layers).toEqual(scene.doc.layers)
+        expect(original.palette).toEqual(scene.doc.palette)
+        await button.trigger('click')
+        expect(background.props('src')).toEqual(scene)
       }
     } finally {
       wrapper.unmount()
