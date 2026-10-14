@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { lagoon, northernLights } from '@/lib/scenes'
 import deepScan from '~/presets/scenes/deep-scan.aurora'
 import ghostTerminal from '~/presets/scenes/ghost-terminal.aurora'
 
 const scenes = [
-  { scene: northernLights, name: 'Northern lights', kind: 'Aurora', group: 'aurora', body: 'Luminous green curtains rising into a violet sky.' },
-  { scene: lagoon, name: 'Lagoon', kind: 'Elements', group: 'elements', body: 'Sunlight dancing through clear, turquoise water.' },
-  { scene: ghostTerminal, name: 'Ghost terminal', kind: 'Tech', group: 'tech', body: 'Falling glyphs and a whisper of electronic interference.' },
-  { scene: deepScan, name: 'Deep scan', kind: 'Tech', group: 'tech', body: 'A cyan radar sweep and quiet echoes in the dark.' },
+  { scene: northernLights, name: 'Northern lights', kind: 'Aurora', group: 'night-skies', body: 'Luminous green curtains rising into a violet sky.' },
+  { scene: lagoon, name: 'Lagoon', kind: 'Elements', group: 'landscapes', body: 'Sunlight dancing through clear, turquoise water.' },
+  { scene: ghostTerminal, name: 'Ghost terminal', kind: 'Tech', group: 'tech-scenes', body: 'Falling glyphs and a whisper of electronic interference.' },
+  { scene: deepScan, name: 'Deep scan', kind: 'Tech', group: 'tech-scenes', body: 'A cyan radar sweep and quiet echoes in the dark.' },
 ]
 </script>
 
@@ -46,7 +45,7 @@ const scenes = [
         class="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/50"
       >
         <div class="relative aspect-16/10 overflow-hidden">
-          <AuroraBackground :src="item.scene" />
+          <LazyBackground :src="item.scene" />
         </div>
         <div class="p-5">
           <p class="eyebrow">

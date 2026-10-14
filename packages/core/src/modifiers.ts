@@ -1,7 +1,7 @@
-/** Optional scene-space distortion. No extra textures or render passes. */
-export function signalWgsl(slot: number | undefined, pixelate: number | undefined): string {
+/** Optional scene modifiers. No extra textures or render passes. */
+export function modifiersWgsl(slot: number | undefined, pixelate: number | undefined): string {
   return /* wgsl */ `
-fn _aurora_signal_sample(uv: vec2f) -> vec4f {
+fn _aurora_scene_sample(uv: vec2f) -> vec4f {
   let p = clamp(${pixelate === undefined ? 'uv' : `mix(uv, (floor(uv * U.v[0].xy / U.v[${pixelate}].x) + 0.5) * U.v[${pixelate}].x / U.v[0].xy, select(1.0, 0.0, U.v[${pixelate}].x == 1.0))`}, vec2f(0.0), vec2f(1.0));
   var ctx: Ctx;
   ctx.uv = p;
@@ -10,14 +10,14 @@ fn _aurora_signal_sample(uv: vec2f) -> vec4f {
   ctx.scroll = U.v[0].w;
   let suv = (p - U.v[1].xy) / U.v[1].zw;
   let aspect = (ctx.res.x * U.v[1].z) / (ctx.res.y * U.v[1].w);
-  return _aurora_signal_scene(ctx, suv, aspect);
+  return _aurora_scene(ctx, suv, aspect);
 }
 ${slot === undefined
   ? ''
   : `fn _aurora_signal_render(uv: vec2f) -> vec4f {
   let a = U.v[${slot}];
   let b = U.v[${slot + 1}];
-  if (a.x == 0.0) { return _aurora_signal_sample(uv); }
+  if (a.x == 0.0) { return _aurora_scene_sample(uv); }
   let clock = U.v[0].z * b.y;
   let cycle = floor(clock);
   let phase = fract(clock);
@@ -37,11 +37,11 @@ ${slot === undefined
   let x = (uv.x - 0.5) * grow + 0.5 + a.x * (tear + jitter.x * a.y * burst * 0.08);
   let y = uv.y + jitter.y * b.x * a.x * burst * 0.12;
   let p = vec2f(x, y);
-  let center = _aurora_signal_sample(p);
-  let split = a.w * a.x * (0.001 + burst * 0.016) * coverage;
-  if (split == 0.0) { return center; }
-  let left = _aurora_signal_sample(p - vec2f(split, 0.0));
-  let right = _aurora_signal_sample(p + vec2f(split, 0.0));
+  let center = _aurora_scene_sample(p);
+  let split = a.w * a.x * burst * 0.017 * coverage;
+  if (split * U.v[0].x < 0.5) { return center; }
+  let left = _aurora_scene_sample(p - vec2f(split, 0.0));
+  let right = _aurora_scene_sample(p + vec2f(split, 0.0));
   return vec4f(left.r, center.g, right.b, max(left.a, max(center.a, right.a)));
 }`}
 `

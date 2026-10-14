@@ -22,12 +22,24 @@ beforeAll(async () => { gpu = await device() })
 afterAll(() => { gpu.destroy() })
 const base: AuroraInput = { format: 'aurora', version: 1, name: 'Signal', palette: ['#fff'], layers: [{ type: pattern.id, mix: 'srgb' }] }
 const effected = (signal: NonNullable<NonNullable<AuroraInput['modifiers']>['signal']> = {}) => assertAurora({ ...base, modifiers: { signal } })
-async function frame(doc: AuroraDocument, time = 0.5, width = 192, height = 108, rect?: readonly [number, number, number, number]) {
+async function frame(doc: AuroraDocument, time = 0.5, width = 192, height = 108, rect?: readonly [number, number, number, number], reduced = false) {
   const shader = compose(doc)
-  return render(gpu, shader.code, packUniforms(doc, shader, { width: rect ? width * 2 : width, height, time, scroll: 0, ...(rect ? { rect } : {}) }), width, height)
+  return render(gpu, shader.code, packUniforms(doc, shader, { width: rect ? width * 2 : width, height, time, scroll: 0, reduced, ...(rect ? { rect } : {}) }), width, height)
 }
 
 describe('scene-wide signal distortion', () => {
+  it('bypasses channel separation between bursts and for sub-pixel offsets', async () => {
+    const plain = effected({ amount: 1, separation: 0, frequency: 1 })
+    const separated = effected({ amount: 1, separation: 1, frequency: 1 })
+    for (const time of [0, 0.7]) expect(diff(await frame(plain, time), await frame(separated, time)).changed).toBe(0)
+    const tiny = effected({ amount: 1, separation: 0.01, frequency: 1 })
+    expect(diff(await frame(plain, 0.25), await frame(tiny, 0.25)).changed).toBe(0)
+    expect(diff(await frame(plain, 0.25), await frame(separated, 0.25)).changed).toBeGreaterThan(0.01)
+  })
+  it.each([0, 0.25, 1.25])('bypasses tearing, shake and separation under reduced motion at time %s', async (time) => {
+    const input = effected({ amount: 1, separation: 1, shake: 1, tracking: 1, frequency: 1 })
+    expect(diff(await frame(input, time, 192, 108, undefined, true), await frame(assertAurora(base), time)).changed).toBe(0)
+  })
   it('is bit-exact with the original scene at zero amount', async () => {
     expect(diff(await frame(assertAurora(base)), await frame(effected({ amount: 0 }))).changed).toBe(0)
   })

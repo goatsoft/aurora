@@ -10,7 +10,7 @@ export const digitalRain = defineGenerator({
   palette: ['oklch(0.12 0.025 165)', 'oklch(0.7 0.17 155)', 'oklch(0.95 0.055 155)'],
   requires: ['hash'],
   params: {
-    density: { default: 20, min: 8, max: 64, step: 1, label: 'Density', description: 'Columns per canvas height.' },
+    density: { default: 20, min: 8, max: 64, step: 1, label: 'Density', description: 'Glyphs per canvas height; columns follow the aspect ratio.' },
     speed: { default: 0.22, min: 0, max: 2, step: 0.01, label: 'Speed', description: 'How quickly the heads fall.' },
     trail: { default: 0.45, min: 0.1, max: 0.9, step: 0.01, label: 'Trail', description: 'Length of each fading trail.' },
     rate: { default: 2, min: 0, max: 12, step: 0.1, label: 'Change rate', description: 'Glyph changes per second; 0 keeps the symbols fixed.', unit: '/s' },

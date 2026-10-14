@@ -82,18 +82,18 @@ An optional scene effect tears, stretches and shakes the complete composition. I
 }
 ```
 
-`amount`, `shake`, `separation` and `tracking` range from 0 to 1. `tearSize` is the height of a tearing band relative to the scene, from 0.02 to 0.5. `frequency` is burst cycles per second, from 0 to 2; zero freezes the distortion while other layers can keep moving. `seed` is a whole number from 0 to 100.
+See the [modifier reference](modifiers.md) for defaults, ranges and control descriptions. Frequency zero freezes the distortion while other layers can keep moving.
 
-Omit `modifiers` for the normal rendering path. An empty `signal` object uses the defaults; an amount of zero leaves the scene unchanged. The effect follows global motion and reduced-motion settings. CSS fallback shows the undistorted background.
+Omit `modifiers` for the normal rendering path. An empty `signal` object uses the defaults; an amount of zero leaves the scene unchanged. Global motion scales the effect. Under `prefers-reduced-motion`, signal distortion is disabled for both `still` and `slow`; other layers follow their configured motion policy. CSS fallback shows the undistorted background.
 
-Colour separation samples the full composition three times, so it costs more than tearing and shake alone. Set `separation` to zero when you only need displacement. This field requires a version of Aurora and `@goatsoft/aurora-format` that supports scene modifiers; older strict validators reject it.
+Colour separation samples the full composition three times during visible bursts. Between bursts, or below half a canvas pixel of separation, Aurora uses one sample. Set `separation` to zero when you only need displacement. This field requires a version of Aurora and `@goatsoft/aurora-format` that supports scene modifiers; older strict validators reject it.
 
 ### Pixelate
 
-`"modifiers": { "pixelate": { "size": 8 } }` samples the scene in square display blocks. Size is a whole number from 1 to 64 canvas pixels; 1 leaves the scene unchanged. Fine-detail generators adapt to the lower effective resolution.
+`"modifiers": { "pixelate": { "size": 8 } }` samples the scene in square display blocks. Size is measured in canvas pixels; 1 leaves the scene unchanged. Its CSS size depends on `devicePixelRatio`, `configureAurora({ pixelRatio })` and the render size cap. At the default pixel ratio, size 8 spans 8 CSS pixels on a 2x screen and 16 CSS pixels on a 1x screen. Fine-detail generators adapt to the lower effective resolution.
 
 ### Vignette
 
-`"modifiers": { "vignette": { "amount": 0.45, "radius": 0.45, "softness": 0.45 } }` darkens the edges without changing transparency. Amount and radius range from 0 to 1; softness ranges from 0.01 to 1. Radius and softness are relative to the shorter scene side. Zero amount leaves the scene unchanged.
+`"modifiers": { "vignette": { "amount": 0.45, "radius": 0.45, "softness": 0.45 } }` darkens the edges without changing transparency. Radius and softness are relative to the shorter scene side. Zero amount leaves the scene unchanged.
 
 Combine these keys in one `modifiers` object. Aurora applies signal distortion first, pixelate sampling next, and vignette last. The CSS fallback keeps the original composition.

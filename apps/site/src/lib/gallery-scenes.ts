@@ -1,7 +1,8 @@
 import type { AuroraModule } from '@goatsoft/aurora'
+import { preset } from '@/lib/presets'
 
 const modules = import.meta.glob<AuroraModule>('~/presets/scenes/*.aurora', { eager: true, import: 'default' })
-const scene = (id: string) => Object.entries(modules).find(([path]) => path.endsWith(`/${id}.aurora`))![1]
+const scene = (id: string) => preset(modules, id, 'scene')
 
 /** Finished compositions: each multi-layer preset appears once, grouped by atmosphere. */
 export const sceneGroups = [

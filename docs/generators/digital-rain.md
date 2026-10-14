@@ -43,7 +43,7 @@ Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
-| `density` | Density | 20 | 8 to 64 | Columns per canvas height. |
+| `density` | Density | 20 | 8 to 64 | Glyphs per canvas height; columns follow the aspect ratio. |
 | `speed` | Speed | 0.22 | 0 to 2 | How quickly the heads fall. |
 | `trail` | Trail | 0.45 | 0.1 to 0.9 | Length of each fading trail. |
 | `rate` | Change rate | 2 /s | 0 to 12 | Glyph changes per second; 0 keeps the symbols fixed. |

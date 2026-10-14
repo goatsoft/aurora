@@ -2,6 +2,7 @@ import type { Component } from 'vue'
 import Binary from '~icons/hugeicons/binary-code'
 import Blend from '~icons/hugeicons/blend'
 import Circle from '~icons/hugeicons/circle'
+import CircleDot from '~icons/hugeicons/circle-dot'
 import Cloud from '~icons/hugeicons/cloud'
 import CloudRain from '~icons/hugeicons/cloud-angled-rain'
 import CloudZap from '~icons/hugeicons/cloud-angled-zap'
@@ -11,8 +12,10 @@ import FastWind from '~icons/hugeicons/fast-wind'
 import Fire from '~icons/hugeicons/fire'
 import Grid from '~icons/hugeicons/grid'
 import Layers from '~icons/hugeicons/layers-01'
+import Monitor from '~icons/hugeicons/monitor'
 import Mountain from '~icons/hugeicons/mountain'
 import MountainSnow from '~icons/hugeicons/mountain-snow'
+import NoSignal from '~icons/hugeicons/no-signal'
 import PaintBoard from '~icons/hugeicons/paint-board'
 import PaintBrush from '~icons/hugeicons/paint-brush-04'
 import PineTree from '~icons/hugeicons/pine-tree'
@@ -30,11 +33,11 @@ const ICONS: Record<string, Component> = {
   'grain': Grid,
   'digital-rain': Binary,
   'glitch': CloudZap,
-  'static': Grid,
+  'static': NoSignal,
   'radar': Radar,
   'ping': Pulse,
-  'scanlines': Grid,
-  'phosphor': Grid,
+  'scanlines': Monitor,
+  'phosphor': CircleDot,
   'strata': Mountain,
   'mountains': MountainSnow,
   'treeline': PineTree,

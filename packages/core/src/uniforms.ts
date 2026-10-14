@@ -10,6 +10,8 @@ export interface FrameState {
   height: number
   /** Seconds since the scene's clock started; frozen for reduced motion. */
   time: number
+  /** Reduced motion bypasses whole-scene signal distortion. */
+  reduced?: boolean
   /** Scroll offset in surface heights, already multiplied by parallax. */
   scroll: number
   /** The surface's rectangle inside its scene, in scene UV: `[x, y, width, height]`. */
@@ -71,7 +73,7 @@ export function packUniforms(
 
   if (shader.signal !== undefined) {
     const s = doc.modifiers!.signal!
-    u.set([s.amount, s.shake, s.tearSize, s.separation, s.tracking, s.frequency, s.seed, 0], shader.signal * 4)
+    u.set([frame.reduced ? 0 : s.amount, s.shake, s.tearSize, s.separation, s.tracking, s.frequency, s.seed, 0], shader.signal * 4)
   }
   if (shader.pixelate !== undefined) u.set([doc.modifiers!.pixelate!.size, 0, 0, 0], shader.pixelate * 4)
   if (shader.vignette !== undefined) {

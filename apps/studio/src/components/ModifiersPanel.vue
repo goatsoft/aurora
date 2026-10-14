@@ -1,31 +1,12 @@
 <script setup lang="ts">
 import type { ParamSpec } from '@goatsoft/aurora'
-import type { AuroraInput } from '@goatsoft/aurora-format'
+import type { ModifierId } from '@goatsoft/aurora-format'
 import { ScrubField } from '@goatsoft/aurora-editor-ui'
-import { PIXELATE_DEFAULTS, SIGNAL_DEFAULTS, VIGNETTE_DEFAULTS } from '@goatsoft/aurora-format'
+import { MODIFIERS } from '@goatsoft/aurora-format'
 import { useStudio } from '@/editor/studio'
 
-type ModifierId = keyof NonNullable<AuroraInput['modifiers']>
 const studio = useStudio()
-const definitions: { id: ModifierId, label: string, hint: string, controls: Record<string, ParamSpec> }[] = [
-  { id: 'signal', label: 'Signal distortion', hint: 'Tear, stretch and shake the complete scene.', controls: {
-    amount: { default: SIGNAL_DEFAULTS.amount, label: 'Amount', description: 'Overall distortion. Zero leaves the scene unchanged.', min: 0, max: 1, step: 0.01 },
-    shake: { default: SIGNAL_DEFAULTS.shake, label: 'Shake', description: 'Horizontal judder during a burst.', min: 0, max: 1, step: 0.01 },
-    tearSize: { default: SIGNAL_DEFAULTS.tearSize, label: 'Tear size', description: 'Height of the bands that stretch and slip sideways.', min: 0.02, max: 0.5, step: 0.01 },
-    separation: { default: SIGNAL_DEFAULTS.separation, label: 'Colour separation', description: 'Separate colour channels around torn edges. Costs more to render.', min: 0, max: 1, step: 0.01 },
-    tracking: { default: SIGNAL_DEFAULTS.tracking, label: 'Tracking', description: 'Brief vertical slips during a burst.', min: 0, max: 1, step: 0.01 },
-    frequency: { default: SIGNAL_DEFAULTS.frequency, label: 'Burst rate', description: 'Burst cycles per second. Zero freezes the distortion.', min: 0, max: 2, step: 0.01 },
-    seed: { default: SIGNAL_DEFAULTS.seed, label: 'Signal seed', description: 'Choose a different distortion pattern.', min: 0, max: 100, step: 1 },
-  } },
-  { id: 'pixelate', label: 'Pixelate', hint: 'Turn the whole composition into display blocks.', controls: {
-    size: { default: PIXELATE_DEFAULTS.size, label: 'Block size', description: 'Display block size in canvas pixels. One leaves the scene unchanged.', min: 1, max: 64, step: 1, unit: 'px' },
-  } },
-  { id: 'vignette', label: 'Vignette', hint: 'Darken the edges to draw attention into the scene.', controls: {
-    amount: { default: VIGNETTE_DEFAULTS.amount, label: 'Darkness', description: 'Edge darkness. Zero leaves the scene unchanged.', min: 0, max: 1, step: 0.01 },
-    radius: { default: VIGNETTE_DEFAULTS.radius, label: 'Clear radius', description: 'Size of the clear centre, relative to the shorter scene side.', min: 0, max: 1, step: 0.01 },
-    softness: { default: VIGNETTE_DEFAULTS.softness, label: 'Softness', description: 'Width of the soft transition to the dark edges.', min: 0.01, max: 1, step: 0.01 },
-  } },
-]
+const definitions: { id: ModifierId, label: string, hint: string, controls: Record<string, ParamSpec> }[] = Object.entries(MODIFIERS).map(([id, modifier]) => ({ id: id as ModifierId, ...modifier }))
 
 function toggle(id: ModifierId, on: boolean) {
   studio.commit(studio.ops.modifier(studio.doc.value, id, on ? {} : undefined))

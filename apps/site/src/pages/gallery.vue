@@ -144,7 +144,7 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
             class="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface/50"
           >
             <div class="relative aspect-4/3 overflow-hidden">
-              <AuroraBackground :src="card.scene" />
+              <LazyBackground :src="card.scene" />
             </div>
             <div class="p-5">
               <h3 class="text-lg font-semibold">

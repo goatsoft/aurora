@@ -82,6 +82,16 @@ describe('colours', () => {
 })
 
 describe('signal effect uniforms', () => {
+  it('bypasses signal distortion for reduced motion and restores the authored amount', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7 }, pixelate: { size: 8 }, vignette: {} } })
+    const shader = compose(input)
+    const out = packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: true })
+    expect(out[shader.signal! * 4]).toBe(0)
+    expect(out[shader.pixelate! * 4]).toBe(8)
+    packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: false }, out)
+    expect(out[shader.signal! * 4]).toBeCloseTo(0.7)
+    expect(input.modifiers!.signal!.amount).toBe(0.7)
+  })
   it('updates every control in place, including zeros, without rebuilding the shader', () => {
     const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7, shake: 0.6, tearSize: 0.2, separation: 0.4, tracking: 0.3, frequency: 0.8, seed: 19 } } })
     const shader = compose(input)

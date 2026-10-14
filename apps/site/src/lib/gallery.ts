@@ -1,8 +1,9 @@
 import type { AuroraModule } from '@goatsoft/aurora'
+import { preset } from '@/lib/presets'
 import { blueHour, glacierStorm, mistyForest } from '@/lib/scenes'
 
 const starters = import.meta.glob<AuroraModule>('~/presets/starters/*.aurora', { eager: true, import: 'default' })
-const starter = (id: string) => Object.entries(starters).find(([path]) => path.endsWith(`/${id}.aurora`))![1]
+const starter = (id: string) => preset(starters, id, 'starter')
 
 /** Cards that show their generator inside a scene rather than alone. */
 const SCENES: Record<string, AuroraModule> = { mountains: blueHour, treeline: mistyForest, rain: glacierStorm }

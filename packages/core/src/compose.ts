@@ -4,7 +4,7 @@ import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { RgbSpace } from '@goatsoft/color'
 import { COLOR_WGSL } from '@goatsoft/color'
 import { noiseWgsl } from './generators/noise'
-import { signalWgsl } from './signal'
+import { modifiersWgsl } from './modifiers'
 import { STD_WGSL } from './wgsl-std'
 
 /** Where each layer's values live in the uniform array, in vec4 slots. */
@@ -136,12 +136,12 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
   const effect = !modified
     ? ''
     : `
-fn _aurora_signal_scene(ctx: Ctx, suv: vec2f, aspect: f32) -> vec4f {
+fn _aurora_scene(ctx: Ctx, suv: vec2f, aspect: f32) -> vec4f {
   var acc = vec4f(0.0);
 ${body.join('\n')}
   return acc;
 }
-${signalWgsl(signal, pixelate)}`
+${modifiersWgsl(signal, pixelate)}`
   const fade = FADE[doc.canvas.fade]
   const code = `${STD_WGSL}${COLOR_WGSL}
 struct Uniforms { v: array<vec4f, ${slot}> };
@@ -155,7 +155,7 @@ ${noiseWgsl(noise)}${[...modules.values()].join('\n')}${effect}
   ctx.res = U.v[0].xy;
   ctx.time = U.v[0].z;
   ctx.scroll = U.v[0].w;
-${!modified ? `  var acc = vec4f(0.0);\n${body.join('\n')}` : `  var acc = ${signal === undefined ? '_aurora_signal_sample' : '_aurora_signal_render'}(ctx.uv);`}
+${!modified ? `  var acc = vec4f(0.0);\n${body.join('\n')}` : `  var acc = ${signal === undefined ? '_aurora_scene_sample' : '_aurora_signal_render'}(ctx.uv);`}
 ${vignette === undefined
   ? ''
   : `  let v = U.v[${vignette}];

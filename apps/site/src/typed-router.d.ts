@@ -255,6 +255,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/guide/modifiers': RouteRecordInfo<
+      '/docs/guide/modifiers',
+      '/docs/guide/modifiers',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/guide/runtime': RouteRecordInfo<
       '/docs/guide/runtime',
       '/docs/guide/runtime',
@@ -589,6 +596,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/guide/getting-started.md': {
       routes:
         | '/docs/guide/getting-started'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/modifiers.md': {
+      routes:
+        | '/docs/guide/modifiers'
       views:
         | never
       pathParamNames:

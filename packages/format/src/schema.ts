@@ -1,5 +1,7 @@
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
+import { Pixelate, Signal, Vignette } from './modifiers-schema'
+import { range } from './range'
 
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
 export const FORMAT_VERSION = 1
@@ -17,14 +19,6 @@ export const REDUCED_MOTION = ['still', 'slow', 'css'] as const
 export const MAX_LAYERS = 16
 export const MAX_COLORS = 16
 
-const range = (min: number, max: number, description: string) =>
-  v.pipe(
-    v.number(),
-    v.minValue(min, `must be between ${min} and ${max}`),
-    v.maxValue(max, `must be between ${min} and ${max}`),
-    v.description(description),
-  )
-
 const unit = (description: string) => range(0, 1, description)
 
 const Color = v.pipe(
@@ -34,8 +28,7 @@ const Color = v.pipe(
     const result = parseColor(dataset.value)
     if (!result.ok) addIssue({ message: result.message })
   }),
-  v.description('Hex, RGB/HSL, OKLab/OKLCH or sRGB/P3; prefer OKLCH.'),
-  v.examples(['oklch(0.68 0.16 245)', 'oklch(0.56 0.22 285 / 0.8)', '#4f8cff']),
+  v.description('Hex, OKLab/OKLCH or sRGB/P3; prefer OKLCH.'),
 )
 
 const Canvas = v.strictObject({
@@ -71,30 +64,6 @@ const Motion = v.strictObject({
   ),
 })
 
-/** Defaults for the optional whole-scene signal distortion. */
-export const SIGNAL_DEFAULTS = { amount: 0.35, shake: 0.25, tearSize: 0.15, separation: 0.2, tracking: 0.15, frequency: 0.5, seed: 0 }
-
-const Signal = v.strictObject({
-  amount: v.optional(unit('Distortion amount.'), SIGNAL_DEFAULTS.amount),
-  shake: v.optional(unit('Horizontal shake.'), SIGNAL_DEFAULTS.shake),
-  tearSize: v.optional(range(0.02, 0.5, 'Tear height.'), SIGNAL_DEFAULTS.tearSize),
-  separation: v.optional(unit('RGB separation.'), SIGNAL_DEFAULTS.separation),
-  tracking: v.optional(unit('Vertical slips.'), SIGNAL_DEFAULTS.tracking),
-  frequency: v.optional(range(0, 2, 'Bursts/second; 0 freezes.'), SIGNAL_DEFAULTS.frequency),
-  seed: v.optional(v.pipe(range(0, 100, 'Distortion seed.'), v.integer('must be a whole number')), SIGNAL_DEFAULTS.seed),
-})
-
-export const PIXELATE_DEFAULTS = { size: 8 }
-export const VIGNETTE_DEFAULTS = { amount: 0.45, radius: 0.45, softness: 0.45 }
-
-const Pixelate = v.strictObject({
-  size: v.optional(v.pipe(range(1, 64, 'Pixels per block.'), v.integer('must be a whole number')), PIXELATE_DEFAULTS.size),
-})
-const Vignette = v.strictObject({
-  amount: v.optional(unit('Edge darkness.'), VIGNETTE_DEFAULTS.amount),
-  radius: v.optional(unit('Clear radius.'), VIGNETTE_DEFAULTS.radius),
-  softness: v.optional(range(0.01, 1, 'Edge softness.'), VIGNETTE_DEFAULTS.softness),
-})
 const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
 
 const LinearMask = v.strictObject({

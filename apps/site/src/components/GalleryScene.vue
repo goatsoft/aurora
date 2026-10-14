@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { AuroraModule } from '@goatsoft/aurora'
-import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { useStudioHref } from '@/lib/studio-link'
 
 const props = defineProps<{ scene: AuroraModule, body: string }>()
@@ -10,7 +9,7 @@ const href = useStudioHref(() => props.scene)
 <template>
   <article class="overflow-hidden rounded-2xl border border-white/10 bg-surface/50">
     <div class="relative aspect-16/10 overflow-hidden">
-      <AuroraBackground :src="scene" />
+      <LazyBackground :src="scene" />
     </div>
     <div class="p-5 sm:p-6">
       <div class="flex flex-wrap items-baseline justify-between gap-2">

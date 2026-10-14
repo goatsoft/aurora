@@ -47,6 +47,7 @@ declare module 'vue' {
     IHgViewOff: typeof import('~icons/hugeicons/view-off')['default']
     ISiGithub: typeof import('~icons/simple-icons/github')['default']
     ISiNpm: typeof import('~icons/simple-icons/npm')['default']
+    LazyBackground: typeof import('./components/LazyBackground.vue')['default']
     Mark: typeof import('./components/Mark.vue')['default']
     ModifierCard: typeof import('./components/ModifierCard.vue')['default']
     ModifiersSection: typeof import('./components/section/ModifiersSection.vue')['default']

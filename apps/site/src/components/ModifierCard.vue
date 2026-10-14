@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AuroraMode, AuroraModule } from '@goatsoft/aurora'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStudioHref } from '@/lib/studio-link'
 
 /**
@@ -13,17 +13,26 @@ import { useStudioHref } from '@/lib/studio-link'
 const props = defineProps<{ name: string, body: string, scene: AuroraModule }>()
 const beforeMode = ref<AuroraMode>('css')
 const afterMode = ref<AuroraMode>('css')
-const live = computed(() => beforeMode.value === 'webgpu' && afterMode.value === 'webgpu')
+const live = computed(() => beforeMode.value === 'webgpu' && afterMode.value === 'webgpu' && !failed.value)
 const original = computed(() => {
   const { modifiers: _, ...doc } = props.scene.doc
-  return doc
+  return { ...props.scene, id: `${props.scene.id}:original`, doc }
 })
 const href = useStudioHref(() => props.scene)
 
-// The stylesheet emits the allowed positions; the comparison needs no inline styles.
 const split = ref(50)
-const clip = computed(() => `[clip-path:inset(0_0_0_${split.value}%)]`)
-const position = computed(() => `left-[${split.value}%]`)
+const failed = ref(false)
+watch(beforeMode, () => {
+  afterMode.value = 'css'
+  failed.value = false
+})
+watch(() => props.scene, () => {
+  failed.value = false
+})
+function afterChanged(value: AuroraMode) {
+  if (afterMode.value === 'webgpu' && value === 'css') failed.value = true
+  afterMode.value = value
+}
 const dragging = ref(false)
 let grip = 0
 function start(event: PointerEvent) {
@@ -51,18 +60,23 @@ function nudge(event: KeyboardEvent) {
 
 <template>
   <article class="overflow-hidden rounded-2xl border border-white/10 bg-surface/50">
-    <div class="relative aspect-16/10 overflow-hidden">
-      <AuroraBackground
+    <div
+      class="relative aspect-16/10 overflow-hidden"
+      :style="{ '--split': `${split}%` }"
+    >
+      <LazyBackground
         :src="original"
         @mode-change="(value) => beforeMode = value"
       />
       <div
-        class="absolute inset-0"
-        :class="live ? clip : 'opacity-0'"
+        v-if="beforeMode === 'webgpu' && !failed"
+        class="absolute inset-0 [clip-path:inset(0_0_0_var(--split))]"
+        :class="{ 'opacity-0': !live }"
       >
         <AuroraBackground
           :src="scene"
-          @mode-change="(value) => afterMode = value"
+          @mode-change="afterChanged"
+          @error="failed = true"
         />
       </div>
       <template v-if="live">
@@ -74,8 +88,7 @@ function nudge(event: KeyboardEvent) {
           aria-valuemax="95"
           :aria-valuenow="split"
           :aria-valuetext="`${split}% original`"
-          class="absolute inset-y-0 z-10 w-11 -translate-x-1/2 cursor-ew-resize touch-none outline-none focus-visible:[&>span]:ring-2 focus-visible:[&>span]:ring-ring"
-          :class="position"
+          class="absolute inset-y-0 left-(--split) z-10 w-11 -translate-x-1/2 cursor-ew-resize touch-none outline-none focus-visible:[&>span]:ring-2 focus-visible:[&>span]:ring-ring"
           @pointerdown="start"
           @pointermove="drag"
           @pointerup="dragging = false"
