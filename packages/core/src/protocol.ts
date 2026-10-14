@@ -23,6 +23,8 @@ export interface SurfaceState {
 export type WorkerRequest
   = | { type: 'probe', fps: number }
     | { type: 'register', generator: GeneratorSpec }
+    /** Compile a document's pipeline now, before any surface draws it. */
+    | { type: 'prepare', doc: AuroraDocument, output: RgbSpace }
     | { type: 'attach', id: number, canvas: OffscreenCanvas, state: SurfaceState }
     | { type: 'update', id: number, state: SurfaceState }
     | { type: 'detach', id: number }

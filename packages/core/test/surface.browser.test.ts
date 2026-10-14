@@ -98,6 +98,22 @@ describe('mountAurora with the real renderer', () => {
 })
 
 describe('mountAurora', () => {
+  it('sends the renderer plain data, even for a Proxy from framework state', async () => {
+    // A Vue ref or reactive is a Proxy, which postMessage can't copy: posting one took the worker
+    // down for every background on the page.
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: scripted().backend })
+    const reactive = new Proxy(hero, {})
+    expect(() => structuredClone(reactive)).toThrow()
+    const surface = mountAurora(host, reactive)
+    await until(() => !!leases[0]?.states.length)
+    expect(() => structuredClone(leases[0]!.states[0])).not.toThrow()
+    expect(leases[0]!.states[0]!.doc).toEqual(hero)
+    surface.update(new Proxy(doc({ name: 'Edited' }), {}))
+    expect(() => structuredClone(leases[0]!.states.at(-1))).not.toThrow()
+    surface.dispose()
+  })
+
   it('paints CSS at once, then crossfades to WebGPU after the first frame', async () => {
     const { backend, leases } = scripted()
     setBackends({ worker: backend, main: scripted().backend })

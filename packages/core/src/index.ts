@@ -3,7 +3,7 @@
 /// <reference types="@webgpu/types" preserve="true" />
 export { configureAurora } from './config'
 export type { AuroraConfig } from './config'
-export { FILL_STYLE, mountAurora, setBackends } from './surface'
+export { FILL_STYLE, mountAurora, prepareAurora, setBackends } from './surface'
 export { createMainThreadBackend, createWorkerBackend } from './pool'
 export type { Backend, Lease, LeaseListener } from './pool'
 export type { SurfaceState } from './protocol'

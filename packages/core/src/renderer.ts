@@ -1,6 +1,8 @@
 import type { ComposedShader } from './compose'
 import type { GeneratorLookup, GeneratorSpec } from './generators/define'
 import type { RendererStats, SurfaceState } from './protocol'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
+import type { RgbSpace } from '@goatsoft/color'
 import { compose } from './compose'
 import { packUniforms } from './uniforms'
 
@@ -117,11 +119,28 @@ export class Renderer {
     this.generators.set(generator.id, generator)
   }
 
+  /**
+   * Starts compiling a document's pipeline, so it is ready (or closer) by the time a surface draws
+   * it. Does nothing if it is compiled or compiling, or a generator it needs isn't registered yet.
+   */
+  prepare(doc: AuroraDocument, output: RgbSpace): void {
+    if (this.failed) return
+    let shader: ComposedShader
+    try {
+      shader = compose(doc, output, this.lookup)
+    } catch {
+      return
+    }
+    this.pipeline(shader)
+  }
+
   attach(id: number, canvas: Canvas, state: SurfaceState): void {
     if (this.failed) return
     this.surfaces.set(id, { canvas, state, dirty: true, shown: false })
     this.stats.surfaces = this.surfaces.size
-    this.schedule()
+    this.prepare(state.doc, state.output)
+    // A first frame doesn't wait for the frame budget.
+    this.schedule(true)
   }
 
   update(id: number, state: SurfaceState): void {
@@ -129,8 +148,11 @@ export class Renderer {
     if (!surface || this.failed) return
     surface.state = state
     surface.dirty = true
+    this.prepare(state.doc, state.output)
     this.schedule()
   }
+
+  private readonly lookup = (type: string) => this.generators.get(type) ?? this.options.generators?.(type)
 
   detach(id: number): void {
     const surface = this.surfaces.get(id)
@@ -168,13 +190,21 @@ export class Renderer {
     return surface.state.visible && (surface.state.reduced !== 'still' || surface.dirty)
   }
 
-  private schedule(): void {
-    if (this.failed || this.drawing || this.timer !== undefined) return
-    if (![...this.surfaces.values()].some((s) => this.needsFrame(s))) return
+  /** Queues the next batch: after the frame budget, or `immediate`ly for a first frame. */
+  private schedule(immediate = false): void {
+    if (this.failed || this.drawing) return
+    if (this.timer !== undefined) {
+      if (!immediate) return
+      clearTimeout(this.timer)
+    }
+    if (![...this.surfaces.values()].some((s) => this.needsFrame(s))) {
+      this.timer = undefined
+      return
+    }
     this.timer = setTimeout(() => {
       this.timer = undefined
       void this.draw()
-    }, 1000 / this.options.fps)
+    }, immediate ? 0 : 1000 / this.options.fps)
   }
 
   /** The pipeline for a shader, or undefined while it compiles (the surface waits a frame). */
@@ -184,6 +214,7 @@ export class Renderer {
     if (existing instanceof Promise) return undefined
     if (existing) return existing
     const device = this.device
+    const started = performance.now()
     const module = device.createShaderModule({ code: shader.code })
     const pending = device.createRenderPipelineAsync({
       layout: this.layout,
@@ -192,8 +223,10 @@ export class Renderer {
       primitive: { topology: 'triangle-list' },
     }).then((pipeline) => {
       if (device !== this.device) return
+      performance.measure('aurora:compile', { start: started, detail: { layers: shader.key } })
       this.pipelines.set(key, pipeline)
-      this.schedule()
+      // Surfaces waiting on this pipeline draw now rather than a frame later.
+      this.schedule(true)
     }, () => this.fail())
     this.pipelines.set(key, pending)
     return undefined
@@ -211,7 +244,7 @@ export class Renderer {
       for (const [id, surface] of this.surfaces) {
         if (!this.needsFrame(surface)) continue
         const { state, canvas } = surface
-        const shader = compose(state.doc, state.output, (type) => this.generators.get(type) ?? this.options.generators?.(type))
+        const shader = compose(state.doc, state.output, this.lookup)
         const pipeline = this.pipeline(shader)
         if (!pipeline) continue
         if (canvas.width !== state.width) canvas.width = state.width
