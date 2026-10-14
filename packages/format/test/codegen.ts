@@ -10,7 +10,7 @@ export function literal(value: string): string {
 
 /** Derive a validator from the authoring schema, removing documentation rather than rules. */
 export function runtimeSchema(source: string, name: string): string {
-  const file = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, true)
+  const file = ts.createSourceFile(name, source.replace(/^(?:\/\/ Generated from [^\r\n]*(?:\r?\n|$))+/, ''), ts.ScriptTarget.Latest, true)
   const result = ts.transform(file, [(context) => {
     const visitor: ts.Visitor = (node) => {
       if (ts.isIdentifier(node) && node.text === 'AuroraSchema') return ts.factory.createIdentifier('AuroraValidationSchema')

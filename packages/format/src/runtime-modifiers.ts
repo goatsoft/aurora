@@ -1,5 +1,4 @@
 // Generated from modifiers-schema.ts; metadata stays in the authoring schema. Regenerate with pnpm test -u.
-// Generated from MODIFIERS by test/modifier-spec.test.ts; regenerate with pnpm test -u.
 import * as v from 'valibot'
 import { range } from './runtime-range'
 export const SIGNAL_DEFAULTS = { amount: 0.35, shake: 0.25, tearSize: 0.15, separation: 0.2, tracking: 0.15, frequency: 0.5, seed: 0 }
