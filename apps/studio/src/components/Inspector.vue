@@ -109,7 +109,7 @@ function addColor(css = 'oklch(0.7 0.15 250)') {
     studio.notify('A palette holds up to 16 colours.', 'error')
     return
   }
-  studio.commit(studio.ops.addColor(studio.doc.value, css))
+  studio.commit(studio.ops.addColor(studio.doc.value, css, (type) => studio.generator(type)?.colors ?? 0))
   editing.value = studio.doc.value.palette.length - 1
 }
 
