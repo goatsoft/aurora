@@ -18,6 +18,15 @@ function model(type: InteractionInput['type'], options: Partial<InteractionInput
 }
 
 describe('Follow', () => {
+  it('lets movement-driven strength decay while keeping the followed position', () => {
+    const follow = model('follow', { smoothing: 0, decay: 1, bindings: [{ layer: 0, parameter: 'intensity', input: 'strength' }] })
+    follow.move(1, 0.5, 1000)
+    expect(follow.frame(1000).samples[0]!.strength).toBe(1)
+    expect(follow.frame(1500).samples[0]!.strength).toBe(0.25)
+    follow.move(1, 0.5, 1900)
+    expect(follow.frame(2000)).toMatchObject({ moving: false, samples: [{ x: 0.5, strength: 0 }] })
+  })
+
   it('eases towards a normalized pointer, settles without idle frames and returns to rest', () => {
     const follow = model('follow')
     follow.move(1, 0, 1000)
@@ -62,7 +71,7 @@ describe('Impulse', () => {
     impulse.activate(0.7, 0.3, 1000)
     const frame = impulse.frame(1250, true)
     expect(frame).toMatchObject({ moving: false, expiresIn: 750 })
-    expect(frame.samples[0]).toMatchObject({ strength: 1, travel: 0 })
+    expect(frame.samples[0]).toMatchObject({ strength: 1, travel: 0.25 })
     expect(impulse.frame(2000, true).expiresIn).toBeUndefined()
   })
 })
@@ -115,6 +124,13 @@ describe('Grab & Release', () => {
 })
 
 describe('render bindings', () => {
+  it('ignores inherited object properties as binding targets instead of writing non-finite uniforms', () => {
+    const doc = document({ type: 'follow', bindings: [{ ...binding, parameter: '__proto__' }] })
+    const state = new InteractionState(doc.interactions![0]!)
+    state.move(1, 0.5, 1000)
+    expect(resolveInteractionFrame(doc, [state.frame(1000)]).doc.layers[0]!.params).toEqual({})
+  })
+
   it('composes clamped parameter/modifier changes and offsets without touching the authored document', () => {
     const doc = assertAurora({ ...base, modifiers: { signal: { amount: 0.2 } }, interactions: [{ type: 'follow', bindings: [
       binding, { ...binding, parameter: 'offsetY', input: 'y', amount: -0.2 },

@@ -20,9 +20,11 @@ const props = defineProps<{
   /** Freeze the ambient animation at its current phase. */
   paused?: boolean
   /** A meaningful container for input, outside this decorative background. */
-  interactionTarget?: HTMLElement
+  interactionTarget?: HTMLElement | undefined
   /** Opt into pointer dragging, which reserves touch gestures on the input container. */
   drag?: boolean
+  /** Preview reduced motion; the visitor's own preference always remains effective. */
+  reducedMotion?: boolean
 }>()
 const emit = defineEmits<{
   modeChange: [mode: AuroraMode]
@@ -36,6 +38,7 @@ const { mode, surface } = useAurora(host, () => props.src, {
   paused: () => props.paused,
   interactionTarget: () => props.interactionTarget,
   drag: () => props.drag,
+  reducedMotion: () => props.reducedMotion,
   onError: (error) => emit('error', error),
 })
 watch(mode, (next) => emit('modeChange', next))

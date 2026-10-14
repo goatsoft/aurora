@@ -32,6 +32,7 @@ export class InteractionState {
   private anchor: [number, number] | undefined
   private previous = 0
   private moved = 0
+  private activity = 0
   private pulses: { x: number, y: number, start: number }[] = []
 
   constructor(public config: AuroraInteraction) {}
@@ -40,6 +41,11 @@ export class InteractionState {
     x = clamp(x) - 0.5
     y = clamp(y) - 0.5
     if (this.config.type === 'follow') {
+      const distance = Math.hypot(x - this.tx, y - this.ty)
+      if (distance > 0.0001) {
+        this.activity = clamp(this.activity + distance * 4)
+        this.moved = now
+      }
       this.tx = x
       this.ty = y
     } else if (this.config.type === 'grab' && this.anchor) {
@@ -56,6 +62,7 @@ export class InteractionState {
 
   leave(): void {
     this.tx = this.ty = 0
+    this.activity = 0
   }
 
   activate(x: number, y: number, now: number): void {
@@ -78,7 +85,7 @@ export class InteractionState {
   }
 
   reset(): void {
-    this.x = this.y = this.tx = this.ty = this.vx = this.vy = this.previous = 0
+    this.x = this.y = this.tx = this.ty = this.vx = this.vy = this.previous = this.activity = 0
     this.anchor = undefined
     this.pulses = []
   }
@@ -93,10 +100,11 @@ export class InteractionState {
         const pulse = this.pulses[slot]
         if (!pulse) return zero()
         const age = Math.max(0, (now - pulse.start) / 1000)
-        return { x: pulse.x, y: pulse.y, strength: config.strength * (reduced ? 1 : (1 - age / config.decay) ** 2), travel: reduced ? 0 : age }
+        return { x: pulse.x, y: pulse.y, strength: config.strength * (reduced ? 1 : (1 - age / config.decay) ** 2), travel: reduced ? Math.min(0.4, config.decay * 0.25) : age }
       })
       const expiresIn = this.pulses.length ? Math.max(1, Math.min(...this.pulses.map((p) => p.start + config.decay * 1000 - now))) : undefined
-      return { samples, moving: !reduced && !!this.pulses.length, ...(expiresIn === undefined ? {} : { expiresIn }) }
+      const animated = config.bindings.some((binding) => binding.input === 'strength' || binding.input === 'travel')
+      return { samples, moving: !reduced && animated && !!this.pulses.length, ...(expiresIn === undefined ? {} : { expiresIn }) }
     }
     if (config.type === 'follow') {
       const rate = reduced || config.smoothing === 0 ? 1 : 1 - Math.exp(-dt / (config.smoothing * (this.tx === 0 && this.ty === 0 ? config.decay : 0.35)))
@@ -123,8 +131,12 @@ export class InteractionState {
         this.vy = small(this.vy)
       }
     }
-    const moving = config.type === 'follow' ? this.x !== this.tx || this.y !== this.ty : !this.anchor && !!(this.x || this.y || this.vx || this.vy)
-    return { samples: [{ x: this.x * config.strength, y: this.y * config.strength, strength: clamp(Math.hypot(this.x, this.y) * 2) * config.strength, travel: 0 }], moving }
+    const age = Math.max(0, (now - this.moved) / 1000)
+    const active = config.type === 'follow' && this.activity > 0 && age < config.decay
+    const strength = config.type === 'follow' ? (active ? this.activity * (reduced ? 1 : (1 - age / config.decay) ** 2) : 0) : clamp(Math.hypot(this.x, this.y) * 2)
+    const usesStrength = config.bindings.some((binding) => binding.input === 'strength')
+    const moving = config.type === 'follow' ? this.x !== this.tx || this.y !== this.ty || (!reduced && active && usesStrength) : !this.anchor && !!(this.x || this.y || this.vx || this.vy)
+    return { samples: [{ x: this.x * config.strength, y: this.y * config.strength, strength: strength * config.strength, travel: 0 }], moving, ...(reduced && active && usesStrength ? { expiresIn: Math.max(1, (config.decay - age) * 1000) } : {}) }
   }
 }
 
@@ -141,7 +153,7 @@ export function resolveInteractionFrame(doc: AuroraDocument, frames: Interaction
         if (!signal) continue
         const name = binding.parameter.slice(7)
         const controls: Record<string, ModifierControl> = MODIFIERS.signal.controls
-        const control = controls[name]
+        const control = Object.hasOwn(controls, name) ? controls[name] : undefined
         if (control) {
           const values: Record<string, number> = signal
           values[name] = clamp(values[name]! + input, control.min, control.max)
@@ -161,10 +173,11 @@ export function resolveInteractionFrame(doc: AuroraDocument, frames: Interaction
         transform[3] = 1
       } else if (binding.parameter === 'opacity') layer.opacity = clamp(layer.opacity + input)
       else {
-        const control = GENERATORS[layer.type]?.params[binding.parameter]
+        const params = GENERATORS[layer.type]?.params
+        const control = params && Object.hasOwn(params, binding.parameter) ? params[binding.parameter] : undefined
         if (!control) continue
         const value = layer.params[binding.parameter]
-        const base = typeof value === 'number' ? value : control.default
+        const base = typeof value === 'number' ? value : typeof value === 'boolean' ? Number(value) : control.default
         layer.params[binding.parameter] = clamp(base + input, control.min, control.max)
       }
     }

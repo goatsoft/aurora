@@ -21,6 +21,8 @@ export interface MountOptions {
   interactionTarget?: HTMLElement
   /** Opt into pointer dragging for Grab & Release; defaults to false to preserve scrolling. */
   drag?: boolean
+  /** Opt into reduced motion explicitly. False never overrides the visitor's preference. */
+  reducedMotion?: boolean
   /** Start with the ambient clock paused. Input and document changes can still redraw. */
   paused?: boolean
   /** Join a named scene: members share one clock and one continuous field. */
@@ -41,6 +43,9 @@ export interface AuroraSurface {
   readonly paused: boolean
   /** Available after the optional interaction module has loaded. Backgrounds remain aria-hidden. */
   readonly interactions: AuroraInteractions | undefined
+  /** Rebind input without remounting the background or resetting its ambient phase. */
+  setInteractionTarget: (target: HTMLElement, drag?: boolean) => void
+  setReducedMotion: (reduced: boolean) => void
   /** Freeze at the current animation phase, without changing the document. */
   pause: () => void
   /** Continue from the frozen phase. */
@@ -169,6 +174,10 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   let rendered = doc
   let transforms: LayerTransform[] | undefined
   let interactions: InteractionController | undefined
+  let interactionTarget = options.interactionTarget ?? host
+  let drag = options.drag ?? false
+  let inputRevision = 0
+  let forceReduced = options.reducedMotion ?? false
   /** An imported module's precompiled fallback: right from the first paint, before generators load. */
   let precompiled = isAuroraModule(source) ? source.css : undefined
   // Hot updates from the module's own watcher apply in place; update() is for a new source.
@@ -201,14 +210,15 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   host.append(root)
 
   const reducedQuery = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : undefined
-  const reduced = (): SurfaceState['reduced'] => (reducedQuery?.matches ? (doc.motion.reduced === 'slow' ? 'slow' : 'still') : false)
-  const cssOnly = () => !!reducedQuery?.matches && doc.motion.reduced === 'css'
+  const prefersReduced = () => forceReduced || !!reducedQuery?.matches
+  const reduced = (): SurfaceState['reduced'] => (prefersReduced() ? (doc.motion.reduced === 'slow' ? 'slow' : 'still') : false)
+  const cssOnly = () => prefersReduced() && doc.motion.reduced === 'css'
 
   function paintFallback() {
     // Until every generator has loaded, compileCss would leave their layers out.
     const css = precompiled && !loaded() ? precompiled : compileCss(doc)
     root.style.position = doc.canvas.fixed ? 'fixed' : 'absolute'
-    const drift = mode === 'css' && css.drift > 0 && !reducedQuery?.matches
+    const drift = mode === 'css' && css.drift > 0 && !prefersReduced()
     fallback.style.cssText = `position:absolute;inset:-10%;${css.style}${drift ? `;animation:aurora-drift ${css.drift}s ease-in-out infinite;will-change:transform` : ''}`
     fallback.style.animationPlayState = pausedAt === undefined ? 'running' : 'paused'
     // While a plain document's generators are still loading, its fallback would be missing their
@@ -282,10 +292,10 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       if (!framed) mark('frame', surfaceId)
       framed = true
       canvas.style.display = ''
-      canvas.style.transition = reducedQuery?.matches ? 'none' : `opacity ${CROSSFADE_MS}ms ease`
+      canvas.style.transition = prefersReduced() ? 'none' : `opacity ${CROSSFADE_MS}ms ease`
       canvas.style.opacity = '1'
       // Keep the CSS underneath until the crossfade has finished, then stop painting it.
-      fadeTimer = setTimeout(paintFallback, reducedQuery?.matches ? 0 : CROSSFADE_MS)
+      fadeTimer = setTimeout(paintFallback, prefersReduced() ? 0 : CROSSFADE_MS)
     } else {
       canvas.style.opacity = '0'
       canvas.style.display = 'none'
@@ -321,6 +331,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   }
   async function settled() {
     if (disposed) return
+    const revision = ++inputRevision
     mark('generators', surfaceId)
     const current = doc
     if (!doc.interactions) {
@@ -332,12 +343,13 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     else {
       try {
         const { InteractionController } = await import('./interactions')
-        if (isDisposed() || current !== doc) return
+        if (isDisposed() || current !== doc || revision !== inputRevision) return
         interactions = new InteractionController(doc, {
-          target: options.interactionTarget ?? host,
-          drag: options.drag ?? false,
+          target: interactionTarget,
+          drag,
           rect: () => state().scene.rect,
           bounds: () => root.getBoundingClientRect(),
+          reduced: prefersReduced,
           render: (next, offsets) => {
             rendered = next
             transforms = offsets
@@ -361,6 +373,22 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     report('Aurora: generators failed to load; showing the CSS fallback.', error)
     paintFallback()
     toCss()
+  }
+  function setInteractionTarget(target: HTMLElement, nextDrag = false) {
+    if (disposed || (target === interactionTarget && nextDrag === drag)) return
+    interactionTarget = target
+    drag = nextDrag
+    inputRevision++
+    interactions?.dispose()
+    interactions = undefined
+    transforms = undefined
+    rendered = doc
+    if (loaded()) void settled()
+  }
+  function setReducedMotion(value: boolean) {
+    if (disposed || forceReduced === value) return
+    forceReduced = value
+    reducedChanged()
   }
   let generatorsReady = prepare()
 
@@ -415,14 +443,17 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   }, on)
   addEventListener('resize', () => push(), on)
   document.addEventListener('visibilitychange', () => push(), on)
-  reducedQuery?.addEventListener('change', () => {
+  function reducedChanged() {
+    if (prefersReduced()) canvas.style.transition = 'none'
+    interactions?.refresh()
     if (cssOnly()) toCss()
     else {
       push()
       if (!lease && mode === 'css') void start()
     }
     paintFallback()
-  }, on)
+  }
+  reducedQuery?.addEventListener('change', reducedChanged, on)
 
   function dispose() {
     if (disposed) return
@@ -470,6 +501,8 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     get mode() { return mode },
     get paused() { return pausedAt !== undefined },
     get interactions() { return interactions },
+    setInteractionTarget,
+    setReducedMotion,
     pause,
     resume,
     element: root,

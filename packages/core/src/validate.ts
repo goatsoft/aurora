@@ -61,7 +61,7 @@ export function checkDocument(doc: AuroraDocument): FormatIssue[] {
         return
       }
       const generator = GENERATORS[layer.type]
-      if (generator && !['opacity', 'offsetX', 'offsetY', 'time'].includes(binding.parameter) && !(binding.parameter in generator.params)) {
+      if (generator && !['opacity', 'offsetX', 'offsetY', 'time'].includes(binding.parameter) && !Object.hasOwn(generator.params, binding.parameter)) {
         const hint = suggest(binding.parameter, Object.keys(generator.params))
         issues.push({ path: `${path}.parameter`, message: `is not a parameter of ${generator.id}.${hint ? ` Did you mean "${hint}"?` : ''}` })
       }

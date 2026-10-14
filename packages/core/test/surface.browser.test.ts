@@ -31,11 +31,11 @@ const until = (check: () => boolean, timeout = 8000) => vi.waitFor(() => {
 }, { timeout, interval: 20 })
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const nativeMedia = window.matchMedia.bind(window)
 function stubMedia(matches: Record<string, boolean>) {
-  const real = window.matchMedia.bind(window)
   vi.spyOn(window, 'matchMedia').mockImplementation((query) => (query in matches
     ? { matches: matches[query]!, media: query, addEventListener() {}, removeEventListener() {} } as unknown as MediaQueryList
-    : real(query)))
+    : nativeMedia(query)))
 }
 
 /** A backend driven by the test: it records states and lets the test fire frames and failures. */
@@ -98,6 +98,28 @@ describe('mountAurora with the real renderer', () => {
 })
 
 describe('mountAurora', () => {
+  it('previews reduced motion without changing speed and cannot override a visitor preference', async () => {
+    stubMedia({ '(prefers-reduced-motion: reduce)': false })
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    const source = doc({ motion: { speed: 2, reduced: 'slow' }, modifiers: { signal: { amount: 0.8 } } })
+    const surface = mountAurora(host, source, { reducedMotion: true })
+    await surface.ready
+    await until(() => !!leases[0]?.states.length)
+    expect(leases[0]!.states.at(-1)).toMatchObject({ reduced: 'slow', doc: { motion: { speed: 2 }, modifiers: { signal: { amount: 0.8 } } } })
+    leases[0]!.listener.frame()
+    expect((surface.element.lastElementChild as HTMLElement).style.transition).toBe('none')
+    surface.setReducedMotion(false)
+    expect(leases[0]!.states.at(-1)!.reduced).toBe(false)
+    surface.dispose()
+    stubMedia({ '(prefers-reduced-motion: reduce)': true })
+    const preferred = mountAurora(host, source, { reducedMotion: true })
+    await until(() => !!leases[1]?.states.length)
+    preferred.setReducedMotion(false)
+    expect(leases[1]!.states.at(-1)!.reduced).toBe('slow')
+    preferred.dispose()
+  })
+
   it('pauses at the current phase and resumes without altering speed or resetting CSS drift', async () => {
     const { backend, leases } = scripted()
     setBackends({ worker: backend, main: backend })

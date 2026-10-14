@@ -48,6 +48,21 @@ async function tick(ms = 34) {
 }
 
 describe('interaction container lifecycle', () => {
+  it('uses a host reduced-motion preview for quiet responses without a continuous update loop', async () => {
+    const doc = assertAurora({ ...base, layers: [{ type: 'aurora-fbm', opacity: 0 }], interactions: [{ type: 'impulse', decay: 1, bindings: [{ layer: 0, parameter: 'opacity', input: 'strength' }] }] })
+    controller = new InteractionController(doc, { target, drag: false, rect: () => [0, 0, 1, 1], reduced: () => true, render })
+    render.mockClear()
+    controller.activate()
+    await tick()
+    expect(render).toHaveBeenCalledOnce()
+    expect(render.mock.calls.at(-1)![0].layers[0]!.opacity).toBe(1)
+    await tick(500)
+    expect(render).toHaveBeenCalledOnce()
+    await tick(500)
+    expect(render).toHaveBeenCalledTimes(2)
+    expect(render.mock.calls.at(-1)![0].layers[0]!.opacity).toBe(0)
+  })
+
   it('normalizes input across a cropped shared scene, coalesces events and stops when idle', async () => {
     start({}, false, [0.5, 0, 0.5, 1])
     await tick()
@@ -79,6 +94,9 @@ describe('interaction container lifecycle', () => {
     controller.move(0.1, 0.5)
     await tick()
     expect(render.mock.calls.at(-1)![1][0]![0]).toBeCloseTo(-0.4)
+    target.blur()
+    await tick()
+    expect(render.mock.calls.at(-1)![1]).toEqual([[0, 0, 0, 0]])
   })
 
   it('maps one shared input container to the same scene coordinate on neighbouring surfaces', async () => {
@@ -113,6 +131,25 @@ describe('interaction container lifecycle', () => {
     expect(capture.has(1)).toBe(true)
     expect(render.mock.calls.at(-1)![1]).toEqual([[0.25, 0, 0, 0]])
     controller.dispose()
+    expect(capture.size).toBe(0)
+    expect(target.style.touchAction).toBe('pan-y')
+  })
+
+  it('shares drag/capture ownership so disposing one scene member does not cancel another', async () => {
+    const doc = assertAurora({ ...base, interactions: [{ type: 'grab', bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    start({ interactions: doc.interactions }, true)
+    const rightRender = vi.fn<InteractionOptions['render']>()
+    const right = new InteractionController(doc, { target, drag: true, rect: () => [0, 0, 1, 1], render: rightRender })
+    pointer('pointerdown', 0.5)
+    pointer('pointermove', 0.75)
+    await tick()
+    controller.dispose()
+    expect(target.style.touchAction).toBe('none')
+    expect(capture.has(1)).toBe(true)
+    pointer('pointermove', 0.9)
+    await tick()
+    expect(rightRender.mock.calls.at(-1)![1][0]![0]).toBeCloseTo(0.4)
+    right.dispose()
     expect(capture.size).toBe(0)
     expect(target.style.touchAction).toBe('pan-y')
   })
@@ -187,11 +224,35 @@ describe('interaction container lifecycle', () => {
     expect(surface.interactions).toBeDefined()
     await vi.waitFor(() => expect(states.length).toBeGreaterThan(0))
     const first = states[0]!
+    const canvas = surface.element.lastElementChild
     surface.interactions!.move(0.75, 0.5)
     await vi.waitFor(() => expect(states.at(-1)).toMatchObject({ transforms: [[0.25, 0, 0, 0]] }))
     expect(first.pausedAt).toBe(first.origin)
     expect(states.at(-1)).toMatchObject({ pausedAt: first.pausedAt, origin: first.origin })
     expect(source.layers[0]!.params).toEqual({})
+    surface.setInteractionTarget(target, true)
+    await vi.waitFor(() => expect(surface.interactions).toBeDefined())
+    expect(surface.element.lastElementChild).toBe(canvas)
+    expect(states.at(-1)).toMatchObject({ pausedAt: first.pausedAt, origin: first.origin })
     surface.dispose()
+  })
+
+  it('keeps only the latest controller when input settings change during loading', async () => {
+    vi.useRealTimers()
+    const backend = {
+      acquire: () => ({ ready: Promise.resolve(true), attach: () => true, update() {}, release() {} }),
+      stats: () => Promise.resolve(undefined),
+    }
+    setBackends({ main: backend, worker: backend })
+    const source = assertAurora({ ...base, interactions: [{ type: 'grab', bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    const surface = mountAurora(target, source)
+    surface.setInteractionTarget(target, true)
+    surface.setInteractionTarget(target, false)
+    surface.setInteractionTarget(target, true)
+    await surface.ready
+    await vi.waitFor(() => expect(surface.interactions).toBeDefined())
+    expect(target.style.touchAction).toBe('none')
+    surface.dispose()
+    expect(target.style.touchAction).toBe('pan-y')
   })
 })

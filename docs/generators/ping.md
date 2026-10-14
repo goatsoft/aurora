@@ -48,5 +48,7 @@ Every parameter is optional; one you leave out uses its default.
 | `width` | Width | 1.5 px | 0.5 to 6 | Pulse line width in canvas pixels. |
 | `decay` | Decay | 2.5 | 0.5 to 8 | How quickly pulses fade as they move outwards. |
 | `glow` | Glow | 0.4 | 0 to 1 | Soft light surrounding each pulse. |
+| `background` | Background | 1 | 0 to 1 | Base colour opacity; 0 leaves only the pulse, for interactive overlays. |
+| `repeat` | Repeat | 1 | 0 to 1 | 1 repeats rings; 0 emits a single pulse from its origin. |
 | `x` | Origin X | 0.5 | 0 to 1 | Horizontal pulse origin; 0 is left and 1 is right. |
 | `y` | Origin Y | 0.5 | 0 to 1 | Vertical pulse origin; 0 is top and 1 is bottom. |

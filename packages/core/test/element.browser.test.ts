@@ -44,6 +44,23 @@ function element(html: string): AuroraBackgroundElement {
 }
 
 describe('<aurora-bg>', () => {
+  it('exposes interactions and rebinds drag/reduced-motion controls without replacing its canvas', async () => {
+    const el = element('<aurora-bg paused reduced-motion></aurora-bg>')
+    el.source = assertAurora({ format: 'aurora', version: 1, name: 'Input', palette: ['#fff'], layers: [{ type: 'aurora-fbm' }], interactions: [{ type: 'grab', bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    await until(() => !!el.interactions && !!leases[0]?.states.length)
+    const canvas = el.querySelector('canvas')
+    expect(leases[0]!.states.at(-1)!.reduced).toBe('still')
+    expect(el.interactionTarget).toBe(parent)
+    el.drag = true
+    await until(() => !!el.interactions && parent.style.touchAction === 'none')
+    el.reducedMotion = false
+    expect(el.querySelector('canvas')).toBe(canvas)
+    expect(leases).toHaveLength(1)
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeDefined()
+    el.remove()
+    expect(parent.style.touchAction).toBe('')
+  })
+
   it('reflects paused and updates playback without remounting or changing the document', async () => {
     const el = element(`<aurora-bg paused src="${HERO}"></aurora-bg>`)
     await until(() => !!leases[0]?.states.length)

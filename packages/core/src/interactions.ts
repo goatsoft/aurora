@@ -20,8 +20,18 @@ export interface InteractionOptions {
   rect: () => readonly [number, number, number, number]
   /** Surface bounds when input is received on a larger shared container. */
   bounds?: () => DOMRectReadOnly
+  /** A host preview may opt into reduced motion; the operating-system preference still applies. */
+  reduced?: () => boolean
   render: (doc: AuroraDocument, transforms: LayerTransform[]) => void
 }
+
+interface InputTarget {
+  original: string
+  users: number
+  drags: Set<InteractionController>
+  captures: Map<number, Set<InteractionController>>
+}
+const targets = new WeakMap<HTMLElement, InputTarget>()
 
 /** Input stays on the page; the existing renderer/worker receives only resolved, plain state. */
 export class InteractionController implements AuroraInteractions {
@@ -38,10 +48,13 @@ export class InteractionController implements AuroraInteractions {
   private readonly pointers = new Set<number>()
   private press: { id: number, x: number, y: number, px: number, py: number, moved: boolean } | undefined
   private capture: number | undefined
-  private readonly touchAction: string
+  private readonly targetState: InputTarget
 
   constructor(private doc: AuroraDocument, private readonly options: InteractionOptions) {
-    this.touchAction = options.target.style.touchAction
+    const shared = targets.get(options.target) ?? { original: options.target.style.touchAction, users: 0, drags: new Set<InteractionController>(), captures: new Map<number, Set<InteractionController>>() }
+    shared.users++
+    targets.set(options.target, shared)
+    this.targetState = shared
     this.configure(doc)
     const { target } = options
     const on = { signal: this.listeners.signal, passive: true }
@@ -50,7 +63,7 @@ export class InteractionController implements AuroraInteractions {
     }, on)
     target.addEventListener('pointerleave', () => {
       this.hovered = false
-      if (this.capture === undefined && !this.focused) this.leave()
+      this.syncActivation()
     }, on)
     target.addEventListener('focusin', () => {
       this.focused = true
@@ -58,7 +71,7 @@ export class InteractionController implements AuroraInteractions {
     target.addEventListener('focusout', (event) => {
       if (event.relatedTarget instanceof Node && target.contains(event.relatedTarget)) return
       this.focused = false
-      if (!this.hovered) this.leave()
+      this.syncActivation()
     }, on)
     target.addEventListener('pointermove', (event) => {
       if (this.pointers.size > 1 || !this.visible) return
@@ -85,10 +98,14 @@ export class InteractionController implements AuroraInteractions {
       this.wake()
       if (!options.drag || !this.models.some((model) => model.config.type === 'grab' && this.active(model))) return
       this.capture = event.pointerId
+      const owners = shared.captures.get(event.pointerId) ?? new Set<InteractionController>()
+      owners.add(this)
+      shared.captures.set(event.pointerId, owners)
       target.setPointerCapture(event.pointerId)
       for (const model of this.models) if (this.active(model)) model.grab(x, y, now)
     }, on)
     const up = (event: PointerEvent) => {
+      if (!this.pointers.has(event.pointerId)) return
       const press = this.press
       if (press?.id === event.pointerId) {
         if (!press.moved) for (const model of this.models) if (this.active(model)) model.activate(press.x, press.y, performance.now())
@@ -102,6 +119,7 @@ export class InteractionController implements AuroraInteractions {
     }
     document.addEventListener('pointerup', up, on)
     document.addEventListener('pointercancel', (event) => {
+      if (!this.pointers.has(event.pointerId)) return
       this.pointers.delete(event.pointerId)
       this.cancel()
     }, on)
@@ -112,7 +130,6 @@ export class InteractionController implements AuroraInteractions {
       this.fingerprint = ''
       this.wake()
     }, on)
-    this.wake()
   }
 
   private control(target: EventTarget | null): boolean {
@@ -121,6 +138,11 @@ export class InteractionController implements AuroraInteractions {
 
   private active(model: InteractionState): boolean {
     return model.config.activation === 'hover' ? this.hovered : model.config.activation === 'focus' ? this.focused : this.hovered || this.focused
+  }
+
+  private syncActivation(): void {
+    for (const model of this.models) if (!this.active(model)) model.leave()
+    this.wake()
   }
 
   /** Convert the chosen container into the full shared scene, including cropped surfaces. */
@@ -138,9 +160,22 @@ export class InteractionController implements AuroraInteractions {
       model.config = config
       return model
     })
-    this.options.target.style.touchAction = this.options.drag && this.models.some((model) => model.config.type === 'grab') ? 'none' : this.touchAction
+    if (this.options.drag && this.models.some((model) => model.config.type === 'grab')) this.targetState.drags.add(this)
+    else {
+      this.targetState.drags.delete(this)
+      this.releaseCapture()
+    }
+    this.targetStyle()
     this.fingerprint = ''
-    this.wake()
+    this.refresh()
+  }
+
+  refresh(): void {
+    this.draw()
+  }
+
+  private targetStyle(): void {
+    this.options.target.style.touchAction = this.targetState.drags.size ? 'none' : this.targetState.original
   }
 
   move(x: number, y: number): void {
@@ -180,7 +215,12 @@ export class InteractionController implements AuroraInteractions {
   private releaseCapture(): void {
     const id = this.capture
     this.capture = undefined
-    if (id !== undefined && this.options.target.hasPointerCapture(id)) this.options.target.releasePointerCapture(id)
+    if (id === undefined) return
+    const owners = this.targetState.captures.get(id)
+    owners?.delete(this)
+    if (owners?.size) return
+    this.targetState.captures.delete(id)
+    if (this.options.target.hasPointerCapture(id)) this.options.target.releasePointerCapture(id)
   }
 
   private cancel(): void {
@@ -222,11 +262,11 @@ export class InteractionController implements AuroraInteractions {
 
   private draw(): void {
     if (this.disposed) return
-    const frames: InteractionFrame[] = this.models.map((model) => model.frame(performance.now(), this.media.matches))
-    const fingerprint = JSON.stringify(frames.map((frame) => frame.samples))
+    const frames: InteractionFrame[] = this.models.map((model) => model.frame(performance.now(), this.media.matches || !!this.options.reduced?.()))
+    const resolved = resolveInteractionFrame(this.doc, frames)
+    const fingerprint = JSON.stringify([resolved.doc.layers.map((layer) => [layer.opacity, layer.params]), resolved.doc.modifiers?.signal, resolved.transforms])
     if (this.fingerprint !== fingerprint) {
       this.fingerprint = fingerprint
-      const resolved = resolveInteractionFrame(this.doc, frames)
       this.options.render(resolved.doc, resolved.transforms)
     }
     if (frames.some((frame) => frame.moving)) this.wake()
@@ -243,6 +283,8 @@ export class InteractionController implements AuroraInteractions {
     this.listeners.abort()
     this.releaseCapture()
     this.pointers.clear()
-    this.options.target.style.touchAction = this.touchAction
+    this.targetState.drags.delete(this)
+    this.targetStyle()
+    if (--this.targetState.users === 0) targets.delete(this.options.target)
   }
 }

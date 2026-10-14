@@ -7,6 +7,7 @@ import { useAuroraScene } from './scene'
 export interface UseAuroraOptions {
   interactionTarget?: MaybeRefOrGetter<HTMLElement | undefined>
   drag?: MaybeRefOrGetter<boolean>
+  reducedMotion?: MaybeRefOrGetter<boolean>
   /** Reactive playback control; leaves the authored document unchanged. */
   paused?: MaybeRefOrGetter<boolean>
   /** Scene name; defaults to the nearest `<AuroraScene>`. */
@@ -68,6 +69,7 @@ export function useAurora(
     surface.value = mountAurora(el, current, {
       interactionTarget: toValue(options.interactionTarget) ?? el.parentElement ?? el,
       drag: toValue(options.drag) ?? false,
+      reducedMotion: toValue(options.reducedMotion) ?? false,
       paused: toValue(options.paused) ?? false,
       ...(name ? { scene: name } : {}),
       onModeChange: (next) => {
@@ -84,11 +86,16 @@ export function useAurora(
       if (current && previous && surface.value) surface.value.update(current)
       else mount()
     }, { immediate: true })
-    watch([scene, target, () => toValue(options.interactionTarget), () => toValue(options.drag)], () => mount())
+    watch([scene, target], () => mount())
+    watch([() => toValue(options.interactionTarget), () => toValue(options.drag)], () => {
+      const el = target.value
+      if (el) surface.value?.setInteractionTarget(toValue(options.interactionTarget) ?? el.parentElement ?? el, toValue(options.drag) ?? false)
+    })
     watch(() => toValue(options.paused), (paused) => {
       if (paused) surface.value?.pause()
       else surface.value?.resume()
     })
+    watch(() => toValue(options.reducedMotion), (reduced) => surface.value?.setReducedMotion(reduced ?? false))
   })
   onScopeDispose(() => {
     loads++

@@ -11,6 +11,7 @@ describe('validateDocument', () => {
     const interaction = (parameter: string, layer?: number) => assertAurora({ ...source, interactions: [{ type: 'follow', bindings: [{ parameter, input: 'x', ...(layer === undefined ? {} : { layer }) }] }] })
     expect(await validateDocument(interaction('offsetX', 0))).toEqual([])
     expect(await validateDocument(interaction('intensity', 0))).toEqual([])
+    expect(await validateDocument(interaction('__proto__', 0))).toEqual([{ path: '$.interactions[0].bindings[0].parameter', message: 'is not a parameter of aurora-fbm.' }])
     expect(await validateDocument(interaction('sped', 0))).toEqual([{ path: '$.interactions[0].bindings[0].parameter', message: 'is not a parameter of aurora-fbm. Did you mean "speed"?' }])
     expect(await validateDocument(interaction('x', 1))).toEqual([{ path: '$.interactions[0].bindings[0].layer', message: 'must reference an existing layer (0–0).' }])
     expect(await validateDocument(interaction('intensity'))).toEqual([{ path: '$.interactions[0].bindings[0].layer', message: 'must reference an existing layer (0–0).' }])

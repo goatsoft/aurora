@@ -19,6 +19,17 @@ afterAll(() => gpu.destroy())
 const base: AuroraInput = { format: 'aurora', version: 1, name: 'Aurora follow', palette: ['#317ee8', '#a74ef5', '#ed45bc'], layers: [{ type: 'aurora-fbm' }] }
 
 describe('interaction uniforms on WebGPU', () => {
+  it('renders transparent Ping overlays without filling the canvas with the base colour', async () => {
+    const doc = assertAurora({ ...base, layers: [{ type: 'ping', params: { background: 0 } }] })
+    const shader = compose(doc)
+    const pixels = await render(gpu, shader.code, packUniforms(doc, shader, { width: W, height: H, time: 2, scroll: 0 }), W, H)
+    const alpha = pixels.filter((_, i) => i % 4 === 3)
+    expect(Math.min(...alpha)).toBe(0)
+    expect(Math.max(...alpha)).toBeGreaterThan(100)
+    expect(diff(pixels, pixels).coverage).toBeGreaterThan(0.05)
+    expect(diff(pixels, pixels).coverage).toBeLessThan(0.8)
+  })
+
   it('keeps a configured scene at rest pixel-identical to the original and moves it without compiling another shader', async () => {
     const original = assertAurora(base)
     const doc = assertAurora({ ...base, interactions: [{ type: 'follow', smoothing: 0, bindings: [{ layer: 0, parameter: 'offsetX', input: 'x', amount: 0.2 }] }] })

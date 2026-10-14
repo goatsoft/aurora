@@ -27,13 +27,13 @@ Add a Follow module to your `.aurora` file. Here, horizontal and vertical moveme
 
 `x` and `y` are centered scene coordinates: left/top is −0.5, the center is 0, and right/bottom is 0.5. Bindings add to the authored value and clamp to the generator's normal range. Negative amounts repel. Give distant layers small offset amounts and foreground layers larger ones to create depth parallax.
 
-`strength` scales the response from 0 to 2. `smoothing` controls Follow's easing from 0 (immediate) to 1. `decay` controls return duration in seconds. `activation` chooses `hover`, `focus` or `both` (the default). Moving away returns the scene to its authored appearance.
+`strength` scales the response from 0 to 2. `smoothing` controls Follow's easing from 0 (immediate) to 1. `decay` controls return duration in seconds. `activation` chooses `hover`, `focus` or `both` (the default). Moving away returns the scene to its authored appearance. Follow's `strength` input reflects movement and decays when input stops, so interference can settle while the pointer stays in place.
 
 Bindings can target an existing numeric generator parameter, `opacity`, `offsetX`, `offsetY` or an independent layer `time`. A binding without a layer can target a signal control such as `signal.amount`, provided the document has a signal modifier. For example, bind Follow's `strength` to `signal.amount` for interference that responds to movement.
 
 ## Tap to ping
 
-Use an Impulse module with a Ping layer authored at zero opacity. Bind `x` and `y` to its origin, `strength` to opacity, and `travel` to its independent clock:
+Use an Impulse module with a Ping layer authored at zero opacity and `params: { "background": 0, "repeat": 0 }`. Bind `x` and `y` to its origin, `strength` to opacity, and `travel` to its independent clock:
 
 ```json
 {
@@ -62,6 +62,10 @@ Pointer dragging is opt-in because it reserves touch gestures on the chosen cont
 
 With core, use `mountAurora(host, scene, { interactionTarget: playground, drag: true })`. Leave `drag` off when the page should scroll normally. Vue defaults input to the background's parent; core defaults to its host. A named scene maps input through its shared geometry so neighbouring surfaces receive the same scene coordinate when they share a container.
 
+`background.setInteractionTarget(container, drag)` changes input without remounting or resetting playback. Vue's reactive `interactionTarget` and `drag` options do the same.
+
+The custom element defaults input to its parent. `<aurora-bg src="/scene.aurora" drag>` opts into dragging; `element.interactionTarget` selects another container, and `element.interactions` exposes the same keyboard methods once loaded.
+
 ## Keyboard and application controls
 
 The surface exposes the same interactions programmatically after `ready`. Connect these methods to accessible buttons or a focused playground:
@@ -86,3 +90,7 @@ Programmatic coordinates are normalized to the complete scene. Keep controls out
 Interaction state never changes the authored document, save/share output or undo history. Pausing holds ambient phase; input redraws only until its response settles. Off-screen and hidden scenes stop input work, clear gestures and release capture. Disposal removes listeners and restores the container's touch behavior.
 
 Reduced motion makes Follow immediate, removes elastic overshoot on release and bypasses kinetic signal distortion. An impulse shows a quiet still response, then expires with one update. The CSS fallback shows the authored scene; GPU translations and independent effect clocks are not reproduced by CSS.
+
+To preview that policy, core accepts `{ reducedMotion: true }` and `background.setReducedMotion(true)`. Vue accepts a `reducedMotion` prop or reactive composable option. Turning the preview off never overrides the visitor's own preference. Studio uses this same policy for its Reduced motion control.
+
+The custom element accepts `reduced-motion` and a boolean `element.reducedMotion` property for the same opt-in preview.
