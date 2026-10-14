@@ -12,14 +12,14 @@ const steps = [
 <template>
   <section
     id="start"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div class="grid items-start gap-12 lg:grid-cols-[1fr_1.15fr]">
       <div v-reveal>
         <p class="eyebrow">
           Workflow
         </p>
-        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+        <h2 class="mt-4 text-heading font-semibold tracking-tight text-balance">
           From Studio to <span class="text-spectrum">your site</span>
         </h2>
         <ol class="mt-10 space-y-6">

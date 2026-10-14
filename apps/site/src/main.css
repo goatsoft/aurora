@@ -24,6 +24,18 @@
   --radius: 0.75rem;
 }
 
+/* Fluid type for the landing page. Each size grows with the viewport between
+   a phone and a laptop and stops at both ends. The rem part keeps browser
+   zoom and text-size settings working, which a bare vw size would not. */
+@theme {
+  --text-display: clamp(2.75rem, 1.6rem + 5vw, 4.5rem);
+  --text-display--line-height: 1.05;
+  --text-heading: clamp(2.25rem, 1.5rem + 3vw, 3rem);
+  --text-heading--line-height: 1.1;
+  --text-lead: clamp(1.125rem, 1rem + 0.4vw, 1.25rem);
+  --text-lead--line-height: 1.6;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
