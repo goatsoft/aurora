@@ -8,3 +8,5 @@ Add optional scene-wide signal distortion with coherent tearing, stretch, shake,
 Add independent Pixelate and Vignette modifiers, with resolution-aware display blocks and alpha-preserving edge shading. Studio groups all three under Modifiers, separately from generators.
 
 Disable signal distortion under reduced motion and skip extra colour samples between visible bursts. Export a shared modifier control spec for Studio and generated validation/reference docs; keep Pixelate units explicit as canvas pixels.
+
+Keep complete Studio and editor descriptions while deriving lean runtime validators from the authoring schemas. Generate string literals safely with apostrophe, backslash and Unicode handling.

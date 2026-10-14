@@ -3,7 +3,7 @@ import type { AuroraDocument, AuroraInput } from './schema'
 import * as v from 'valibot'
 import { AuroraFormatError, jsonPath, toFormatIssue } from './issues'
 import { migrate } from './migrate'
-import { AuroraSchema, SCHEMA_URL } from './schema'
+import { AuroraValidationSchema, SCHEMA_URL } from './runtime-schema'
 
 export type ParseResult
   = | { ok: true, doc: AuroraDocument, sourceVersion: number }
@@ -27,9 +27,9 @@ export function parseAurora(input: unknown): ParseResult {
   const migrated = migrate(value)
   if (!migrated.ok) return migrated
 
-  const result = v.safeParse(AuroraSchema, migrated.value)
+  const result = v.safeParse(AuroraValidationSchema, migrated.value)
   if (!result.success) {
-    return { ok: false, issues: result.issues.map((issue) => toFormatIssue(issue, AuroraSchema, migrated.value)) }
+    return { ok: false, issues: result.issues.map((issue) => toFormatIssue(issue, AuroraValidationSchema, migrated.value)) }
   }
 
   const issues = checkReferences(result.output)

@@ -76,7 +76,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - **Size**, minified with dependencies bundled and gzipped. `pnpm size` measures them and `pnpm verify` fails when one is over; `scripts/size.ts` holds the list.
   - Main-thread runtime and worker: 10 kB each.
-  - `@goatsoft/aurora/element`: 14 kB, since it carries the format's Valibot schema to validate files at runtime.
+  - `@goatsoft/aurora/element`: 14 kB, since it carries the format's generated Valibot validator; editor metadata is excluded (ADR-0012).
   - Each generator: 2 kB. The shared noise library: 3 kB, shipped once however many generators use it.
 - **Runtime.** One worker and one GPU device per page, a shared 30 fps budget, frames gated on the previous submit completing, and 0.5x device pixel ratio capped at 1280 px per axis, all configurable through `configureAurora({ fps, pixelRatio, maxPixels })`. First frame within 100 ms of attach on an M1.
 - **Site.** Lighthouse 100 in all four categories on desktop. On mobile, 100 for accessibility, best practices and SEO, and at least 99 for performance (ADR-0008). CLS at most 0.01.
@@ -123,7 +123,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 - Headless SwiftShader can't present WebGPU canvases: render through `TextureCanvas` (packages/core/test/gpu.ts) to check pixels. Classic parity is bit-exact; keep it that way.
 - Auroras are the flagship: new defaults, docs and demos start from the aurora presets.
 - **Generators are art-directed.** Every generator has a golden image (`packages/core/test/golden/<id>.png`, regenerate with `UPDATE_GOLDEN=1 pnpm test:browser`) and must look beautiful with its defaults and palette before it ships. Review motion, not just a still: render several frames.
-- Generator docs and starters are generated: change the generator, then `pnpm test -u`.
+- Generator docs and starters, modifier schemas/docs, and runtime validators are generated: change their source, then `pnpm test -u`. The public authoring schema retains metadata; runtime validators derive from its syntax tree (ADR-0012).
 - Studio saves documents as authored: the classic presets must stay byte-identical to what Studio writes (apps/studio/test/document.test.ts).
 - Band-limit fine detail: work out the pixel footprint from `ctx.res` and fade or widen anything periodic before it aliases.
 

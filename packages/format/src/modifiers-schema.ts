@@ -4,23 +4,23 @@ import { range } from './range'
 
 export const SIGNAL_DEFAULTS = { amount: 0.35, shake: 0.25, tearSize: 0.15, separation: 0.2, tracking: 0.15, frequency: 0.5, seed: 0 }
 export const Signal = v.strictObject({
-  amount: v.optional(range(0, 1, 'Distortion; 0 bypasses.'), SIGNAL_DEFAULTS.amount),
-  shake: v.optional(range(0, 1, 'Horizontal burst judder.'), SIGNAL_DEFAULTS.shake),
-  tearSize: v.optional(range(0.02, 0.5, 'Scene-relative band height.'), SIGNAL_DEFAULTS.tearSize),
-  separation: v.optional(range(0, 1, 'RGB separation during bursts.'), SIGNAL_DEFAULTS.separation),
-  tracking: v.optional(range(0, 1, 'Vertical burst slips.'), SIGNAL_DEFAULTS.tracking),
-  frequency: v.optional(range(0, 2, 'Bursts/second; 0 freezes.'), SIGNAL_DEFAULTS.frequency),
-  seed: v.optional(v.pipe(range(0, 100, 'Distortion pattern seed.'), v.integer('must be a whole number')), SIGNAL_DEFAULTS.seed),
+  amount: v.optional(range(0, 1, 'Overall distortion strength. Zero leaves the scene unchanged.'), SIGNAL_DEFAULTS.amount),
+  shake: v.optional(range(0, 1, 'Horizontal judder during a distortion burst.'), SIGNAL_DEFAULTS.shake),
+  tearSize: v.optional(range(0.02, 0.5, 'Height of the bands that stretch and slip sideways, relative to the scene\'s height.'), SIGNAL_DEFAULTS.tearSize),
+  separation: v.optional(range(0, 1, 'Separate colour channels around torn edges. Visible separation samples the scene three times; quiet frames use one sample.'), SIGNAL_DEFAULTS.separation),
+  tracking: v.optional(range(0, 1, 'Brief vertical tracking slips during a distortion burst.'), SIGNAL_DEFAULTS.tracking),
+  frequency: v.optional(range(0, 2, 'Burst cycles per second. Zero freezes the distortion while other layers can keep moving.'), SIGNAL_DEFAULTS.frequency),
+  seed: v.optional(v.pipe(range(0, 100, 'Choose a different distortion pattern.'), v.integer('must be a whole number')), SIGNAL_DEFAULTS.seed),
 })
 
 export const PIXELATE_DEFAULTS = { size: 8 }
 export const Pixelate = v.strictObject({
-  size: v.optional(v.pipe(range(1, 64, 'Canvas pixels/block; 1 bypasses.'), v.integer('must be a whole number')), PIXELATE_DEFAULTS.size),
+  size: v.optional(v.pipe(range(1, 64, 'Block size in canvas pixels. One leaves the scene unchanged; the CSS size depends on the rendering pixel ratio.'), v.integer('must be a whole number')), PIXELATE_DEFAULTS.size),
 })
 
 export const VIGNETTE_DEFAULTS = { amount: 0.45, radius: 0.45, softness: 0.45 }
 export const Vignette = v.strictObject({
-  amount: v.optional(range(0, 1, 'Edge darkness; 0 bypasses.'), VIGNETTE_DEFAULTS.amount),
-  radius: v.optional(range(0, 1, 'Clear radius / shorter side.'), VIGNETTE_DEFAULTS.radius),
-  softness: v.optional(range(0.01, 1, 'Edge softness / shorter side.'), VIGNETTE_DEFAULTS.softness),
+  amount: v.optional(range(0, 1, 'Edge darkness. Zero leaves the scene unchanged.'), VIGNETTE_DEFAULTS.amount),
+  radius: v.optional(range(0, 1, 'Size of the clear centre, relative to the scene\'s shorter side.'), VIGNETTE_DEFAULTS.radius),
+  softness: v.optional(range(0.01, 1, 'Width of the soft transition to the dark edges, relative to the shorter scene side.'), VIGNETTE_DEFAULTS.softness),
 })

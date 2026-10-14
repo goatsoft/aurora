@@ -31,4 +31,4 @@ The fixed order is Signal distortion, Pixelate sampling, then Vignette and the o
 
 ## Shared control definitions
 
-`@goatsoft/aurora-format` exports `MODIFIERS` as the source of labels, hints, defaults, ranges and steps. Studio reads it directly; `pnpm test -u` generates the typed runtime validators, JSON Schema and modifier reference from it. Snapshot checks prevent drift, and authoring-only metadata does not add to the element bundle.
+`@goatsoft/aurora-format` exports `MODIFIERS` as the source of labels, hints, defaults, ranges and steps. Studio reads it directly; `pnpm test -u` generates typed schemas, JSON Schema and the modifier reference from it. [ADR-0012](0012-authoring-metadata-and-runtime-validation.md) separates the fully described authoring schema from the generated runtime validator. Snapshot checks prevent drift, and authoring-only metadata does not add to the element bundle.

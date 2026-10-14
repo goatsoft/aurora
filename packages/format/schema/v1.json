@@ -88,49 +88,49 @@
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "Distortion; 0 bypasses.",
+              "description": "Overall distortion strength. Zero leaves the scene unchanged.",
               "default": 0.35
             },
             "shake": {
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "Horizontal burst judder.",
+              "description": "Horizontal judder during a distortion burst.",
               "default": 0.25
             },
             "tearSize": {
               "type": "number",
               "minimum": 0.02,
               "maximum": 0.5,
-              "description": "Scene-relative band height.",
+              "description": "Height of the bands that stretch and slip sideways, relative to the scene's height.",
               "default": 0.15
             },
             "separation": {
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "RGB separation during bursts.",
+              "description": "Separate colour channels around torn edges. Visible separation samples the scene three times; quiet frames use one sample.",
               "default": 0.2
             },
             "tracking": {
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "Vertical burst slips.",
+              "description": "Brief vertical tracking slips during a distortion burst.",
               "default": 0.15
             },
             "frequency": {
               "type": "number",
               "minimum": 0,
               "maximum": 2,
-              "description": "Bursts/second; 0 freezes.",
+              "description": "Burst cycles per second. Zero freezes the distortion while other layers can keep moving.",
               "default": 0.5
             },
             "seed": {
               "type": "integer",
               "minimum": 0,
               "maximum": 100,
-              "description": "Distortion pattern seed.",
+              "description": "Choose a different distortion pattern.",
               "default": 0
             }
           },
@@ -144,7 +144,7 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 64,
-              "description": "Canvas pixels/block; 1 bypasses.",
+              "description": "Block size in canvas pixels. One leaves the scene unchanged; the CSS size depends on the rendering pixel ratio.",
               "default": 8
             }
           },
@@ -158,21 +158,21 @@
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "Edge darkness; 0 bypasses.",
+              "description": "Edge darkness. Zero leaves the scene unchanged.",
               "default": 0.45
             },
             "radius": {
               "type": "number",
               "minimum": 0,
               "maximum": 1,
-              "description": "Clear radius / shorter side.",
+              "description": "Size of the clear centre, relative to the scene's shorter side.",
               "default": 0.45
             },
             "softness": {
               "type": "number",
               "minimum": 0.01,
               "maximum": 1,
-              "description": "Edge softness / shorter side.",
+              "description": "Width of the soft transition to the dark edges, relative to the shorter scene side.",
               "default": 0.45
             }
           },

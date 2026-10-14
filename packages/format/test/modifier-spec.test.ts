@@ -1,6 +1,7 @@
 import type { ModifierSpec } from '@/index'
 import { describe, expect, inject, it } from 'vitest'
 import { assertAurora, MODIFIERS } from '@/index'
+import { literal } from './codegen'
 
 const root = inject('root')
 const definitions: [string, ModifierSpec][] = Object.entries(MODIFIERS)
@@ -15,7 +16,7 @@ function schemas(): string {
     const controls = Object.entries(modifier.controls)
     const values = controls.map(([key, p]) => `${key}: ${p.default}`).join(', ')
     const fields = controls.map(([key, p]) => {
-      const rule = `range(${p.min}, ${p.max}, '${p.description}')`
+      const rule = `range(${p.min}, ${p.max}, ${literal(p.description)})`
       return `  ${key}: v.optional(${p.step === 1 ? `v.pipe(${rule}, v.integer('must be a whole number'))` : rule}, ${defaults}.${key}),`
     }).join('\n')
     return `export const ${defaults} = { ${values} }\nexport const ${name} = v.strictObject({\n${fields}\n})`
