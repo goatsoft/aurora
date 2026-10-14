@@ -44,7 +44,7 @@ describe('Studio recreates every classic and mono preset from scratch', () => {
 })
 
 describe('serialize', () => {
-  it.each([...read('classic'), ...read('mono'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
+  it.each([...read('classic'), ...read('mono'), ...read('scenes'), ...read('starters'), ...read('interactions')])('round-trips %s unchanged', (_, text) => {
     expect(serialize(JSON.parse(text) as Doc)).toBe(text)
   })
 })

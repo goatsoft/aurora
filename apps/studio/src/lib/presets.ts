@@ -8,6 +8,7 @@ const scenes = import.meta.glob<string>('~/presets/scenes/*.aurora', { query: '?
 const classic = import.meta.glob<string>('~/presets/classic/*.aurora', { query: '?raw', import: 'default', eager: true })
 const mono = import.meta.glob<string>('~/presets/mono/*.aurora', { query: '?raw', import: 'default', eager: true })
 const starters = import.meta.glob<string>('~/presets/starters/*.aurora', { query: '?raw', import: 'default', eager: true })
+const interactions = import.meta.glob<string>('~/presets/interactions/*.aurora', { query: '?raw', import: 'default', eager: true })
 
 export interface Preset {
   id: string
@@ -37,6 +38,7 @@ function byCatalogue(presets: Preset[]): Preset[] {
 /** The galleries Studio ships: art-directed scenes, the classic presets (the parity reference), GOATsoft's monochrome auroras and one starter per generator. */
 export const PACKS = [
   { id: 'scenes', label: 'Scenes', description: 'Art-directed, multi-layer', presets: pack(scenes) },
+  { id: 'interactions', label: 'Interactions', description: 'Responsive scenes', presets: pack(interactions) },
   { id: 'classic', label: 'Classic pack', description: 'The original eight backgrounds, bit-exact', presets: pack(classic) },
   { id: 'mono', label: 'GOATsoft mono', description: 'Grayscale mist, dark and light', presets: pack(mono) },
   { id: 'starters', label: 'Starters', description: 'One per generator', presets: byCatalogue(pack(starters)) },

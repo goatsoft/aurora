@@ -45,6 +45,8 @@ declare module 'vue' {
     IHgTick02: typeof import('~icons/hugeicons/tick02')['default']
     IHgView: typeof import('~icons/hugeicons/view')['default']
     IHgViewOff: typeof import('~icons/hugeicons/view-off')['default']
+    InteractionPlayground: typeof import('./components/InteractionPlayground.vue')['default']
+    InteractionsSection: typeof import('./components/section/InteractionsSection.vue')['default']
     ISiGithub: typeof import('~icons/simple-icons/github')['default']
     ISiNpm: typeof import('~icons/simple-icons/npm')['default']
     LazyBackground: typeof import('./components/LazyBackground.vue')['default']

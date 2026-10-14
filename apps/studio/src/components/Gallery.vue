@@ -36,11 +36,11 @@ const thumb = (preset: Preset) => `position:absolute;inset:-10%;${compileCss(pre
               Open one to start from it. You can undo back to your document.
             </DialogDescription>
           </div>
-          <Segmented
+          <Select
             v-model="pack"
             :options="PACKS.map((p) => ({ value: p.id, label: p.label }))"
-            class="w-[300px]"
-            size="sm"
+            class="w-44 shrink-0"
+            label="Preset collection"
           />
         </header>
         <div class="grid grid-cols-3 gap-3 overflow-y-auto p-5">

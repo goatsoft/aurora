@@ -49,6 +49,10 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
             class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >Modifiers</a>
           <a
+            href="#interactions"
+            class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >Interactions</a>
+          <a
             href="#generator-library"
             class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >Individual generators ↓</a>
@@ -92,6 +96,7 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
         </div>
       </section>
       <ModifiersSection embedded />
+      <InteractionsSection />
       <div
         id="generator-library"
         class="scroll-mt-24 pt-20 sm:pt-32"

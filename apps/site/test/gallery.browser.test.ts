@@ -36,7 +36,9 @@ describe('gallery', () => {
       expect(wrapper.get('#modifiers h2').text()).toBe('Modifiers')
       expect(wrapper.get('#modifiers').text()).not.toContain('Give the whole scene a finishing touch.')
       expect(wrapper.findAll('section').filter((section) => galleryGroups.some((group) => section.attributes('id') === group.id)).reduce((count, section) => count + section.findAll('article').length, 0)).toBe(cards.length)
-      expect(wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to'))).toEqual(cards.map((card) => `/docs/generators/${card.id}`))
+      const links = wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to') as string)
+      expect(links.filter((link) => link.startsWith('/docs/generators/'))).toEqual(cards.map((card) => `/docs/generators/${card.id}`))
+      expect(links).toContain('/docs/guide/interactions')
       for (const group of galleryGroups) {
         expect(wrapper.get(`nav a[href="#${group.id}"]`).text()).toContain(group.name)
         const section = wrapper.get(`section#${group.id}`)

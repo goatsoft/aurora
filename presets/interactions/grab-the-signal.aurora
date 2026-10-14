@@ -1,0 +1,170 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Grab the Signal",
+  "modifiers": {
+    "signal": {
+      "amount": 0.06,
+      "shake": 0.55,
+      "tearSize": 0.12,
+      "separation": 0.55,
+      "tracking": 0.3,
+      "frequency": 0.65,
+      "seed": 12
+    },
+    "vignette": {
+      "amount": 0.35,
+      "radius": 0.5,
+      "softness": 0.45
+    }
+  },
+  "interactions": [
+    {
+      "type": "grab",
+      "decay": 0.9,
+      "damping": 0.45,
+      "bindings": [
+        {
+          "layer": 0,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.15
+        },
+        {
+          "layer": 0,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.09
+        },
+        {
+          "layer": 1,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.15
+        },
+        {
+          "layer": 1,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.09
+        },
+        {
+          "layer": 2,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.15
+        },
+        {
+          "layer": 2,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.09
+        },
+        {
+          "layer": 3,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.15
+        },
+        {
+          "layer": 3,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.09
+        },
+        {
+          "parameter": "signal.amount",
+          "input": "strength",
+          "amount": 0.9
+        }
+      ]
+    },
+    {
+      "type": "impulse",
+      "decay": 0.75,
+      "bindings": [
+        {
+          "parameter": "signal.amount",
+          "input": "strength",
+          "amount": 0.75
+        }
+      ]
+    }
+  ],
+  "palette": [
+    "oklch(0.14 0.045 285)",
+    "oklch(0.82 0.14 195)",
+    "oklch(0.73 0.23 340)",
+    "oklch(0.35 0.09 290)"
+  ],
+  "layers": [
+    {
+      "type": "glitch",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "density": 0.42,
+        "strength": 0.28,
+        "separation": 0.7,
+        "seed": 12,
+        "frequency": 0.3,
+        "bands": 24
+      }
+    },
+    {
+      "type": "static",
+      "blend": "screen",
+      "opacity": 0.18,
+      "colors": [
+        0,
+        3,
+        1
+      ],
+      "params": {
+        "size": 1,
+        "contrast": 0.35,
+        "interference": 0.3,
+        "dropout": 0.45,
+        "seed": 4,
+        "rate": 6
+      }
+    },
+    {
+      "type": "phosphor",
+      "blend": "screen",
+      "opacity": 0.22,
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "spacing": 6,
+        "strength": 0.35,
+        "glow": 0.7,
+        "speed": 0.035
+      }
+    },
+    {
+      "type": "scanlines",
+      "blend": "screen",
+      "opacity": 0.35,
+      "colors": [
+        0,
+        3,
+        1
+      ],
+      "params": {
+        "spacing": 5,
+        "softness": 0.65,
+        "strength": 0.3,
+        "speed": 0.025,
+        "roll": 0.4
+      }
+    }
+  ]
+}
