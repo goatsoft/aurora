@@ -20,7 +20,10 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let aspect = ctx.res.x / ctx.res.y;
   let d = (ctx.uv - vec2f(P.x, P.y)) * vec2f(aspect, 1.0);
   let r = length(d);
-  let turn = fract(atan2(d.x, -d.y) / 6.2831853 + P.twist * r - ctx.time * P.speed);
+  // On the row through the centre -d.y is -0.0, and some GPUs' atan2 then returns the wrong half
+  // turn, drawing a line across the whole width. Keep its x argument off zero.
+  let ax = select(-d.y, 1e-9, d.y == 0.0);
+  let turn = fract(atan2(d.x, ax) / 6.2831853 + P.twist * r - ctx.time * P.speed);
   // Three colours round the circle, back to the first: no seam.
   let s = turn * 3.0;
   let k = smoothstep(0.0, 1.0, fract(s));

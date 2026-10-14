@@ -133,11 +133,19 @@ describe('prerender', () => {
     expect(readFileSync(join(out, 'index.html'), 'utf8')).toBe(`<head>${idleLoader('/assets/index-a.js')}</head><div id="app"></div>`)
   })
 
-  it('with hydrate idle, needs exactly one module script', async () => {
+  it('with hydrate idle, starts data-eager scripts at once', async () => {
     const out = mkdtempSync(join(tmpdir(), 'gruff-'))
-    writeFileSync(join(out, 'index.html'), '<head><!--head--></head><div id="app"><!--app--></div>')
+    const eager = '<script type="module" crossorigin src="/assets/warm-c.js" data-eager></script>'
+    writeFileSync(join(out, 'index.html'), `<head><!--head-->${eager}<script type="module" crossorigin src="/assets/index-a.js"></script></head><div id="app"><!--app--></div>`)
+    await prerender({ outDir: out, routes: ['/'], hydrate: 'idle', render: () => Promise.resolve({ html: '', head: '' }) })
+    expect(readFileSync(join(out, 'index.html'), 'utf8')).toBe(`<head>${eager}${idleLoader('/assets/index-a.js')}</head><div id="app"></div>`)
+  })
+
+  it('with hydrate idle, needs exactly one module script without data-eager', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'gruff-'))
+    writeFileSync(join(out, 'index.html'), '<head><!--head--><script type="module" src="/a.js" data-eager></script></head><div id="app"><!--app--></div>')
     await expect(prerender({ outDir: out, routes: ['/'], hydrate: 'idle', render: () => Promise.resolve({ html: '', head: '' }) }))
-      .rejects.toThrow('prerender: hydrate \'idle\' needs exactly one module script in the template, found 0.')
+      .rejects.toThrow('prerender: hydrate \'idle\' needs exactly one module script without data-eager in the template, found 0.')
   })
 
   it('subsets the fonts the pages use and renames them', async () => {

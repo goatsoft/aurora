@@ -1,6 +1,8 @@
 import type { Generator } from './generators/define'
 import type { RendererStats, SurfaceState, WorkerRequest, WorkerResponse } from './protocol'
 import type { Renderer } from './renderer'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
+import type { RgbSpace } from '@goatsoft/color'
 import { generatorSpec } from './generators/define'
 
 export interface LeaseListener {
@@ -22,19 +24,35 @@ export interface Lease {
 
 export interface Backend {
   acquire: (listener: LeaseListener) => Lease
+  /**
+   * Starts the backend (its GPU device) if it isn't running and, given a document, compiles its
+   * pipeline ahead of any surface. The document's generators must be loaded. Unused, the backend
+   * stops after `IDLE_RELEASE_MS`. Resolves like a lease's `ready`. Optional for custom backends.
+   */
+  prepare?: (doc?: AuroraDocument, output?: RgbSpace) => Promise<boolean>
   stats: () => Promise<RendererStats | undefined>
 }
+
+/** How long a backend stays up with no surfaces: after the last one goes, or after `prepare` alone. */
+export const IDLE_RELEASE_MS = 10_000
 
 /** How long the worker gets to prove it can render (ADR-0077). */
 export const PROBE_TIMEOUT = 4000
 
+/** A lease on a backend that can't render here: the surface moves on to the next one. */
+const UNAVAILABLE: Lease = { ready: Promise.resolve(false), attach: () => false, update: () => undefined, release: () => undefined }
+
 /**
  * The page's worker backend (ADR-0079): one worker, one lease per surface. The worker starts on the
- * first lease and terminates with the last, and any failure moves every surface to CSS.
+ * first lease and terminates with the last, and any failure moves every surface to CSS. A failed
+ * probe isn't retried: this browser can't render in a worker, so later surfaces go straight to
+ * the main thread rather than waiting on another probe.
  */
 export function createWorkerBackend(factory: () => Worker, fps: () => number, generators: (id: string) => Generator | undefined): Backend {
   let host: ReturnType<typeof start> | undefined
   let nextId = 0
+  let idle: ReturnType<typeof setTimeout> | undefined
+  let unavailable = false
 
   function start() {
     const worker = factory()
@@ -46,7 +64,10 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
     const ready = new Promise<boolean>((resolve) => {
       resolveReady = resolve
     })
-    const timeout = setTimeout(fail, PROBE_TIMEOUT)
+    const timeout = setTimeout(() => {
+      unavailable = true
+      fail()
+    }, PROBE_TIMEOUT)
 
     function fail() {
       if (failed) return
@@ -63,7 +84,10 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
       if (data.type === 'ready') {
         clearTimeout(timeout)
         if (data.available) resolveReady(true)
-        else fail()
+        else {
+          unavailable = true
+          fail()
+        }
       } else if (data.type === 'frame') listeners.get(data.id)?.frame()
       else if (data.type === 'stats') stats.shift()?.(data.stats)
       else fail()
@@ -83,8 +107,8 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
     }
     send({ type: 'probe', fps: fps() })
     /** Sends the worker the generators a document uses, once each, before it needs them. */
-    function register(state: SurfaceState) {
-      for (const { type } of state.doc.layers) {
+    function register(doc: AuroraDocument) {
+      for (const { type } of doc.layers) {
         const generator = registered.has(type) ? undefined : generators(type)
         if (generator && send({ type: 'register', generator: generatorSpec(generator) })) registered.add(type)
       }
@@ -103,7 +127,28 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
   }
 
   return {
+    prepare(doc, output = 'srgb') {
+      if (unavailable) return Promise.resolve(false)
+      if (!host || host.failed) host = start()
+      const current = host
+      if (doc) {
+        current.register(doc)
+        current.send({ type: 'prepare', doc, output })
+      }
+      if (!current.listeners.size) {
+        // Prepared for a background that never mounted: don't keep a worker and a GPU device for it.
+        clearTimeout(idle)
+        idle = setTimeout(() => {
+          if (current.listeners.size) return
+          current.fail()
+          if (host === current) host = undefined
+        }, IDLE_RELEASE_MS)
+      }
+      return current.ready
+    },
     acquire(listener) {
+      clearTimeout(idle)
+      if (unavailable) return UNAVAILABLE
       if (!host || host.failed) host = start()
       const current = host
       const id = ++nextId
@@ -121,13 +166,13 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
           }
           // From here the canvas belongs to the worker: later failures can only fall back to CSS,
           // and a failed send has already told every listener.
-          current.register(state)
+          current.register(state.doc)
           current.send({ type: 'attach', id, canvas: offscreen, state }, [offscreen])
           return true
         },
         update(state) {
           if (released) return
-          current.register(state)
+          current.register(state.doc)
           current.send({ type: 'update', id, state })
         },
         release() {
@@ -152,9 +197,6 @@ export function createWorkerBackend(factory: () => Worker, fps: () => number, ge
     },
   }
 }
-
-/** How long the main-thread renderer stays warm after its last surface goes, for a quick remount. */
-export const IDLE_RELEASE_MS = 10_000
 
 /**
  * Main-thread rendering for browsers without WebGPU in workers (some Safari versions). The renderer
@@ -189,6 +231,15 @@ export function createMainThreadBackend(gpu: () => GPU | undefined, fps: () => n
   }
 
   return {
+    prepare(doc, output = 'srgb') {
+      renderer ??= start()
+      const current = renderer
+      if (!listeners.size) releaseWhenIdle()
+      return current.then((r) => {
+        if (doc) r?.prepare(doc, output)
+        return !!r
+      })
+    },
     acquire(listener) {
       clearTimeout(idle)
       renderer ??= start()

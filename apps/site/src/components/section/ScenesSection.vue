@@ -14,7 +14,7 @@ const scenes = [
 
 <template>
   <section
-    id="generators"
+    id="scenes"
     class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">

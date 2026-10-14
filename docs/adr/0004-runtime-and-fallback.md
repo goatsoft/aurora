@@ -40,3 +40,13 @@ Headless SwiftShader in Chromium 141 loses the device the moment a WebGPU canvas
 - **Hot updates follow the current source.** A module's watcher applies its hot updates in place; `update()` with a different source (another module or a plain document) detaches the old watcher, so an edit to a file no longer in use can't bring it back.
 - **Errors are reported, not thrown.** `onError` (and `@error`, and `aurora-error`) says why a background is on CSS when WebGPU is available; the fallback stays on screen.
 - **The main-thread renderer is released when idle**, 10 seconds after its last surface, rather than kept for the page's lifetime. The worker already terminates with its last surface.
+
+## First frame, October 2026
+
+Measured on the landing page with a phone-like setup (4x CPU slowdown, 1.6 Mbps, 150 ms latency), the hero reached WebGPU about 1.7 s after navigation, against a first paint at about 0.3 s. Three causes:
+
+- **Framework state took the worker down.** A document from a Vue `ref` is a Proxy, `postMessage` can't copy it, and a failed post terminated the worker for every surface, which then started the main-thread renderer from scratch. Surfaces now keep a plain copy of their document (a JSON round trip; documents are JSON).
+- **Steps ran one after another.** The device waited for the generators, and compiling waited for the next frame tick. Now a surface starts its backend while its generators download, the renderer starts compiling when a surface attaches, and a first frame (or one that was waiting on a pipeline) draws without waiting for the frame budget.
+- **Nothing could start before mount.** `prepareAurora(...sources)` starts the device, loads the generators and compiles the pipelines ahead of any surface (a `prepare` message to the worker). A backend started this way with no surface stops after 10 seconds, like the main-thread renderer. If the worker fails its probe, it prepares the main thread instead, and a failed probe is no longer retried for every new surface.
+
+Each step is a User Timing mark (`aurora:mount`, `generators`, `gpu`, `attach`, `frame`, and `aurora:compile` in the renderer), so the time to first frame can be measured on any site.

@@ -20,6 +20,16 @@ export function isAuroraModule(source: AuroraSource): source is AuroraModule {
 
 export const documentOf = (source: AuroraSource): AuroraDocument => (isAuroraModule(source) ? source.doc : source)
 
+/**
+ * A copy of the source's document as plain data. Documents are posted to the rendering worker, and
+ * framework state (a Vue `ref` or `reactive`, for one) is a Proxy that can't be posted: the post
+ * would throw and take the worker down for every background on the page. Documents are JSON, so
+ * a JSON round trip copies them exactly.
+ */
+export function plainDocument(source: AuroraSource): AuroraDocument {
+  return JSON.parse(JSON.stringify(documentOf(source))) as AuroraDocument
+}
+
 const hot = new Map<string, Set<(doc: AuroraDocument) => void>>()
 
 /** Registers a surface for hot updates of one module. Returns the unregister function. */
