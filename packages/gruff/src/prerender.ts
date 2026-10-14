@@ -31,7 +31,8 @@ export interface PrerenderOptions {
    * browser is idle, or at the first interaction if that comes sooner, so the JavaScript doesn't
    * compete with first paint. The prerendered page works meanwhile (links are links); a button
    * clicked before the app is live is clicked again when the app dispatches `gruff:hydrated` on
-   * `window` after mounting.
+   * `window` after mounting. A module script marked `data-eager` still starts at once: use one to
+   * get work going before the app, such as warming up a hero background.
    */
   hydrate?: 'eager' | 'idle'
   /**
@@ -68,14 +69,16 @@ export function idleLoader(src: string): string {
   return `<script>${body}</script>`
 }
 
-/** Replaces the build's module entry and its preloads with `idleLoader`. */
+/** Replaces the build's module entry and its preloads with `idleLoader`. Scripts marked `data-eager` stay. */
 function deferScripts(template: string): string {
-  const entries = [...template.matchAll(/<script type="module"(?: crossorigin)? src="([^"]+)"><\/script>/g)]
-  if (entries.length !== 1) throw new Error(`prerender: hydrate 'idle' needs exactly one module script in the template, found ${entries.length}.`)
-  const [tag, src] = entries[0]!
+  const entries = [...template.matchAll(/<script type="module"([^>]*)><\/script>/g)].filter(([, attrs]) => !/\sdata-eager\b/.test(attrs!))
+  if (entries.length !== 1) throw new Error(`prerender: hydrate 'idle' needs exactly one module script without data-eager in the template, found ${entries.length}.`)
+  const [tag, attrs] = entries[0]!
+  const src = /\ssrc="([^"]+)"/.exec(attrs!)?.[1]
+  if (!src) throw new Error(`prerender: hydrate 'idle' needs the module script to have a src: ${tag}`)
   return template
     .replace(/\s*<link rel="modulepreload"[^>]*>/g, '')
-    .replace(tag, () => idleLoader(src!))
+    .replace(tag, () => idleLoader(src))
 }
 
 /** `<html>`'s attributes with `extra` added, replacing any of the same name. */

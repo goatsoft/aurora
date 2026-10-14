@@ -4,7 +4,7 @@ Status: accepted
 
 ## Context
 
-PLAN.md originally published `@goatsoft/*` to GitHub Packages only. GitHub's npm registry needs a token with `read:packages` to install, even for public packages, so every consuming site and CI job would need an `.npmrc` and a secret. That is the opposite of the one-line install Aurora promises. Nothing had been published there yet.
+The original plan published `@goatsoft/*` to GitHub Packages only. GitHub's npm registry needs a token with `read:packages` to install, even for public packages, so every consuming site and CI job would need an `.npmrc` and a secret. That is the opposite of the one-line install Aurora promises. Nothing had been published there yet.
 
 The workspace also resolves packages through the `@goatsoft/source` condition, so the apps, tests and the sample never run the built `dist/`. A packaging mistake (a missing export, an unpublished file, an asset URL that only works in the repo) would reach users unnoticed. Packing the packages for this decision found one: core's worker URL was root-absolute (`new URL('/assets/worker-….js', import.meta.url)`), which resolves against the consuming site instead of the package.
 

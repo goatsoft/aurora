@@ -2,11 +2,12 @@ import type { AuroraSource } from './module'
 import type { Backend, Lease } from './pool'
 import type { SurfaceState } from './protocol'
 import type { SceneMember } from './scene'
+import type { AuroraDocument } from '@goatsoft/aurora-format'
 import type { RgbSpace } from '@goatsoft/color'
 import { getConfig, renderRatio } from './config'
 import { compileCss, DRIFT_KEYFRAMES } from './css'
 import { GENERATORS, loadGenerators } from './generators/index'
-import { documentOf, isAuroraModule, watchModule } from './module'
+import { isAuroraModule, plainDocument, watchModule } from './module'
 import { createMainThreadBackend, createWorkerBackend } from './pool'
 import { joinScene, sceneGeometry } from './scene'
 
@@ -75,6 +76,61 @@ const CROSSFADE_MS = 300
 const epochNow = () => performance.timeOrigin + performance.now()
 const media = (query: string) => typeof matchMedia === 'function' && matchMedia(query).matches
 
+let surfaces = 0
+/**
+ * User Timing marks for each step to the first WebGPU frame, so DevTools' Performance panel (or a
+ * PerformanceObserver) shows where the time goes. `detail.surface` tells backgrounds apart.
+ */
+function mark(name: 'mount' | 'generators' | 'gpu' | 'attach' | 'frame', surface: number) {
+  performance.mark(`aurora:${name}`, { detail: { surface } })
+}
+
+/** The colour space a document renders in: Display P3 where the screen has it and a layer mixes in OKLab. */
+export function outputFor(doc: AuroraDocument): RgbSpace {
+  return media('(color-gamut: p3)') && doc.layers.some((l) => l.mix === 'oklab') ? 'display-p3' : 'srgb'
+}
+
+/** Whether this page renders through the worker: it needs worker WebGPU and transferable canvases. */
+export function usesWorker(): boolean {
+  return getConfig().worker && typeof Worker !== 'undefined' && typeof HTMLCanvasElement !== 'undefined' && 'transferControlToOffscreen' in HTMLCanvasElement.prototype
+}
+
+/** Whether WebGPU may be tried at all here (the CSS fallback is used otherwise). */
+export function gpuAllowed(): boolean {
+  if (typeof navigator === 'undefined' || !('gpu' in navigator)) return false
+  return !(getConfig().touch === 'css' && media('(pointer: coarse)'))
+}
+
+/**
+ * Gets backgrounds ready before they mount, so they can show WebGPU straight away: starts the GPU,
+ * downloads the generators the documents use, and compiles their shaders. Call it as early as you
+ * know which backgrounds a page shows, for example when a route starts loading. It does nothing on
+ * the server or where the CSS fallback will be used, and is safe to call more than once. A GPU
+ * started for backgrounds that never mount is released after a few seconds.
+ *
+ * Resolves once the generators have loaded; compiling carries on in the background.
+ */
+export async function prepareAurora(...sources: AuroraSource[]): Promise<void> {
+  if (typeof window === 'undefined') return
+  const docs = sources.map(plainDocument)
+  const { worker, main } = getBackends()
+  let backend = gpuAllowed() ? (usesWorker() ? worker : main) : undefined
+  // The device starts while the generators download.
+  const ready = backend?.prepare?.()
+  await loadGenerators(docs.flatMap((doc) => doc.layers.map((layer) => layer.type)))
+  if (!backend) return
+  // A worker that fails its probe means backgrounds will render on the main thread: warm that up.
+  if (backend === worker && (await ready) === false) {
+    backend = main
+    void main.prepare?.()
+  }
+  const css = media('(prefers-reduced-motion: reduce)')
+  for (const doc of docs) {
+    if (css && doc.motion.reduced === 'css') continue
+    if (doc.layers.every((layer) => layer.type in GENERATORS)) void backend.prepare?.(doc, outputFor(doc))
+  }
+}
+
 let keyframesInstalled = false
 function installKeyframes() {
   if (keyframesInstalled || typeof CSSStyleSheet === 'undefined') return
@@ -92,7 +148,9 @@ function installKeyframes() {
  * `source` is a validated document or an imported `.aurora` module; modules hot-update in place.
  */
 export function mountAurora(host: HTMLElement, source: AuroraSource, options: MountOptions = {}): AuroraSurface {
-  let doc = documentOf(source)
+  const surfaceId = ++surfaces
+  mark('mount', surfaceId)
+  let doc = plainDocument(source)
   /** An imported module's precompiled fallback: right from the first paint, before generators load. */
   let precompiled = isAuroraModule(source) ? source.css : undefined
   // Hot updates from the module's own watcher apply in place; update() is for a new source.
@@ -149,9 +207,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   const scene = options.scene ? joinScene(options.scene, member, epochNow()) : undefined
   const origin = scene?.origin ?? epochNow()
 
-  function output(): RgbSpace {
-    return media('(color-gamut: p3)') && doc.layers.some((l) => l.mix === 'oklab') ? 'display-p3' : 'srgb'
-  }
+  const output = () => outputFor(doc)
 
   function state(): SurfaceState {
     const r = root.getBoundingClientRect()
@@ -178,12 +234,15 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     if (!disposed && loaded()) lease?.update(state())
   }
 
+  let framed = false
   function setMode(next: AuroraMode) {
     if (mode === next || disposed) return
     mode = next
     root.dataset['aurora'] = next
     clearTimeout(fadeTimer)
     if (next === 'webgpu') {
+      if (!framed) mark('frame', surfaceId)
+      framed = true
       canvas.style.display = ''
       canvas.style.transition = reducedQuery?.matches ? 'none' : `opacity ${CROSSFADE_MS}ms ease`
       canvas.style.opacity = '1'
@@ -224,6 +283,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   }
   function settled() {
     if (disposed) return
+    mark('generators', surfaceId)
     paintFallback()
     if (!loaded()) {
       const missing = doc.layers.map((l) => l.type).filter((type) => !(type in GENERATORS))
@@ -240,11 +300,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   let generatorsReady = prepare()
 
   async function start() {
-    await generatorsReady
-    if (disposed || !loaded()) return
-    const config = getConfig()
-    if (cssOnly() || typeof navigator === 'undefined' || !('gpu' in navigator)) return
-    if (config.touch === 'css' && media('(pointer: coarse)')) return
+    if (disposed || cssOnly() || !gpuAllowed()) return
     const { worker, main } = getBackends()
     const listener = {
       frame: () => setMode('webgpu'),
@@ -253,18 +309,24 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
         toCss()
       },
     }
-    const candidates = config.worker && typeof Worker !== 'undefined' && 'transferControlToOffscreen' in canvas ? [worker, main] : [main]
+    const candidates = usesWorker() && 'transferControlToOffscreen' in canvas ? [worker, main] : [main]
     for (const backend of candidates) {
+      // The GPU starts while the generators download, rather than after.
       const next = backend.acquire(listener)
       lease = next
+      const [ready] = await Promise.all([next.ready, generatorsReady])
       // Awaiting lets dispose() or a newer start() run in between, so re-read the state.
-      if (!(await next.ready) || isDisposed() || lease !== next) {
+      if (!ready || isDisposed() || lease !== next || !loaded()) {
         next.release()
         if (lease === next) lease = undefined
-        if (isDisposed()) return
+        if (isDisposed() || !loaded()) return
         continue
       }
-      if (next.attach(canvas, state())) return
+      mark('gpu', surfaceId)
+      if (next.attach(canvas, state())) {
+        mark('attach', surfaceId)
+        return
+      }
       next.release()
       lease = undefined
     }
@@ -316,13 +378,13 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     if (disposed) return
     unwatch?.()
     unwatch = isAuroraModule(next) ? watchModule(next.id, (hot) => apply(hot)) : undefined
-    apply(documentOf(next), isAuroraModule(next) ? next.css : undefined)
+    apply(next, isAuroraModule(next) ? next.css : undefined)
   }
 
   /** Shows a document, from update() or from the current module's hot update. */
   function apply(next: AuroraSource, css?: typeof precompiled) {
     if (disposed) return
-    doc = documentOf(next)
+    doc = plainDocument(next)
     precompiled = css
     generatorsReady = prepare()
     paintFallback()

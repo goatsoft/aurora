@@ -5,17 +5,17 @@ import { goldenHour } from '@/lib/scenes'
 <template>
   <section
     id="studio"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
       <div v-reveal>
         <p class="eyebrow">
           The editor
         </p>
-        <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+        <h2 class="mt-4 text-heading font-semibold tracking-tight text-balance">
           Aurora Studio
         </h2>
-        <p class="mt-4 text-lg text-pretty text-muted-foreground">
+        <p class="mt-4 text-lead text-pretty text-muted-foreground">
           Adjust layers, colours and motion. Save a .aurora file for your site.
         </p>
         <Button
