@@ -2,6 +2,7 @@
 import type { AuroraMode } from '@goatsoft/aurora'
 import { compileCss, DRIFT_KEYFRAMES } from '@goatsoft/aurora'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useCompact } from '@/editor/layout'
 import { DEFAULT_COPY, useStudio, VIEWPORTS } from '@/editor/studio'
 
@@ -15,6 +16,38 @@ const { ui } = studio
 const compact = useCompact()
 
 const area = ref<HTMLElement>()
+const playground = ref<HTMLElement>()
+const background = ref<InstanceType<typeof AuroraBackground>>()
+const cursor = reactive({ x: 0.5, y: 0.5, held: false })
+const interactive = computed(() => !!studio.rendered.value.interactions?.length)
+function interact(event: KeyboardEvent) {
+  if (event.target !== event.currentTarget || !interactive.value || event.metaKey || event.ctrlKey || event.altKey) return
+  const input = background.value?.surface?.interactions
+  if (!input) return
+  const arrows: Record<string, [number, number]> = { ArrowLeft: [-0.08, 0], ArrowRight: [0.08, 0], ArrowUp: [0, -0.08], ArrowDown: [0, 0.08] }
+  const delta = arrows[event.key]
+  if (delta) {
+    cursor.x = Math.max(0, Math.min(1, cursor.x + delta[0]))
+    cursor.y = Math.max(0, Math.min(1, cursor.y + delta[1]))
+    input.move(cursor.x, cursor.y)
+  } else if (event.key === 'Enter' || event.key === ' ') input.activate(cursor.x, cursor.y)
+  else if (event.key.toLowerCase() === 'g') {
+    cursor.held = !cursor.held
+    if (cursor.held) input.grab(cursor.x, cursor.y)
+    else input.release()
+  } else if (event.key === 'Escape') {
+    cursor.x = cursor.y = 0.5
+    cursor.held = false
+    input.reset()
+  } else return
+  event.preventDefault()
+  event.stopPropagation()
+}
+function leave() {
+  if (cursor.held) background.value?.surface?.interactions?.release()
+  cursor.held = false
+  background.value?.surface?.interactions?.leave()
+}
 const { width: areaWidth, height: areaHeight } = useElementSize(area)
 const frame = computed(() => {
   const vp = VIEWPORTS[ui.viewport]
@@ -26,9 +59,10 @@ const frame = computed(() => {
 })
 
 const css = computed(() => compileCss(studio.preview.value))
+const preferredReduced = useMediaQuery('(prefers-reduced-motion: reduce)')
 const cssStyle = computed(() => {
   const { style, drift } = css.value
-  const animate = drift > 0 && !ui.reducedMotion
+  const animate = drift > 0 && !ui.reducedMotion && !preferredReduced.value
   return `position:absolute;inset:-10%;${style}${animate ? `;animation:aurora-drift ${drift}s ease-in-out infinite;animation-play-state:${ui.playing ? 'running' : 'paused'}` : ''}`
 })
 const gpuMode = ref<AuroraMode>('css')
@@ -65,11 +99,24 @@ const page = computed(() => (ui.page === 'dark'
       class="absolute inset-0 overflow-y-auto"
       @scroll="(e) => (ui.scroll = (e.target as HTMLElement).scrollTop)"
     >
-      <div class="relative min-h-[260vh]">
+      <div
+        ref="playground"
+        class="relative min-h-[260vh] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        :tabindex="interactive ? 0 : undefined"
+        :role="interactive ? 'group' : undefined"
+        :aria-label="interactive ? 'Scene interaction playground' : undefined"
+        :aria-describedby="interactive ? 'stage-interaction-help' : undefined"
+        @keydown="interact"
+        @blur="leave"
+      >
         <AuroraBackground
           v-if="ui.preview !== 'css'"
+          ref="background"
           :src="studio.preview.value"
           :paused="!ui.playing"
+          :interaction-target="playground"
+          :drag="ui.dragInteractions"
+          :reduced-motion="ui.reducedMotion"
           @mode-change="(m) => (gpuMode = m)"
         />
         <div
@@ -107,9 +154,16 @@ const page = computed(() => (ui.page === 'dark'
       @click.self="ui.sheet = undefined"
     >
       <div
-        class="relative shrink-0 overflow-hidden rounded-[18px] shadow-[0_0_0_1px_oklch(1_0_0/0.08),0_30px_80px_-20px_oklch(0_0_0/0.65)] transition-[width,height] duration-500 ease-[cubic-bezier(0.2,0.9,0.1,1)]"
+        ref="playground"
+        class="relative shrink-0 overflow-hidden rounded-[18px] shadow-[0_0_0_1px_oklch(1_0_0/0.08),0_30px_80px_-20px_oklch(0_0_0/0.65)] transition-[width,height] duration-500 ease-[cubic-bezier(0.2,0.9,0.1,1)] outline-none focus-visible:ring-2 focus-visible:ring-ring"
         :class="page"
         :style="{ width: `${frame.width * frame.scale}px`, height: `${frame.height * frame.scale}px` }"
+        :tabindex="interactive ? 0 : undefined"
+        :role="interactive ? 'group' : undefined"
+        :aria-label="interactive ? 'Scene interaction playground' : undefined"
+        :aria-describedby="interactive ? 'stage-interaction-help' : undefined"
+        @keydown="interact"
+        @blur="leave"
       >
         <div
           class="absolute top-0 left-0 origin-top-left"
@@ -117,8 +171,12 @@ const page = computed(() => (ui.page === 'dark'
         >
           <AuroraBackground
             v-if="ui.preview !== 'css'"
+            ref="background"
             :src="studio.preview.value"
             :paused="!ui.playing"
+            :interaction-target="playground"
+            :drag="ui.dragInteractions"
+            :reduced-motion="ui.reducedMotion"
             @mode-change="(m) => (gpuMode = m)"
           />
           <div
@@ -193,5 +251,14 @@ const page = computed(() => (ui.page === 'dark'
         </span>
       </div>
     </div>
+    <p
+      v-if="interactive"
+      id="stage-interaction-help"
+      class="sr-only"
+      aria-live="polite"
+    >
+      Arrows move; Enter emits a pulse; G grabs or releases; Escape resets.
+      Cursor {{ Math.round(cursor.x * 100) }}%, {{ Math.round(cursor.y * 100) }}%. {{ cursor.held ? 'Grabbed.' : 'Released.' }}
+    </p>
   </div>
 </template>

@@ -1,4 +1,4 @@
-import type { AuroraDocument, AuroraInput, FormatIssue } from '@goatsoft/aurora-format'
+import type { AuroraDocument, AuroraInput, FormatIssue, InteractionInput } from '@goatsoft/aurora-format'
 import { checkDocument } from '@goatsoft/aurora'
 import { FORMAT_ID, FORMAT_VERSION, parseAurora, stringifyAurora } from '@goatsoft/aurora-format'
 
@@ -63,6 +63,18 @@ const layerAt = (doc: Doc, i: number) => {
   return layer
 }
 
+/** Keep bindings attached to their layer when the stack changes. Empty modules disappear. */
+function mapInteractionLayers(doc: Doc, map: (layer: number) => number | undefined): void {
+  if (!doc.interactions) return
+  const interactions = doc.interactions.map((module) => ({ ...module, bindings: module.bindings.flatMap((binding) => {
+    if (binding.layer === undefined) return [binding]
+    const layer = map(binding.layer)
+    return layer === undefined ? [] : [{ ...binding, layer }]
+  }) })).filter((module) => module.bindings.length)
+  if (interactions.length) doc.interactions = interactions
+  else delete doc.interactions
+}
+
 /**
  * The palette indices a layer reads, one per generator colour. A layer without `colors` cycles
  * through the whole palette, so what it reads depends on the palette's length.
@@ -73,6 +85,14 @@ export function layerColors(layer: LayerInput, paletteLength: number, count: num
 }
 
 export const ops = {
+  /** Add, replace or remove a declarative module; gesture state never enters this operation. */
+  interaction: (doc: Doc, index: number, value: InteractionInput | undefined) => edit(doc, (d) => {
+    const interactions = [...(d.interactions ?? [])]
+    if (value === undefined) interactions.splice(index, 1)
+    else interactions[index] = structuredClone(value)
+    if (interactions.length) d.interactions = interactions
+    else delete d.interactions
+  }),
   /** Toggle or replace one scene modifier without changing the others. */
   modifier: <K extends keyof NonNullable<Doc['modifiers']>>(doc: Doc, key: K, value: NonNullable<Doc['modifiers']>[K]) => edit(doc, (d) => {
     const modifiers = { ...d.modifiers }
@@ -140,20 +160,30 @@ export const ops = {
   }),
 
   addLayer: (doc: Doc, layer: LayerInput, at = doc.layers.length) => edit(doc, (d) => {
+    at = Math.max(0, Math.min(at, d.layers.length))
+    mapInteractionLayers(d, (i) => i >= at ? i + 1 : i)
     d.layers.splice(at, 0, layer)
   }),
 
   removeLayer: (doc: Doc, i: number) => edit(doc, (d) => {
-    if (d.layers.length > 1) d.layers.splice(i, 1)
+    if (d.layers.length > 1) {
+      d.layers.splice(i, 1)
+      mapInteractionLayers(d, (layer) => layer === i ? undefined : layer > i ? layer - 1 : layer)
+    }
   }),
 
   duplicateLayer: (doc: Doc, i: number) => edit(doc, (d) => {
+    const bindings = d.interactions?.map((module) => module.bindings.filter((binding) => binding.layer === i).map((binding) => ({ ...binding, layer: i + 1 })))
+    mapInteractionLayers(d, (layer) => layer > i ? layer + 1 : layer)
+    d.interactions?.forEach((module, index) => module.bindings.push(...bindings![index]!))
     d.layers.splice(i + 1, 0, structuredClone(layerAt(d, i)))
   }),
 
   moveLayer: (doc: Doc, from: number, to: number) => edit(doc, (d) => {
     const [layer] = d.layers.splice(from, 1)
-    d.layers.splice(Math.max(0, Math.min(to, d.layers.length)), 0, layer!)
+    to = Math.max(0, Math.min(to, d.layers.length))
+    d.layers.splice(to, 0, layer!)
+    mapInteractionLayers(d, (i) => i === from ? to : from < to && i > from && i <= to ? i - 1 : from > to && i >= to && i < from ? i + 1 : i)
   }),
 
   /** Sets a layer field; `undefined` removes it (back to its default). */
@@ -177,5 +207,9 @@ export const ops = {
     const layer = layerAt(d, i)
     layer.type = type
     layer.params = Object.fromEntries(Object.entries(layer.params ?? {}).filter(([name]) => params.includes(name)))
+    if (d.interactions) {
+      d.interactions = d.interactions.map((module) => ({ ...module, bindings: module.bindings.filter((binding) => binding.layer !== i || ['opacity', 'offsetX', 'offsetY', 'time', ...params].includes(binding.parameter)) })).filter((module) => module.bindings.length)
+      if (!d.interactions.length) delete d.interactions
+    }
   }),
 }

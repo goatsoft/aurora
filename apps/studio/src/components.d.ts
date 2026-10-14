@@ -51,6 +51,7 @@ declare module 'vue' {
     IHgUpload04: typeof import('~icons/hugeicons/upload04')['default']
     IHgViewOffSlash: typeof import('~icons/hugeicons/view-off-slash')['default']
     Inspector: typeof import('./components/Inspector.vue')['default']
+    InteractionsPanel: typeof import('./components/InteractionsPanel.vue')['default']
     Kbd: typeof import('./components/ui/Kbd.vue')['default']
     LayersPanel: typeof import('./components/LayersPanel.vue')['default']
     MobileBar: typeof import('./components/MobileBar.vue')['default']
