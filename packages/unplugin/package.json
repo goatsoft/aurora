@@ -1,6 +1,6 @@
 {
   "name": "@goatsoft/aurora-unplugin",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Import .aurora files in Vite, Rollup, Rolldown, esbuild, webpack and Rspack: validated at build time, typed, hot-reloaded.",
   "keywords": [
     "aurora",
