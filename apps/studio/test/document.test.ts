@@ -18,7 +18,7 @@ function recreate(target: Doc): Doc {
   for (const [key, value] of Object.entries(target.canvas ?? {})) doc = ops.canvas(doc, key as keyof CanvasInput, value)
   for (const [key, value] of Object.entries(target.motion ?? {})) doc = ops.motion(doc, key as keyof MotionInput, value)
   target.palette.forEach((css, i) => {
-    doc = i < doc.palette.length ? ops.color(doc, i, css) : ops.addColor(doc, css)
+    doc = i < doc.palette.length ? ops.color(doc, i, css) : ops.addColor(doc, css, () => 0)
   })
   while (doc.palette.length > target.palette.length) doc = ops.removeColor(doc, doc.palette.length - 1)
   const starterLayers = doc.layers.length
@@ -88,6 +88,14 @@ describe('ops', () => {
     expect(doc.palette).toHaveLength(2)
     expect(doc.layers[0]!.colors).toEqual([0, 1, 1])
     expect(ops.removeColor(ops.removeColor(doc, 0), 0).palette).toHaveLength(1)
+  })
+
+  it('keeps the colours a layer reads when a palette colour is added', () => {
+    const count = (type: string) => (type === 'aurora-fbm' ? 3 : 1)
+    const doc: Doc = { ...base, layers: [{ type: 'aurora-fbm' }] }
+    const added = ops.addColor(doc, 'red', count)
+    expect(added.palette).toHaveLength(4)
+    expect(added.layers[0]!.colors).toEqual([0, 1, 2])
   })
 
   it('moves, duplicates and removes layers, keeping at least one', () => {
