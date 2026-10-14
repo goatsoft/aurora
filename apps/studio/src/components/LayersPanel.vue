@@ -83,7 +83,7 @@ function add(generator: Generator) {
     const existing = doc.palette.indexOf(css)
     if (existing >= 0) return existing
     if (doc.palette.length >= 16) return 0
-    doc = studio.ops.addColor(doc, css)
+    doc = studio.ops.addColor(doc, css, (type) => studio.generator(type)?.colors ?? 0)
     return doc.palette.length - 1
   })
   studio.layers.add(newLayer(generator.id, colors), Math.min(doc.layers.length, ui.layer + 1), doc)
