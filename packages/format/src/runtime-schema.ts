@@ -33,6 +33,24 @@ const Motion = v.strictObject({
   reduced: v.optional(v.picklist(REDUCED_MOTION), 'still'),
 })
 const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'), v.maxValue(MAX_LAYERS - 1, `must be ${MAX_LAYERS - 1} or less`))
+/** Bind a module's normalized input to a layer control or a signal modifier control. */
+const InteractionBinding = v.strictObject({
+  layer: v.optional(LayerIndex),
+  parameter: v.pipe(v.string(), v.nonEmpty('must not be empty'), v.maxLength(64, 'must be 64 characters or fewer')),
+  input: v.picklist(['x', 'y', 'strength', 'travel']),
+  amount: v.optional(range(-4, 4), 1),
+  slot: v.optional(v.pipe(range(0, 3), v.integer('must be a whole number')), 0),
+})
+const Interaction = v.strictObject({
+  type: v.picklist(['follow', 'impulse', 'grab']),
+  activation: v.optional(v.picklist(['hover', 'focus', 'both']), 'both'),
+  strength: v.optional(range(0, 2), 1),
+  smoothing: v.optional(unit(), 0.65),
+  decay: v.optional(range(0.05, 5), 1),
+  damping: v.optional(unit(), 0.75),
+  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(64, 'must have 64 bindings or fewer')),
+})
 const LinearMask = v.strictObject({
   type: v.literal('linear'),
   angle: v.optional(v.number(), 180),
@@ -75,6 +93,7 @@ export const AuroraValidationSchema = v.strictObject({
   canvas: v.optional(Canvas, {}),
   motion: v.optional(Motion, {}),
   modifiers: v.optional(Modifiers),
+  interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(8, 'must have 8 interactions or fewer'))),
   palette: v.pipe(v.array(Color), v.minLength(1, 'must have at least one colour'), v.maxLength(MAX_COLORS, `must have ${MAX_COLORS} colours or fewer`)),
   layers: v.pipe(v.array(Layer), v.minLength(1, 'must have at least one layer'), v.maxLength(MAX_LAYERS, `must have ${MAX_LAYERS} layers or fewer`)),
   fallback: v.optional(Fallback, { mode: 'auto' }),
@@ -89,3 +108,6 @@ export type MixSpace = (typeof MIX_SPACES)[number]
 export type SignalModifier = v.InferOutput<typeof Signal>
 export type PixelateModifier = v.InferOutput<typeof Pixelate>
 export type VignetteModifier = v.InferOutput<typeof Vignette>
+export type AuroraInteraction = v.InferOutput<typeof Interaction>
+export type InteractionInput = v.InferInput<typeof Interaction>
+export type InteractionBindingInput = v.InferInput<typeof InteractionBinding>
