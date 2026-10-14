@@ -15,7 +15,7 @@ beforeAll(async () => {
   result = JSON.parse(stdout) as Result
 }, 60_000)
 
-describe('sample app (PLAN.md Phase 3)', () => {
+describe('sample app', () => {
   it('server-renders every background with its CSS fallback inlined, so nothing flashes', () => {
     const { html } = result
     expect(html.match(/class="aurora-background"/g)).toHaveLength(4)

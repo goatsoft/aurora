@@ -134,7 +134,7 @@ pnpm verify                             # lint, typecheck, tests, build and size
 | `pnpm changeset` | Record a change for the next release |
 | `pnpm consumers` | Pack the packages and build a fresh project with them in every supported bundler |
 
-Read [AGENTS.md](AGENTS.md) before contributing: it has the stack, the rules and how releases work. Design decisions are recorded in [docs/adr](docs/adr). Bugs and ideas go in [Issues](https://github.com/goatsoft/aurora/issues), and every version's notes are in [Releases](https://github.com/goatsoft/aurora/releases).
+Read [AGENTS.md](AGENTS.md) before contributing: it has the stack, the rules and how releases work. Design decisions are recorded in [docs/adr](docs/adr). What's planned is on the [roadmap](https://github.com/orgs/goatsoft/projects/2), bugs and ideas go in [Issues](https://github.com/goatsoft/aurora/issues), and every version's notes are in [Releases](https://github.com/goatsoft/aurora/releases).
 
 ## Licence
 

@@ -1,7 +1,7 @@
 import type { Rolldown } from 'vite'
 import { resolve } from 'node:path'
 /**
- * Size budgets (PLAN.md §3.2), measured the way a site ships them: minified, dependencies bundled,
+ * Size budgets (AGENTS.md, Budgets), measured the way a site ships them: minified, dependencies bundled,
  * gzipped. `pnpm size` prints them; `pnpm verify` fails when one is exceeded.
  */
 import { gzipSync } from 'node:zlib'
@@ -73,6 +73,6 @@ for (const budget of budgets) {
   console.log(`${ok ? '✓' : '✗'} ${budget.name.padEnd(34)} ${(size / KB).toFixed(2).padStart(6)} kB gzip  (budget ${budget.limit / KB} kB)`)
 }
 if (failed) {
-  console.error('\nOver budget. See PLAN.md §3.2.')
+  console.error('\nOver budget. See Budgets in AGENTS.md.')
   process.exit(1)
 }
