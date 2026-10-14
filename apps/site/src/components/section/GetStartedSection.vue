@@ -5,7 +5,7 @@ import { northernLights } from '@/lib/scenes'
 </script>
 
 <template>
-  <section class="mx-auto max-w-6xl px-6 py-16">
+  <section class="mx-auto max-w-6xl px-6 py-12 sm:py-16">
     <div
       v-reveal
       class="relative isolate overflow-hidden rounded-3xl border border-white/10 px-6 py-20 text-center"
@@ -18,10 +18,10 @@ import { northernLights } from '@/lib/scenes'
         position="top-4 right-4"
       />
       <div class="absolute inset-0 -z-10 bg-background/40" />
-      <h2 class="mx-auto max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      <h2 class="mx-auto max-w-2xl text-heading font-semibold tracking-tight text-balance">
         Try it on your site
       </h2>
-      <p class="mx-auto mt-4 max-w-xl text-lg text-pretty text-white/80">
+      <p class="mx-auto mt-4 max-w-xl text-lead text-pretty text-white/80">
         MIT licensed. Works with Vue or plain HTML.
       </p>
       <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

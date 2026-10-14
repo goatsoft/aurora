@@ -32,7 +32,7 @@ const cards = [
 <template>
   <section
     id="generators"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div
       v-reveal
@@ -41,10 +41,10 @@ const cards = [
       <p class="eyebrow">
         Generators
       </p>
-      <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      <h2 class="mt-4 text-heading font-semibold tracking-tight text-balance">
         Every kind of atmosphere
       </h2>
-      <p class="mt-4 text-lg text-pretty text-muted-foreground">
+      <p class="mt-4 text-lead text-pretty text-muted-foreground">
         Try the backgrounds below, or combine them in Studio.
       </p>
     </div>
