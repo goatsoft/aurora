@@ -1,0 +1,69 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Prism sky",
+  "palette": [
+    "oklch(0.09 0.025 275)",
+    "oklch(0.18 0.055 285)",
+    "oklch(0.95 0.025 220)",
+    "oklch(0.88 0.17 190)",
+    "oklch(0.7 0.2 285)",
+    "oklch(0.65 0.23 335)",
+    "oklch(0.05 0.015 275)",
+    "oklch(0.08 0.025 275)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "seed": 23,
+        "density": 0.3,
+        "milkyway": 0.25,
+        "meteors": 0
+      }
+    },
+    {
+      "type": "curtain",
+      "blend": "screen",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "intensity": 1.3,
+        "base": 0.74,
+        "height": 0.7,
+        "folds": 3,
+        "seed": 12,
+        "wave": 0.8,
+        "rays": 0.75
+      }
+    },
+    {
+      "type": "linear-gradient",
+      "colors": [
+        7,
+        6
+      ],
+      "params": {
+        "stops": 2
+      },
+      "mask": {
+        "type": "linear",
+        "angle": 0,
+        "start": 0.05,
+        "end": 0.14
+      }
+    }
+  ],
+  "motion": {
+    "speed": 0.65
+  }
+}

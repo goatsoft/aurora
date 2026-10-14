@@ -1,0 +1,71 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Distorted glitch",
+  "palette": [
+    "oklch(0.13 0.035 285)",
+    "oklch(0.75 0.14 195)",
+    "oklch(0.65 0.23 340)",
+    "oklch(0.4 0.08 230)"
+  ],
+  "layers": [
+    {
+      "type": "glitch",
+      "params": {
+        "frequency": 0.6,
+        "strength": 0.35,
+        "bands": 24,
+        "density": 0.55,
+        "separation": 0.2,
+        "seed": 7
+      }
+    },
+    {
+      "type": "static",
+      "blend": "screen",
+      "opacity": 0.35,
+      "colors": [
+        0,
+        3,
+        1
+      ],
+      "params": {
+        "size": 2,
+        "rate": 12,
+        "contrast": 0.3,
+        "interference": 0.45,
+        "dropout": 0.2,
+        "seed": 3
+      }
+    },
+    {
+      "type": "scanlines",
+      "blend": "screen",
+      "opacity": 0.5,
+      "colors": [
+        0,
+        3,
+        1
+      ],
+      "params": {
+        "spacing": 4,
+        "softness": 0.35,
+        "strength": 0.45,
+        "speed": 0.06,
+        "roll": 0.4
+      }
+    }
+  ],
+  "modifiers": {
+    "signal": {
+      "amount": 0.75,
+      "shake": 0.65,
+      "tearSize": 0.16,
+      "separation": 0.55,
+      "tracking": 0.35,
+      "frequency": 0.8,
+      "seed": 9
+    }
+  }
+}

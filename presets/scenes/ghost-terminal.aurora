@@ -1,0 +1,43 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Ghost Terminal",
+  "palette": [
+    "oklch(0.1 0.018 160)",
+    "oklch(0.72 0.18 150)",
+    "oklch(0.96 0.04 150)",
+    "oklch(0.3 0.07 170)"
+  ],
+  "layers": [
+    {
+      "type": "digital-rain",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "density": 24,
+        "speed": 0.22,
+        "trail": 0.55,
+        "seed": 7
+      }
+    },
+    {
+      "type": "static",
+      "blend": "screen",
+      "opacity": 0.14,
+      "colors": [
+        0,
+        3,
+        1
+      ],
+      "params": {
+        "contrast": 0.3,
+        "rate": 4,
+        "seed": 5
+      }
+    }
+  ]
+}

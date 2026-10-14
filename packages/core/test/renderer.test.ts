@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { generatorSpec } from '@/generators/define'
 import { GENERATORS } from '@/generators/index'
 import { Renderer } from '@/renderer'
+import { compose } from '@/shader'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 import { solid } from './solid'
 
@@ -46,6 +47,17 @@ afterEach(() => {
 })
 
 describe('Renderer', () => {
+  it.each(['still', 'slow'] as const)('disables signal distortion under reduced %s and restores it on preference changes', async (reduced) => {
+    const r = await renderer()
+    const modified = assertAurora({ ...doc, modifiers: { signal: { amount: 1 } } })
+    const offset = compose(modified).signal! * 4
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ doc: modified, reduced }))
+    await tick()
+    expect(fake.log.writes.at(-1)![offset]).toBe(0)
+    r.update(1, state({ doc: modified, reduced: false }))
+    await tick()
+    expect(fake.log.writes.at(-1)![offset]).toBe(1)
+  })
   it('rejects without WebGPU or an adapter', async () => {
     await expect(Renderer.create(undefined, events, { fps: 30 })).rejects.toThrow('WebGPU is not available.')
     fake.noAdapter()

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Digital rain starter",
+  "palette": [
+    "oklch(0.12 0.025 165)",
+    "oklch(0.7 0.17 155)",
+    "oklch(0.95 0.055 155)"
+  ],
+  "layers": [
+    {
+      "type": "digital-rain"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Night Protocol",
+  "palette": [
+    "oklch(0.13 0.05 290)",
+    "oklch(0.24 0.09 305)",
+    "oklch(0.16 0.045 240)",
+    "oklch(0.09 0.015 230)",
+    "oklch(0.68 0.12 195)",
+    "oklch(0.91 0.055 205)"
+  ],
+  "layers": [
+    {
+      "type": "mesh-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        0
+      ],
+      "params": {
+        "speed": 0.08
+      }
+    },
+    {
+      "type": "digital-rain",
+      "blend": "screen",
+      "opacity": 0.8,
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "density": 18,
+        "speed": 0.13,
+        "trail": 0.25,
+        "rate": 0.8,
+        "glow": 0.6,
+        "seed": 31
+      }
+    }
+  ]
+}

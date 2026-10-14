@@ -15,10 +15,10 @@ useHead({})
       <HeroStudio />
     </div>
     <PillarsSection />
-    <ElementsSection />
+    <ScenesSection />
+    <ModifiersSection />
     <CodeSection />
     <StudioSection />
-    <ScenesSection />
     <SharedSection />
     <GetStartedSection />
   </main>

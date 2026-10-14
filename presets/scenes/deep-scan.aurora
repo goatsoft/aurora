@@ -1,0 +1,60 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Deep Scan",
+  "palette": [
+    "oklch(0.11 0.025 240)",
+    "oklch(0.17 0.055 235)",
+    "oklch(0.09 0.02 250)",
+    "oklch(0.1 0.02 180)",
+    "oklch(0.7 0.13 190)",
+    "oklch(0.95 0.06 155)"
+  ],
+  "layers": [
+    {
+      "type": "mesh-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        0
+      ],
+      "params": {
+        "speed": 0.05
+      }
+    },
+    {
+      "type": "radar",
+      "blend": "screen",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "speed": 0.06,
+        "scale": 0.9,
+        "contacts": 18,
+        "persistence": 0.5,
+        "seed": 23
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0.22,
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "speed": 0.1,
+        "spacing": 0.18,
+        "decay": 4,
+        "width": 0.8
+      }
+    }
+  ]
+}

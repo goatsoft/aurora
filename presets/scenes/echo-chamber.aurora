@@ -1,0 +1,65 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Echo Chamber",
+  "palette": [
+    "oklch(0.12 0.035 275)",
+    "oklch(0.2 0.075 295)",
+    "oklch(0.1 0.02 240)",
+    "oklch(0.08 0.015 240)",
+    "oklch(0.74 0.13 200)",
+    "oklch(0.92 0.06 185)",
+    "oklch(0.65 0.2 305)",
+    "oklch(0.88 0.1 325)"
+  ],
+  "layers": [
+    {
+      "type": "mesh-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        0
+      ],
+      "params": {
+        "speed": 0.05
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "x": 0.3,
+        "y": 0.6,
+        "speed": 0.08,
+        "spacing": 0.23,
+        "decay": 2.8,
+        "glow": 0.7
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0.85,
+      "colors": [
+        3,
+        6,
+        7
+      ],
+      "params": {
+        "x": 0.73,
+        "y": 0.35,
+        "speed": 0.11,
+        "spacing": 0.28,
+        "decay": 3.2,
+        "glow": 0.6
+      }
+    }
+  ]
+}

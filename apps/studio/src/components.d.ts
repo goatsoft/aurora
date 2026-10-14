@@ -54,6 +54,7 @@ declare module 'vue' {
     Kbd: typeof import('./components/ui/Kbd.vue')['default']
     LayersPanel: typeof import('./components/LayersPanel.vue')['default']
     MobileBar: typeof import('./components/MobileBar.vue')['default']
+    ModifiersPanel: typeof import('./components/ModifiersPanel.vue')['default']
     MotionBar: typeof import('./components/MotionBar.vue')['default']
     Notices: typeof import('./components/Notices.vue')['default']
     Popover: typeof import('./components/ui/Popover.vue')['default']

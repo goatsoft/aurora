@@ -11,7 +11,7 @@ export default mergeConfig(site, defineConfig({
       enabled: true,
       headless: true,
       screenshotFailures: false,
-      provider: playwright(),
+      provider: playwright({ launchOptions: process.env['AURORA_CHROME'] ? { channel: 'chrome' } : {} }),
       instances: [{ browser: 'chromium' }],
     },
   },

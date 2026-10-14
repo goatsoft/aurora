@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Scan lines starter",
+  "palette": [
+    "oklch(0.12 0.03 285)",
+    "oklch(0.48 0.1 230)",
+    "oklch(0.8 0.12 195)"
+  ],
+  "layers": [
+    {
+      "type": "scanlines"
+    }
+  ]
+}

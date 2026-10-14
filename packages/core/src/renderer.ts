@@ -270,6 +270,7 @@ export class Renderer {
           width: state.scene.width,
           height: state.scene.height,
           time: seconds,
+          reduced: state.reduced !== false,
           scroll: state.scroll,
           rect: state.scene.rect,
         }, surface.uniforms)
