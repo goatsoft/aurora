@@ -80,3 +80,15 @@ describe('colours', () => {
     expect(paramValue(layer, auroraFbm, 'intensity')).toBe(1)
   })
 })
+
+describe('signal effect uniforms', () => {
+  it('updates every control in place, including zeros, without rebuilding the shader', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7, shake: 0.6, tearSize: 0.2, separation: 0.4, tracking: 0.3, frequency: 0.8, seed: 19 } } })
+    const shader = compose(input)
+    const out = packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0 })
+    expect([...out.subarray(shader.signal! * 4)]).toEqual(f32([0.7, 0.6, 0.2, 0.4, 0.3, 0.8, 19, 0]))
+    const zero = assertAurora({ ...input, modifiers: { signal: { amount: 0, shake: 0, tearSize: 0.02, separation: 0, tracking: 0, frequency: 0, seed: 0 } } })
+    expect(packUniforms(zero, shader, { width: 200, height: 100, time: 1, scroll: 0 }, out)).toBe(out)
+    expect([...out.subarray(shader.signal! * 4)]).toEqual(f32([0, 0, 0.02, 0, 0, 0, 0, 0]))
+  })
+})

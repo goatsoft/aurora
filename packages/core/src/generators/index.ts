@@ -30,6 +30,14 @@ const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'fire': () => import('./fire').then((m) => m.fire as Generator),
   // Texture, laid over the rest.
   'grain': () => import('./grain').then((m) => m.grain as Generator),
+  // Tech.
+  'digital-rain': () => import('./digital-rain').then((m) => m.digitalRain as Generator),
+  'glitch': () => import('./glitch').then((m) => m.glitch as Generator),
+  'static': () => import('./static').then((m) => m.staticNoise as Generator),
+  'radar': () => import('./radar').then((m) => m.radar as Generator),
+  'scanlines': () => import('./scanlines').then((m) => m.scanlines as Generator),
+  'phosphor': () => import('./phosphor').then((m) => m.phosphor as Generator),
+  'ping': () => import('./ping').then((m) => m.ping as Generator),
 }
 
 const registry: Record<string, Generator> = { [auroraFbm.id]: auroraFbm }

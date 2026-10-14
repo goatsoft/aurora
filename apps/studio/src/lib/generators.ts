@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import Binary from '~icons/hugeicons/binary-code'
 import Blend from '~icons/hugeicons/blend'
 import Circle from '~icons/hugeicons/circle'
 import Cloud from '~icons/hugeicons/cloud'
@@ -15,6 +16,8 @@ import MountainSnow from '~icons/hugeicons/mountain-snow'
 import PaintBoard from '~icons/hugeicons/paint-board'
 import PaintBrush from '~icons/hugeicons/paint-brush-04'
 import PineTree from '~icons/hugeicons/pine-tree'
+import Pulse from '~icons/hugeicons/pulse-02'
+import Radar from '~icons/hugeicons/radar-02'
 import Sparkles from '~icons/hugeicons/sparkles'
 import Star from '~icons/hugeicons/star'
 
@@ -25,6 +28,13 @@ const ICONS: Record<string, Component> = {
   'linear-gradient': Blend,
   'conic': Circle,
   'grain': Grid,
+  'digital-rain': Binary,
+  'glitch': CloudZap,
+  'static': Grid,
+  'radar': Radar,
+  'ping': Pulse,
+  'scanlines': Grid,
+  'phosphor': Grid,
   'strata': Mountain,
   'mountains': MountainSnow,
   'treeline': PineTree,
@@ -46,4 +56,5 @@ export const GENERATOR_GROUPS: { label: string, ids: string[] }[] = [
   { label: 'Aurora', ids: ['aurora-fbm', 'curtain', 'starfield'] },
   { label: 'Elements', ids: ['strata', 'mountains', 'treeline', 'clouds', 'wind', 'rain', 'lightning', 'fire', 'water'] },
   { label: 'Gradients', ids: ['mesh-gradient', 'linear-gradient', 'linear-sweep', 'conic', 'grain'] },
+  { label: 'Tech', ids: ['digital-rain', 'glitch', 'static', 'radar', 'ping', 'scanlines', 'phosphor'] },
 ]

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Static starter",
+  "palette": [
+    "oklch(0.13 0.025 265)",
+    "oklch(0.4 0.08 230)",
+    "oklch(0.8 0.12 195)"
+  ],
+  "layers": [
+    {
+      "type": "static"
+    }
+  ]
+}

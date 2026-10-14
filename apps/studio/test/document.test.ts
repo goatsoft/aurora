@@ -1,9 +1,11 @@
 import type { CanvasInput, Doc, LayerInput, MotionInput } from '@/editor/document'
 import { readdirSync, readFileSync } from 'node:fs'
+import { loadGenerators } from '@goatsoft/aurora'
 import { describe, expect, inject, it } from 'vitest'
 import { newLayer, ops, resolve, serialize, snap, starter } from '@/editor/document'
 
 const root = inject('root')
+await loadGenerators()
 const read = (pack: string) => readdirSync(`${root}/presets/${pack}`).filter((f) => f.endsWith('.aurora')).map((f) => [f, readFileSync(`${root}/presets/${pack}/${f}`, 'utf8')] as const)
 
 /**
@@ -44,6 +46,21 @@ describe('Studio recreates every classic and mono preset from scratch', () => {
 describe('serialize', () => {
   it.each([...read('classic'), ...read('mono'), ...read('scenes'), ...read('starters')])('round-trips %s unchanged', (_, text) => {
     expect(serialize(JSON.parse(text) as Doc)).toBe(text)
+  })
+})
+
+describe('Tech scenes in Studio', () => {
+  const names = ['ghost-terminal.aurora', 'signal-lost.aurora', 'night-protocol.aurora', 'deep-scan.aurora', 'echo-chamber.aurora']
+  it.each(read('scenes').filter(([name]) => names.includes(name)))('recreates and edits %s using the inspector operations', (_, text) => {
+    const doc = recreate(JSON.parse(text) as Doc)
+    expect(resolve(doc).ok).toBe(true)
+    const index = doc.layers.length - 1
+    const duplicated = ops.duplicateLayer(doc, index)
+    const edited = ops.layer(duplicated, index + 1, 'opacity', 0.4)
+    const reopened = JSON.parse(serialize(edited)) as Doc
+    expect(resolve(reopened).ok).toBe(true)
+    expect(reopened.layers[index + 1]).toEqual({ ...doc.layers[index], opacity: 0.4 })
+    expect(reopened.layers[index]).toEqual(doc.layers[index])
   })
 })
 

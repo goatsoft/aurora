@@ -43,10 +43,10 @@ const year = new Date().getFullYear()
           </li>
           <li>
             <RouterLink
-              to="/#generators"
+              to="/gallery"
               class="hover:text-foreground"
             >
-              Generators
+              Gallery
             </RouterLink>
           </li>
           <li>

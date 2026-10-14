@@ -1,5 +1,5 @@
-export { AuroraSchema, BLEND_MODES, FADES, FORMAT_ID, FORMAT_VERSION, MAX_COLORS, MAX_LAYERS, MIX_SPACES, REDUCED_MOTION, SCHEMA_URL } from './schema'
-export type { AuroraDocument, AuroraInput, AuroraLayer, BlendMode, MixSpace } from './schema'
+export { AuroraSchema, BLEND_MODES, FADES, FORMAT_ID, FORMAT_VERSION, MAX_COLORS, MAX_LAYERS, MIX_SPACES, PIXELATE_DEFAULTS, REDUCED_MOTION, SCHEMA_URL, SIGNAL_DEFAULTS, VIGNETTE_DEFAULTS } from './schema'
+export type { AuroraDocument, AuroraInput, AuroraLayer, BlendMode, MixSpace, PixelateModifier, SignalModifier, VignetteModifier } from './schema'
 export { assertAurora, defineAurora, parseAurora, stringifyAurora } from './document'
 export type { ParseResult } from './document'
 export { AuroraFormatError, jsonPath, suggest } from './issues'

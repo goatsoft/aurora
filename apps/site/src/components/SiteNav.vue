@@ -6,7 +6,7 @@ const scrolled = computed(() => y.value > 24)
 const open = ref(false)
 const links = [
   { label: 'Features', to: '/#features' },
-  { label: 'Generators', to: '/#generators' },
+  { label: 'Gallery', to: '/gallery' },
   { label: 'Studio', to: '/#studio' },
   { label: 'Docs', to: '/docs' },
 ]

@@ -15,7 +15,7 @@ const cards = [{ label: 'Card one' }, { label: 'Card two' }, { label: 'Card thre
 <template>
   <section
     id="shared"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div
       v-reveal
@@ -24,10 +24,10 @@ const cards = [{ label: 'Card one' }, { label: 'Card two' }, { label: 'Card thre
       <p class="eyebrow">
         Shared backgrounds
       </p>
-      <h2 class="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      <h2 class="mt-4 text-heading font-semibold tracking-tight text-balance">
         One background across separate panels
       </h2>
-      <p class="mt-4 text-lg text-pretty text-muted-foreground">
+      <p class="mt-4 text-lead text-pretty text-muted-foreground">
         One continuous background across three cards. Toggle it to compare.
       </p>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -65,12 +65,17 @@ const cards = [{ label: 'Card one' }, { label: 'Card two' }, { label: 'Card thre
         </div>
       </div>
     </div>
-    <div class="mt-12 grid gap-4 sm:grid-cols-3">
+    <!--
+      On phones, two cards side by side over a wide one, so the cards still sit next to each other
+      and the background can be seen running across the gaps; a single column of tall cards hid it.
+    -->
+    <div class="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
       <div
         v-for="(card, i) in cards"
         :key="card.label"
         v-reveal="i * 80"
-        class="relative isolate flex aspect-4/5 flex-col justify-end overflow-hidden rounded-2xl border border-white/10 p-5"
+        class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-5"
+        :class="i === cards.length - 1 ? 'col-span-2 aspect-8/5 sm:col-span-1 sm:aspect-4/5' : 'aspect-4/5'"
       >
         <div class="absolute inset-0 -z-10">
           <AuroraBackground

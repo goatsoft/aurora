@@ -52,7 +52,7 @@ describe('parseAurora', () => {
   const layer = (extra: object) => ({ ...minimal, layers: [{ type: 'aurora-fbm', ...extra }] })
   it.each([
     ['a typo in a key', layer({ blnd: 'screen' }), '$.layers[0].blnd', 'is not a known key. Did you mean "blend"?'],
-    ['an unknown top-level key', { ...minimal, extra: 1 }, '$.extra', 'is not a known key. Expected one of: $schema, format, version, name, canvas, motion, palette, layers, fallback.'],
+    ['an unknown top-level key', { ...minimal, extra: 1 }, '$.extra', 'is not a known key. Expected one of: $schema, format, version, name, canvas, motion, modifiers, palette, layers, fallback.'],
     ['an unknown key in a mask', layer({ mask: { type: 'radial', radius: 1 } }), '$.layers[0].mask.radius', 'is not a known key. Expected one of: type, x, y, start, end.'],
     ['a missing field', { ...minimal, name: undefined }, '$.name', 'is required.'],
     ['a typo in an option', layer({ blend: 'scren' }), '$.layers[0].blend', 'must be "normal" | "screen" | "add" | "multiply" | "overlay", got "scren". Did you mean "screen"?'],

@@ -20,7 +20,7 @@ declare module 'vue' {
     DocPage: typeof import('./components/doc/DocPage.vue')['default']
     DocToc: typeof import('./components/doc/DocToc.vue')['default']
     EditInStudio: typeof import('./components/EditInStudio.vue')['default']
-    ElementsSection: typeof import('./components/section/ElementsSection.vue')['default']
+    GalleryScene: typeof import('./components/GalleryScene.vue')['default']
     GetStartedSection: typeof import('./components/section/GetStartedSection.vue')['default']
     HeroSection: typeof import('./components/section/HeroSection.vue')['default']
     HeroStudio: typeof import('./components/HeroStudio.vue')['default']

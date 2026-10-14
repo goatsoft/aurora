@@ -9,7 +9,7 @@ const pillars = [
 <template>
   <section
     id="features"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
   >
     <div
       v-reveal
@@ -18,7 +18,7 @@ const pillars = [
       <p class="eyebrow">
         How it works
       </p>
-      <h2 class="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      <h2 class="mx-auto mt-4 max-w-3xl text-heading font-semibold tracking-tight text-balance">
         Uses WebGPU when available, <span class="text-muted-foreground">with a CSS fallback.</span>
       </h2>
     </div>

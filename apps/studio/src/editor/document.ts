@@ -73,6 +73,15 @@ export function layerColors(layer: LayerInput, paletteLength: number, count: num
 }
 
 export const ops = {
+  /** Toggle or replace one scene modifier without changing the others. */
+  modifier: <K extends keyof NonNullable<Doc['modifiers']>>(doc: Doc, key: K, value: NonNullable<Doc['modifiers']>[K]) => edit(doc, (d) => {
+    const modifiers = { ...d.modifiers }
+    if (value === undefined) Reflect.deleteProperty(modifiers, key)
+    else modifiers[key] = value
+    if (Object.keys(modifiers).length) d.modifiers = modifiers
+    else delete d.modifiers
+  }),
+
   rename: (doc: Doc, name: string) => edit(doc, (d) => {
     d.name = name
   }),

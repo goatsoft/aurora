@@ -78,6 +78,111 @@
       "additionalProperties": false,
       "default": {}
     },
+    "modifiers": {
+      "type": "object",
+      "properties": {
+        "signal": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Distortion; 0 disables.",
+              "default": 0.35
+            },
+            "shake": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Horizontal burst judder.",
+              "default": 0.25
+            },
+            "tearSize": {
+              "type": "number",
+              "minimum": 0.02,
+              "maximum": 0.5,
+              "description": "Relative tear height.",
+              "default": 0.15
+            },
+            "separation": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Colour-channel separation.",
+              "default": 0.2
+            },
+            "tracking": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Vertical tracking slips.",
+              "default": 0.15
+            },
+            "frequency": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2,
+              "description": "Burst rate; 0 freezes distortion.",
+              "default": 0.5
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Signal pattern seed.",
+              "default": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "pixelate": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 64,
+              "description": "Block size in pixels.",
+              "default": 8
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "vignette": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Edge darkness.",
+              "default": 0.45
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Clear radius.",
+              "default": 0.45
+            },
+            "softness": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1,
+              "description": "Edge softness.",
+              "default": 0.45
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "palette": {
       "type": "array",
       "items": {

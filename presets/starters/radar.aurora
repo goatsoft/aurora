@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Radar starter",
+  "palette": [
+    "oklch(0.12 0.025 170)",
+    "oklch(0.76 0.15 165)",
+    "oklch(0.92 0.08 150)"
+  ],
+  "layers": [
+    {
+      "type": "radar"
+    }
+  ]
+}

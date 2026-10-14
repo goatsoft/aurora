@@ -59,3 +59,41 @@ Each layer is one generator. Its `type` is the generator's id and its `params` a
 ## Validation
 
 Files are checked against the schema and then against each generator: unknown types and parameters get "did you mean" suggestions, and colour indices must exist in the palette. With the bundler plugin this happens at build time, with errors at the file, line and column.
+
+## Modifiers
+
+Modifiers transform the whole background and are separate from generators. Enable them independently in **Modifiers**.
+
+### Signal distortion
+
+An optional scene effect tears, stretches and shakes the complete composition. In Studio, open **Modifiers → Signal distortion**.
+
+```json
+"modifiers": {
+  "signal": {
+    "amount": 0.65,
+    "shake": 0.55,
+    "tearSize": 0.12,
+    "separation": 0.55,
+    "tracking": 0.3,
+    "frequency": 0.65,
+    "seed": 12
+  }
+}
+```
+
+`amount`, `shake`, `separation` and `tracking` range from 0 to 1. `tearSize` is the height of a tearing band relative to the scene, from 0.02 to 0.5. `frequency` is burst cycles per second, from 0 to 2; zero freezes the distortion while other layers can keep moving. `seed` is a whole number from 0 to 100.
+
+Omit `modifiers` for the normal rendering path. An empty `signal` object uses the defaults; an amount of zero leaves the scene unchanged. The effect follows global motion and reduced-motion settings. CSS fallback shows the undistorted background.
+
+Colour separation samples the full composition three times, so it costs more than tearing and shake alone. Set `separation` to zero when you only need displacement. This field requires a version of Aurora and `@goatsoft/aurora-format` that supports scene modifiers; older strict validators reject it.
+
+### Pixelate
+
+`"modifiers": { "pixelate": { "size": 8 } }` samples the scene in square display blocks. Size is a whole number from 1 to 64 canvas pixels; 1 leaves the scene unchanged. Fine-detail generators adapt to the lower effective resolution.
+
+### Vignette
+
+`"modifiers": { "vignette": { "amount": 0.45, "radius": 0.45, "softness": 0.45 } }` darkens the edges without changing transparency. Amount and radius range from 0 to 1; softness ranges from 0.01 to 1. Radius and softness are relative to the shorter scene side. Zero amount leaves the scene unchanged.
+
+Combine these keys in one `modifiers` object. Aurora applies signal distortion first, pixelate sampling next, and vignette last. The CSS fallback keeps the original composition.

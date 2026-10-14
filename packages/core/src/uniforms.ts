@@ -69,6 +69,15 @@ export function packUniforms(
   const rect = frame.rect ?? FULL
   u.set([frame.width, frame.height, frame.time * doc.motion.speed, frame.scroll, ...rect], 0)
 
+  if (shader.signal !== undefined) {
+    const s = doc.modifiers!.signal!
+    u.set([s.amount, s.shake, s.tearSize, s.separation, s.tracking, s.frequency, s.seed, 0], shader.signal * 4)
+  }
+  if (shader.pixelate !== undefined) u.set([doc.modifiers!.pixelate!.size, 0, 0, 0], shader.pixelate * 4)
+  if (shader.vignette !== undefined) {
+    const v = doc.modifiers!.vignette!
+    u.set([v.amount, v.radius, v.softness, 0], shader.vignette * 4)
+  }
   shader.layers.forEach(({ generator, params, mask, colors }, i) => {
     const layer = doc.layers[i]!
     const names = Object.keys(generator.params)

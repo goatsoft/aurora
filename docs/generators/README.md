@@ -25,3 +25,10 @@ Each generator draws one kind of background. A layer's `type` names its generato
 | [Water](water.md) | `water` | Water: moving light patterns on the floor of clear water. |
 | [Fire](fire.md) | `fire` | Fire: flames rising from the bottom edge, with embers above them. |
 | [Grain](grain.md) | `grain` | Animated film grain, to lay over other layers. |
+| [Digital rain](digital-rain.md) | `digital-rain` | Tech: luminous glyphs falling in uneven columns, with bright heads and fading trails. |
+| [Glitch](glitch.md) | `glitch` | Tech: fractured signal bands and separated colour accents, punctuated by short bursts. |
+| [Static](static.md) | `static` | Tech: electronic noise, rolling interference bands and pockets of signal dropout. |
+| [Radar](radar.md) | `radar` | Tech: a rotating radar sweep, range rings and contacts fading into the dark. |
+| [Scan lines](scanlines.md) | `scanlines` | Tech: a luminous CRT raster with soft scan lines and a slow rolling exposure band. |
+| [Phosphor](phosphor.md) | `phosphor` | Tech: a glowing display-dot lattice with a soft, drifting phosphor bloom. |
+| [Ping](ping.md) | `ping` | Tech: luminous pulses expanding from a point and dissolving into a soft halo. |

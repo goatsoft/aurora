@@ -87,9 +87,23 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/digital-rain': RouteRecordInfo<
+      '/docs/generators/digital-rain',
+      '/docs/generators/digital-rain',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/fire': RouteRecordInfo<
       '/docs/generators/fire',
       '/docs/generators/fire',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/glitch': RouteRecordInfo<
+      '/docs/generators/glitch',
+      '/docs/generators/glitch',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -136,6 +150,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/phosphor': RouteRecordInfo<
+      '/docs/generators/phosphor',
+      '/docs/generators/phosphor',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/ping': RouteRecordInfo<
+      '/docs/generators/ping',
+      '/docs/generators/ping',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/radar': RouteRecordInfo<
+      '/docs/generators/radar',
+      '/docs/generators/radar',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/rain': RouteRecordInfo<
       '/docs/generators/rain',
       '/docs/generators/rain',
@@ -143,9 +178,23 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/scanlines': RouteRecordInfo<
+      '/docs/generators/scanlines',
+      '/docs/generators/scanlines',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/starfield': RouteRecordInfo<
       '/docs/generators/starfield',
       '/docs/generators/starfield',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/static': RouteRecordInfo<
+      '/docs/generators/static',
+      '/docs/generators/static',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -269,6 +318,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/gallery': RouteRecordInfo<
+      '/gallery',
+      '/gallery',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -346,9 +402,25 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/digital-rain.md': {
+      routes:
+        | '/docs/generators/digital-rain'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/fire.md': {
       routes:
         | '/docs/generators/fire'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/glitch.md': {
+      routes:
+        | '/docs/generators/glitch'
       views:
         | never
       pathParamNames:
@@ -402,6 +474,30 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/phosphor.md': {
+      routes:
+        | '/docs/generators/phosphor'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/ping.md': {
+      routes:
+        | '/docs/generators/ping'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/radar.md': {
+      routes:
+        | '/docs/generators/radar'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/rain.md': {
       routes:
         | '/docs/generators/rain'
@@ -410,9 +506,25 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/scanlines.md': {
+      routes:
+        | '/docs/generators/scanlines'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/starfield.md': {
       routes:
         | '/docs/generators/starfield'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/static.md': {
+      routes:
+        | '/docs/generators/static'
       views:
         | never
       pathParamNames:
@@ -549,6 +661,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/studio/shortcuts.md': {
       routes:
         | '/docs/studio/shortcuts'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/gallery.vue': {
+      routes:
+        | '/gallery'
       views:
         | never
       pathParamNames:

@@ -71,6 +71,32 @@ const Motion = v.strictObject({
   ),
 })
 
+/** Defaults for the optional whole-scene signal distortion. */
+export const SIGNAL_DEFAULTS = { amount: 0.35, shake: 0.25, tearSize: 0.15, separation: 0.2, tracking: 0.15, frequency: 0.5, seed: 0 }
+
+const Signal = v.strictObject({
+  amount: v.optional(unit('Distortion; 0 disables.'), SIGNAL_DEFAULTS.amount),
+  shake: v.optional(unit('Horizontal burst judder.'), SIGNAL_DEFAULTS.shake),
+  tearSize: v.optional(range(0.02, 0.5, 'Relative tear height.'), SIGNAL_DEFAULTS.tearSize),
+  separation: v.optional(unit('Colour-channel separation.'), SIGNAL_DEFAULTS.separation),
+  tracking: v.optional(unit('Vertical tracking slips.'), SIGNAL_DEFAULTS.tracking),
+  frequency: v.optional(range(0, 2, 'Burst rate; 0 freezes distortion.'), SIGNAL_DEFAULTS.frequency),
+  seed: v.optional(v.pipe(range(0, 100, 'Signal pattern seed.'), v.integer('must be a whole number')), SIGNAL_DEFAULTS.seed),
+})
+
+export const PIXELATE_DEFAULTS = { size: 8 }
+export const VIGNETTE_DEFAULTS = { amount: 0.45, radius: 0.45, softness: 0.45 }
+
+const Pixelate = v.strictObject({
+  size: v.optional(v.pipe(range(1, 64, 'Block size in pixels.'), v.integer('must be a whole number')), PIXELATE_DEFAULTS.size),
+})
+const Vignette = v.strictObject({
+  amount: v.optional(unit('Edge darkness.'), VIGNETTE_DEFAULTS.amount),
+  radius: v.optional(unit('Clear radius.'), VIGNETTE_DEFAULTS.radius),
+  softness: v.optional(range(0.01, 1, 'Edge softness.'), VIGNETTE_DEFAULTS.softness),
+})
+const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+
 const LinearMask = v.strictObject({
   type: v.literal('linear'),
   angle: v.optional(v.pipe(v.number(), v.description('Direction in degrees, CSS convention (180 = top to bottom).')), 180),
@@ -162,6 +188,7 @@ export const AuroraSchema = v.pipe(
     ),
     canvas: v.optional(Canvas, {}),
     motion: v.optional(Motion, {}),
+    modifiers: v.optional(Modifiers),
     palette: v.pipe(
       v.array(Color),
       v.minLength(1, 'must have at least one colour'),
@@ -187,3 +214,8 @@ export type AuroraInput = v.InferInput<typeof AuroraSchema>
 export type AuroraLayer = AuroraDocument['layers'][number]
 export type BlendMode = (typeof BLEND_MODES)[number]
 export type MixSpace = (typeof MIX_SPACES)[number]
+
+export type SignalModifier = v.InferOutput<typeof Signal>
+
+export type PixelateModifier = v.InferOutput<typeof Pixelate>
+export type VignetteModifier = v.InferOutput<typeof Vignette>

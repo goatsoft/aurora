@@ -25,6 +25,14 @@ Phase 4 adds ten generators to the aurora: animated gradients, grain, a `starfie
   - Scenes: `borealis` (a diffuse aurora, green at the horizon rising into magenta and violet rays, over a treeline; the site's hero), `polar-night` (teal and violet aurora over mountains), `northern-lights` (green curtains over a sparse sky, rebuilt on `curtain`) `blue-hour` (mountains against a dusk gradient) and `glacier`, `glacier-night` and `glacier-storm` (one landscape of mountains and a treeline by day, under an aurora at night, and in rain and lightning; the Studio picture under the hero switches between them) `misty-forest` (three rows of spruce fading into a pale morning sky, the treeline's card) and `lagoon` (teal caustics over a drifting mesh gradient) each have their own starfield and palette, so no two look alike.
   - Goldens that include `aurora-fbm` come from CI: its `fract(sin(…))` hash depends on how the CPU's SwiftShader computes `sin`, so an ARM Mac renders it differently from CI's x86. CI uploads `*.actual.png` when a golden fails.
 
+## Tech generators, October 2026
+
+- Studio's **Tech** group adds `digital-rain`, `glitch`, `static`, `radar`, `ping`, `scanlines` and `phosphor`. Digital rain uses original procedural segmented glyphs, so it needs neither a font nor a texture atlas. Electronic static has rolling interference and dropout, distinct from the existing opt-in film grain.
+- Glitch draws its own disrupted signal. It does not sample or displace earlier layers; whole-scene distortion is provided separately by [scene modifiers](0011-scene-modifiers.md). Radar's deterministic contacts light up behind its rotating sweep; ping emits expanding rings from an editable origin.
+- These remain ordinary on-demand generators, with palette roles, CSS approximations, controls generated from specs and no new dependencies. Glyph density, line widths and ring spacing account for the canvas pixel footprint. The runtime's frozen clock gives each an intentional reduced-motion still.
+- Scan lines adds a pixel-filtered CRT raster and a slow exposure roll; phosphor adds a band-limited dot lattice with broad drifting illumination. Signal Lost layers these over quieter static and restrained glitch bursts. Both are independent signal generators, not post-processing filters.
+- Each generator has a default golden and a contact sheet at three times across desktop, portrait and ultrawide canvases. Ghost Terminal, Signal Lost, Night Protocol, Deep Scan and Echo Chamber are composed scenes with their own goldens.
+
 ## Consequences
 
 - A generator's first use costs one small request; the CSS fallback covers the gap.

@@ -69,7 +69,7 @@ export function defineAurora(doc: Omit<AuroraInput, 'format' | 'version'> & Part
   return { $schema: SCHEMA_URL, format: 'aurora', version: 1, ...doc }
 }
 
-const KEY_ORDER = ['$schema', 'format', 'version', 'name', 'canvas', 'motion', 'palette', 'layers', 'fallback']
+const KEY_ORDER = ['$schema', 'format', 'version', 'name', 'canvas', 'motion', 'modifiers', 'palette', 'layers', 'fallback']
 
 /** Serialises a document as stable, human-friendly JSON: canonical key order, 2-space indent, trailing newline. */
 export function stringifyAurora(doc: AuroraDocument | AuroraInput): string {
