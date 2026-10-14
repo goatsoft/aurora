@@ -65,12 +65,14 @@ function schema(): Plugin {
  * `src/warm.ts` as an entry of its own, started at once on every page (marked `data-eager`, so
  * gruff leaves it alone): gruff starts the app only when the page is idle, and warming up the
  * landing page's backgrounds shouldn't wait that long. Vite would merge it into the app's bundle
- * if it were a second script in index.html, so the build gives it its own input instead.
+ * if it were a second script in index.html, so the build gives it its own input instead. Off under
+ * Vitest, whose browser runner serves its own HTML page.
  */
 function warm(): Plugin {
   const entry = `${here}src/warm.ts`
   return {
     name: 'aurora-site:warm',
+    apply: () => !process.env['VITEST'],
     config(_, { command, isSsrBuild }) {
       if (command === 'build' && !isSsrBuild) return { build: { rolldownOptions: { input: { index: `${here}index.html`, warm: entry } } } }
       return undefined
