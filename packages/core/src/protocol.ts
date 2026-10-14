@@ -17,6 +17,8 @@ export interface SurfaceState {
   reduced: false | 'still' | 'slow'
   /** Clock origin, epoch milliseconds. Surfaces in one scene share it. */
   origin: number
+  /** Frozen epoch time while explicitly paused; omitted while playing. */
+  pausedAt?: number
   output: RgbSpace
 }
 

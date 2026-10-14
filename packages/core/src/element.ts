@@ -28,7 +28,7 @@ const DEFAULT_STYLE = ':where(aurora-bg){display:block;position:absolute;inset:0
  * mode changes and `aurora-error` when a file can't be loaded or is invalid.
  */
 export class AuroraBackgroundElement extends HTMLElement {
-  static observedAttributes = ['src', 'scene']
+  static observedAttributes = ['src', 'scene', 'paused']
 
   private surface: AuroraSurface | undefined
   private current: AuroraSource | undefined
@@ -66,6 +66,15 @@ export class AuroraBackgroundElement extends HTMLElement {
     this.setAttribute('scene', value)
   }
 
+  /** Boolean attribute: pauses at the current phase without changing authored speed. */
+  get paused(): boolean {
+    return this.hasAttribute('paused')
+  }
+
+  set paused(value: boolean) {
+    this.toggleAttribute('paused', value)
+  }
+
   connectedCallback(): void {
     this.setAttribute('aria-hidden', 'true')
     this.setState('css')
@@ -82,7 +91,10 @@ export class AuroraBackgroundElement extends HTMLElement {
   attributeChangedCallback(name: string, previous: string | null, next: string | null): void {
     if (previous === next || !this.isConnected) return
     if (name === 'src' && next) void this.load()
-    else if (name === 'scene' && this.current) {
+    else if (name === 'paused') {
+      if (this.paused) this.surface?.pause()
+      else this.surface?.resume()
+    } else if (name === 'scene' && this.current) {
       this.surface?.dispose()
       this.surface = undefined
       this.mount()
@@ -117,6 +129,7 @@ export class AuroraBackgroundElement extends HTMLElement {
   private mount(): void {
     const source = this.current!
     this.surface = mountAurora(this, source, {
+      paused: this.paused,
       ...(this.scene ? { scene: this.scene } : {}),
       onModeChange: (mode) => {
         this.setState(mode)

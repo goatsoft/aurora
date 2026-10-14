@@ -44,6 +44,21 @@ function element(html: string): AuroraBackgroundElement {
 }
 
 describe('<aurora-bg>', () => {
+  it('reflects paused and updates playback without remounting or changing the document', async () => {
+    const el = element(`<aurora-bg paused src="${HERO}"></aurora-bg>`)
+    await until(() => !!leases[0]?.states.length)
+    expect(el.paused).toBe(true)
+    expect(leases[0]!.states[0]!.pausedAt).toBeDefined()
+    const doc = leases[0]!.states[0]!.doc
+    el.paused = false
+    expect(el.hasAttribute('paused')).toBe(false)
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeUndefined()
+    el.setAttribute('paused', '')
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeDefined()
+    expect(leases[0]!.states.at(-1)!.doc).toBe(doc)
+    expect(leases).toHaveLength(1)
+  })
+
   it('is defined, fills its parent and is hidden from assistive tech', () => {
     const el = element('<aurora-bg></aurora-bg>')
     expect(el).toBeInstanceOf(AuroraBackgroundElement)

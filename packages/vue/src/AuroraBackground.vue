@@ -17,6 +17,8 @@ const props = defineProps<{
   src: AuroraSource | string
   /** Join a named scene (defaults to the nearest `<AuroraScene>`). */
   scene?: string
+  /** Freeze the ambient animation at its current phase. */
+  paused?: boolean
 }>()
 const emit = defineEmits<{
   modeChange: [mode: AuroraMode]
@@ -27,6 +29,7 @@ defineSlots<{ default?: (props: { mode: AuroraMode }) => unknown }>()
 const host = ref<HTMLElement>()
 const { mode, surface } = useAurora(host, () => props.src, {
   scene: () => props.scene,
+  paused: () => props.paused,
   onError: (error) => emit('error', error),
 })
 watch(mode, (next) => emit('modeChange', next))

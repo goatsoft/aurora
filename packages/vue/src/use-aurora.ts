@@ -5,6 +5,8 @@ import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, watch } 
 import { useAuroraScene } from './scene'
 
 export interface UseAuroraOptions {
+  /** Reactive playback control; leaves the authored document unchanged. */
+  paused?: MaybeRefOrGetter<boolean>
   /** Scene name; defaults to the nearest `<AuroraScene>`. */
   scene?: MaybeRefOrGetter<string | undefined>
   onError?: (error: Error) => void
@@ -62,6 +64,7 @@ export function useAurora(
     if (!el || !current) return
     const name = scene()
     surface.value = mountAurora(el, current, {
+      paused: toValue(options.paused) ?? false,
       ...(name ? { scene: name } : {}),
       onModeChange: (next) => {
         mode.value = next
@@ -78,6 +81,10 @@ export function useAurora(
       else mount()
     }, { immediate: true })
     watch([scene, target], () => mount())
+    watch(() => toValue(options.paused), (paused) => {
+      if (paused) surface.value?.pause()
+      else surface.value?.resume()
+    })
   })
   onScopeDispose(() => {
     loads++

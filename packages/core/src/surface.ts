@@ -15,6 +15,8 @@ import { joinScene, sceneGeometry } from './scene'
 export type AuroraMode = 'css' | 'webgpu'
 
 export interface MountOptions {
+  /** Start with the ambient clock paused. Input and document changes can still redraw. */
+  paused?: boolean
   /** Join a named scene: members share one clock and one continuous field. */
   scene?: string
   /** Aborting disposes the surface. */
@@ -30,6 +32,11 @@ export interface MountOptions {
 
 export interface AuroraSurface {
   readonly mode: AuroraMode
+  readonly paused: boolean
+  /** Freeze at the current animation phase, without changing the document. */
+  pause: () => void
+  /** Continue from the frozen phase. */
+  resume: () => void
   /** The element Aurora added to the host. */
   readonly element: HTMLElement
   /** Swaps the document. Values update in place; a new layer stack compiles in the background. */
@@ -157,6 +164,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   let unwatch = isAuroraModule(source) ? watchModule(source.id, (next) => apply(next)) : undefined
   let mode: AuroraMode = 'css'
   let disposed = false
+  let pausedAt = options.paused ? epochNow() : undefined
   let lease: Lease | undefined
   let visible = true
   let fadeTimer: ReturnType<typeof setTimeout> | undefined
@@ -191,6 +199,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     root.style.position = doc.canvas.fixed ? 'fixed' : 'absolute'
     const drift = mode === 'css' && css.drift > 0 && !reducedQuery?.matches
     fallback.style.cssText = `position:absolute;inset:-10%;${css.style}${drift ? `;animation:aurora-drift ${css.drift}s ease-in-out infinite;will-change:transform` : ''}`
+    fallback.style.animationPlayState = pausedAt === undefined ? 'running' : 'paused'
     // While a plain document's generators are still loading, its fallback would be missing their
     // layers: show nothing of ours yet (a server-rendered fallback underneath covers it).
     const incomplete = loading && !precompiled && !loaded()
@@ -205,7 +214,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     changed: () => push(),
   }
   const scene = options.scene ? joinScene(options.scene, member, epochNow()) : undefined
-  const origin = scene?.origin ?? epochNow()
+  let origin = scene?.origin ?? pausedAt ?? epochNow()
 
   const output = () => outputFor(doc)
 
@@ -222,6 +231,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       visible: visible && !document.hidden,
       reduced: reduced(),
       origin,
+      ...(pausedAt === undefined ? {} : { pausedAt }),
       output: output(),
     }
   }
@@ -232,6 +242,21 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
 
   function push() {
     if (!disposed && loaded()) lease?.update(state())
+  }
+
+  function pause() {
+    if (disposed || pausedAt !== undefined) return
+    pausedAt = epochNow()
+    fallback.style.animationPlayState = 'paused'
+    push()
+  }
+
+  function resume() {
+    if (disposed || pausedAt === undefined) return
+    origin += epochNow() - pausedAt
+    pausedAt = undefined
+    fallback.style.animationPlayState = 'running'
+    push()
   }
 
   let framed = false
@@ -401,6 +426,9 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
 
   return {
     get mode() { return mode },
+    get paused() { return pausedAt !== undefined },
+    pause,
+    resume,
     element: root,
     update,
     dispose,

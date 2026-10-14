@@ -98,6 +98,50 @@ describe('mountAurora with the real renderer', () => {
 })
 
 describe('mountAurora', () => {
+  it('pauses at the current phase and resumes without altering speed or resetting CSS drift', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    let time = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => time)
+    const surface = mountAurora(host, hero)
+    await until(() => !!leases[0]?.states.length)
+    const fallback = surface.element.firstElementChild as HTMLElement
+    const animation = fallback.style.animationName
+    const origin = leases[0]!.states.at(-1)!.origin
+    time = 5000
+    surface.pause()
+    const frozen = leases[0]!.states.at(-1)!
+    expect(surface.paused).toBe(true)
+    expect(frozen.pausedAt! - frozen.origin).toBe(4000)
+    expect(fallback.style.animationPlayState).toBe('paused')
+    time = 25_000
+    surface.pause()
+    surface.update(doc({ name: 'Paused edit' }))
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBe(frozen.pausedAt)
+    expect(leases[0]!.states.at(-1)!.doc.motion.speed).toBe(hero.motion.speed)
+    surface.resume()
+    expect(surface.paused).toBe(false)
+    expect(leases[0]!.states.at(-1)!.origin).toBe(origin + 20_000)
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeUndefined()
+    expect(fallback.style.animationPlayState).toBe('running')
+    expect(fallback.style.animationName).toBe(animation)
+    surface.resume()
+    expect(leases[0]!.states.at(-1)!.origin).toBe(origin + 20_000)
+    surface.dispose()
+    surface.pause()
+    expect(surface.paused).toBe(false)
+  })
+
+  it('starts paused before the first frame', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    const surface = mountAurora(host, hero, { paused: true })
+    await until(() => !!leases[0]?.states.length)
+    expect(leases[0]!.states[0]!.pausedAt).toBe(leases[0]!.states[0]!.origin)
+    expect(surface.paused).toBe(true)
+    surface.dispose()
+  })
+
   it('sends the renderer plain data, even for a Proxy from framework state', async () => {
     // A Vue ref or reactive is a Proxy, which postMessage can't copy: posting one took the worker
     // down for every background on the page.

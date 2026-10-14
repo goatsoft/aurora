@@ -28,8 +28,8 @@ const frame = computed(() => {
 const css = computed(() => compileCss(studio.preview.value))
 const cssStyle = computed(() => {
   const { style, drift } = css.value
-  const animate = drift > 0 && ui.playing && !ui.reducedMotion
-  return `position:absolute;inset:-10%;${style}${animate ? `;animation:aurora-drift ${drift}s ease-in-out infinite` : ''}`
+  const animate = drift > 0 && !ui.reducedMotion
+  return `position:absolute;inset:-10%;${style}${animate ? `;animation:aurora-drift ${drift}s ease-in-out infinite;animation-play-state:${ui.playing ? 'running' : 'paused'}` : ''}`
 })
 const gpuMode = ref<AuroraMode>('css')
 // Only say there's no WebGPU once it has had time to start.
@@ -69,6 +69,7 @@ const page = computed(() => (ui.page === 'dark'
         <AuroraBackground
           v-if="ui.preview !== 'css'"
           :src="studio.preview.value"
+          :paused="!ui.playing"
           @mode-change="(m) => (gpuMode = m)"
         />
         <div
@@ -117,6 +118,7 @@ const page = computed(() => (ui.page === 'dark'
           <AuroraBackground
             v-if="ui.preview !== 'css'"
             :src="studio.preview.value"
+            :paused="!ui.playing"
             @mode-change="(m) => (gpuMode = m)"
           />
           <div

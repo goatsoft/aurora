@@ -38,6 +38,28 @@ async function frame(renderer: Renderer, frames: ReturnType<typeof vi.fn>, id: n
 }
 
 describe('Renderer on a real GPU', () => {
+  it('holds a nonzero phase on the GPU while paused and redraws edits without advancing it', async () => {
+    const frames = vi.fn()
+    let now = 5000
+    const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60, now: () => now, generators: (id) => GENERATORS[id] })
+    const canvas = new TextureCanvas()
+    const frozen = state({ reduced: false, pausedAt: 5000, origin: 1000 })
+    const actual = await frame(renderer, frames, 1, canvas, frozen)
+    const shader = compose(hero)
+    const expected = await render(reference, shader.code, packUniforms(hero, shader, { width: W, height: H, time: 4, scroll: 0 }), W, H)
+    expect(diff(expected, actual).changed).toBe(0)
+    const count = renderer.stats.frames
+    now = 25_000
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(renderer.stats.frames).toBe(count)
+    renderer.update(1, { ...frozen, scroll: 0.3 })
+    await vi.waitFor(() => expect(renderer.stats.frames).toBe(count + 1))
+    const edited = await render(reference, shader.code, packUniforms(hero, shader, { width: W, height: H, time: 4, scroll: 0.3 }), W, H)
+    expect(diff(edited, await canvas.pixels()).changed).toBe(0)
+    expect(diff(actual, edited).changed).toBeGreaterThan(0.1)
+    renderer.fail()
+  })
+
   it('renders exactly what the composed shader renders, and reports the frame after completion', async () => {
     const frames = vi.fn()
     const renderer = await Renderer.create(navigator.gpu, { frame: frames, fail: vi.fn() }, { fps: 60, generators: (id) => GENERATORS[id] })

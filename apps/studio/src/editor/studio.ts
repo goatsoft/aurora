@@ -243,7 +243,7 @@ function createStudio() {
     const ids = layerIds.value
     const visible = base.layers.map((_, i) => !ui.muted.has(ids[i]!))
     const layers = base.layers.map((layer, i) => (visible[i] ? layer : { ...layer, opacity: 0 }))
-    const speed = ui.playing ? base.motion.speed * (ui.reducedMotion && base.motion.reduced === 'slow' ? 0.1 : 1) : 0
+    const speed = base.motion.speed * (ui.reducedMotion && base.motion.reduced === 'slow' ? 0.1 : 1)
     return { ...base, layers, motion: { ...base.motion, speed: ui.reducedMotion && base.motion.reduced === 'still' ? 0 : speed } }
   })
 
