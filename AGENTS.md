@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI agents and humans working in this repo. [PLAN.md](PLAN.md) is the roadmap and source of truth for scope; read the current phase there before starting work.
+Instructions for AI agents and humans working in this repo. Scope and priorities live in the [Aurora roadmap](https://github.com/orgs/goatsoft/projects/2) project and its [issues](https://github.com/goatsoft/aurora/issues); check there before starting work. Decisions are recorded in [docs/adr](docs/adr).
 
 ## What this is
 
@@ -17,7 +17,7 @@ Aurora: a GOATsoft library for WebGPU-only animated backgrounds with a generated
 - **Valibot** for `.aurora` validation; **fast-check** for fuzz tests.
 - **Vue 3.5** (peer) and **unplugin 3** for the bindings; `vue-tsc` checks `.vue` files in apps.
 - **Studio**: vue-router 5 file routes, unplugin-auto-import / -vue-components / -icons (Hugeicons), reka-ui styled shadcn-style with Tailwind 4, motion-v. Its components are tested in the `studio` Vitest project (browser, in `pnpm test:apps`), which extends Studio's Vite config.
-- Phase 6 adds gruff on `unplugin-vue-markdown` (see PLAN.md §5).
+- **gruff**, our static site generator, builds the site and docs on `unplugin-vue-markdown` (ADR-0008).
 
 ## Layout
 
@@ -56,7 +56,7 @@ AURORA_CHROME=1 pnpm test:browser   # the same, in the installed Google Chrome i
 pnpm --filter aurora-studio dev   # Studio on localhost, with dev-tool mode on this repo's .aurora files
 pnpm coverage
 pnpm test -u         # regenerate snapshots, including packages/format/schema/v1.json
-pnpm size            # gzip sizes against the PLAN.md §3.2 budgets
+pnpm size            # gzip sizes against the budgets below
 pnpm changeset       # for any user-facing change to a @goatsoft/* package
 pnpm consumers       # pack the packages, check the tarballs, and build a fresh project with them in every bundler
 ```
@@ -64,6 +64,22 @@ pnpm consumers       # pack the packages, check the tarballs, and build a fresh 
 ## North star
 
 Aurora must be very, very slick. It should blow people away visually and in its DX. Every change is judged against that: no visual glitches, beautiful defaults, errors that say exactly what is wrong and how to fix it, types that autocomplete everything.
+
+## Engineering bars
+
+- **No visual glitches.** No flash of an empty canvas and no layout shift. The swap from the CSS fallback to WebGPU crossfades in about 300 ms, and device loss recovers without the page noticing.
+- **Accessibility.** Reduced motion is honoured everywhere. Backgrounds are always `aria-hidden`. Studio is fully keyboard operable and passes WCAG AA.
+- **Performance.** Paused off-screen and in hidden tabs, one GPU batch per tick, and budgets checked in CI.
+- **Truthfulness.** The runtime never claims WebGPU before a real frame has rendered.
+
+## Budgets
+
+- **Size**, minified with dependencies bundled and gzipped. `pnpm size` measures them and `pnpm verify` fails when one is over; `scripts/size.ts` holds the list.
+  - Main-thread runtime and worker: 10 kB each.
+  - `@goatsoft/aurora/element`: 14 kB, since it carries the format's Valibot schema to validate files at runtime.
+  - Each generator: 2 kB. The shared noise library: 3 kB, shipped once however many generators use it.
+- **Runtime.** One worker and one GPU device per page, a shared 30 fps budget, frames gated on the previous submit completing, and 0.5x device pixel ratio capped at 1280 px per axis, all configurable through `configureAurora({ fps, pixelRatio, maxPixels })`. First frame within 100 ms of attach on an M1.
+- **Site.** Lighthouse 100 in all four categories on desktop. On mobile, 100 for accessibility, best practices and SEO, and at least 99 for performance (ADR-0008). CLS at most 0.01.
 
 ## Rules
 
@@ -94,7 +110,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 - `.aurora` files are declarative JSON and must never carry executable code or WGSL.
 - Colours are authored and mixed in OKLab/OKLCH; `mix: "srgb"` exists only for bit-exact parity with the classic presets. All colour maths goes in `@goatsoft/color`; never reimplement it elsewhere.
 - Never report WebGPU (`data-aurora="webgpu"`) before a real frame has rendered.
-- Respect the budgets in PLAN.md §3.2 (core < 10 kB gzip, each generator < 2 kB).
+- Respect the [budgets](#budgets) (core < 10 kB gzip, each generator < 2 kB).
 - Backgrounds are always `aria-hidden` and honour `prefers-reduced-motion`.
 
 ### Tests
@@ -114,7 +130,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 ### Docs
 
 - Record significant decisions as an ADR in `docs/adr/NNNN-title.md`.
-- Keep this file and PLAN.md current when the stack or rules change.
+- Keep this file current when the stack or rules change, and the [roadmap](https://github.com/orgs/goatsoft/projects/2) current when scope changes: one issue per outcome, phases as milestones.
 
 ### Brand and licensing
 

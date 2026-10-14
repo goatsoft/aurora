@@ -28,4 +28,4 @@
           - .github/workflows/**
 "type: docs":
   - changed-files:
-      - any-glob-to-any-file: [docs/**, README.md, PLAN.md, AGENTS.md, "packages/*/README.md"]
+      - any-glob-to-any-file: [docs/**, README.md, AGENTS.md, "packages/*/README.md"]

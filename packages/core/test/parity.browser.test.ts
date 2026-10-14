@@ -7,8 +7,8 @@ import { CLASSIC_WGSL } from './fixtures/classic-aurora'
 import { device, diff, render } from './gpu'
 
 /**
- * PLAN.md Phase 2 parity: every classic preset renders bit-identically to the original shader in mix "srgb"
- * (PLAN allows 1%; we hold ourselves to zero differing pixels).
+ * Classic parity: every classic preset renders bit-identically to the original shader in mix "srgb"
+ * (the original plan allowed 1%; we hold ourselves to zero differing pixels).
  * The reference options are restated from the original components, not derived from our presets.
  */
 const presets = import.meta.glob<string>('~/presets/classic/*.aurora', { query: '?raw', import: 'default', eager: true })

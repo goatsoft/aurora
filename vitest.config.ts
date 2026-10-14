@@ -29,7 +29,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['packages/*/src/**'],
       reporter: ['text', 'html', 'lcov'],
-      // PLAN.md Phase 1: the format and colour packages stay at 100%.
+      // The format and colour packages stay at 100% (AGENTS.md, Tests).
       thresholds: {
         'packages/color/src/**': { 100: true },
         'packages/format/src/**': { 100: true },

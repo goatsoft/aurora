@@ -14,7 +14,7 @@
   from_name: "enhancement"
 - name: "type: docs"
   color: "0075ca"
-  description: "Docs, ADRs, README or PLAN"
+  description: "Docs, ADRs, README or AGENTS.md"
   from_name: "documentation"
 - name: "type: perf"
   color: "fbca04"
