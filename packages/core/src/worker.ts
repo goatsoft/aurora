@@ -16,6 +16,8 @@ let renderer: Renderer | undefined
 let failed = false
 /** Generators sent while the probe is still running: the page registers as soon as a surface updates. */
 const pending: GeneratorSpec[] = []
+/** Documents to compile once the device is ready. */
+const prepares: Extract<WorkerRequest, { type: 'prepare' }>[] = []
 
 scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
   switch (data.type) {
@@ -33,6 +35,7 @@ scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
         if (!new OffscreenCanvas(1, 1).getContext('webgpu')) throw new Error('No OffscreenCanvas WebGPU.')
         renderer = created
         for (const generator of pending.splice(0)) created.register(generator)
+        for (const { doc, output } of prepares.splice(0)) created.prepare(doc, output)
         post({ type: 'ready', available: true })
       }).catch(() => {
         failed = true
@@ -42,6 +45,10 @@ scope.onmessage = ({ data }: MessageEvent<WorkerRequest>) => {
     case 'register':
       if (renderer) renderer.register(data.generator)
       else pending.push(data.generator)
+      return
+    case 'prepare':
+      if (renderer) renderer.prepare(data.doc, data.output)
+      else if (!failed) prepares.push(data)
       return
     case 'attach':
       if (failed || !renderer) post({ type: 'fail' })

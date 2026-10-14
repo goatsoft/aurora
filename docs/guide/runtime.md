@@ -21,6 +21,23 @@ Each background tries, in order:
 
 In both cases WebGPU replaces the CSS fallback, with a short crossfade, only after its first frame has rendered. The element reports which one it is showing in `data-aurora` (`"webgpu"` or `"css"`).
 
+## Showing WebGPU sooner
+
+Before its first WebGPU frame, a background needs a GPU device, the generators it uses, and its shader compiled. Mounting starts the device and the generator downloads together, and compiling starts as soon as both are ready.
+
+If you know which backgrounds a page shows before they mount, `prepareAurora` does all of that ahead of time, so they show WebGPU as soon as they mount:
+
+```ts
+import { prepareAurora } from '@goatsoft/aurora'
+import hero from './hero.aurora'
+
+void prepareAurora(hero)
+```
+
+Call it as early as you can: in a small script that starts before your app, or when a route starts loading. It does nothing on the server or where the CSS fallback will be used, and calling it again for the same background costs nothing. A GPU started for backgrounds that never mount is released after 10 seconds.
+
+To see where the time goes, open the Performance panel in your browser's developer tools. Aurora adds a mark for each step: `aurora:mount`, `aurora:generators`, `aurora:gpu`, `aurora:attach` and `aurora:frame`, with the background's number in `detail.surface`. Rendering in a worker, the shader compile shows as `aurora:compile` on the worker's track.
+
 ## When it stays on CSS
 
 A background stays on its CSS fallback, and says why, when a generator fails to load or isn't registered, or when WebGPU is present but no renderer starts or the renderer stops. Listen for it to log or report it:

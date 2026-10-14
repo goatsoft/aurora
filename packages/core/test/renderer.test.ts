@@ -69,12 +69,14 @@ describe('Renderer', () => {
     const r = await renderer(30)
     r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state())
     r.attach(2, new fake.Canvas() as unknown as OffscreenCanvas, state())
-    await tick(34) // compile
-    await tick(34)
+    // The first frame doesn't wait for the budget: it draws as soon as the pipeline is ready.
+    await tick(0)
     expect(fake.log.submits).toBe(1)
     expect(fake.log.passes).toBe(2)
     fake.holdWork()
-    await tick(34)
+    await tick(20)
+    expect(fake.log.submits).toBe(1)
+    await tick(14)
     await tick(500)
     expect(fake.log.submits).toBe(2)
     fake.finishWork()
@@ -133,8 +135,29 @@ describe('Renderer', () => {
     expect(fake.log.passes).toBe(0)
     expect(fake.log.pipelines).toBe(1)
     fake.finishPipelines()
-    await tick()
+    // Waiting surfaces draw as soon as their pipeline is ready, not a frame later.
+    await tick(0)
     expect(fake.log.passes).toBe(2)
+  })
+
+  it('compiles a prepared document before any surface draws it', async () => {
+    fake.holdPipelines()
+    const r = await renderer()
+    r.prepare(doc, 'srgb')
+    r.prepare(doc, 'srgb')
+    expect(fake.log.pipelines).toBe(1)
+    fake.finishPipelines()
+    await tick(0)
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state())
+    await tick(0)
+    expect(fake.log.pipelines).toBe(1)
+    expect(fake.log.passes).toBe(1)
+  })
+
+  it('ignores a prepared document whose generators it does not have yet', async () => {
+    const r = await renderer()
+    r.prepare(assertAurora({ ...doc, layers: [{ type: 'not-registered' }] }), 'srgb')
+    expect(fake.log.pipelines).toBe(0)
   })
 
   it('recreates the uniform buffer when the layer stack grows', async () => {

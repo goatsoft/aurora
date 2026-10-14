@@ -61,9 +61,35 @@ function schema(): Plugin {
   }
 }
 
+/**
+ * `src/warm.ts` as an entry of its own, started at once on every page (marked `data-eager`, so
+ * gruff leaves it alone): gruff starts the app only when the page is idle, and warming up the
+ * landing page's backgrounds shouldn't wait that long. Vite would merge it into the app's bundle
+ * if it were a second script in index.html, so the build gives it its own input instead.
+ */
+function warm(): Plugin {
+  const entry = `${here}src/warm.ts`
+  return {
+    name: 'aurora-site:warm',
+    config(_, { command, isSsrBuild }) {
+      if (command === 'build' && !isSsrBuild) return { build: { rolldownOptions: { input: { index: `${here}index.html`, warm: entry } } } }
+      return undefined
+    },
+    transformIndexHtml: {
+      order: 'post',
+      handler(_html, { server, bundle }) {
+        const chunk = Object.values(bundle ?? {}).find((c) => c.type === 'chunk' && c.isEntry && c.name === 'warm')
+        const src = server ? '/src/warm.ts' : chunk && `/${chunk.fileName}`
+        return src ? [{ tag: 'script', attrs: { 'type': 'module', src, 'data-eager': true }, injectTo: 'head' }] : []
+      },
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     schema(),
+    warm(),
     attributionBadges(root),
     badgeSnippets(),
     // Pages from src/pages, and every Markdown file under the repo's docs/ as /docs/….
