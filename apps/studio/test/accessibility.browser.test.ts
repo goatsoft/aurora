@@ -1,4 +1,6 @@
+import { ScrubField } from '@goatsoft/aurora-editor-ui'
 import { contrastRatio, parseColor, rgbToOklab } from '@goatsoft/color'
+import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import '@/main.css'
 
@@ -24,5 +26,28 @@ describe('Studio panel contrast', () => {
         expect(contrastRatio(parsed.color, background), `${token} over ${ground}`).toBeGreaterThanOrEqual(token === '--ring' ? 3 : 4.5)
       }
     }
+  })
+
+  it('keeps a default value readable above a fully filled slider', () => {
+    const wrapper = mount(ScrubField, { props: { modelValue: 1, label: 'Opacity', min: 0, max: 1, step: 0.01, default: 1 }, attachTo: document.body })
+    try {
+      const canvas = document.createElement('canvas')
+      canvas.width = canvas.height = 1
+      const context = canvas.getContext('2d')!
+      context.fillStyle = '#fff'
+      context.fillRect(0, 0, 1, 1)
+      const control = wrapper.get('[role="slider"]').element
+      for (const paint of [getComputedStyle(document.documentElement).getPropertyValue('--panel'), getComputedStyle(control).backgroundColor, getComputedStyle(control.children[0]!).backgroundColor]) {
+        context.fillStyle = paint
+        context.fillRect(0, 0, 1, 1)
+      }
+      const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+      const background = rgbToOklab({ r: r! / 255, g: g! / 255, b: b! / 255, alpha: 1 })
+      context.fillStyle = getComputedStyle(wrapper.get('span').element).color
+      context.fillRect(0, 0, 1, 1)
+      const [inkR, inkG, inkB] = context.getImageData(0, 0, 1, 1).data
+      const ink = rgbToOklab({ r: inkR! / 255, g: inkG! / 255, b: inkB! / 255, alpha: 1 })
+      expect(contrastRatio(ink, background)).toBeGreaterThanOrEqual(4.5)
+    } finally { wrapper.unmount() }
   })
 })

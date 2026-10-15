@@ -12,7 +12,7 @@
   --background: oklch(0.13 0.025 272);
   --surface: oklch(0.18 0.03 272);
   --foreground: oklch(0.95 0.012 270);
-  --muted-foreground: oklch(0.7 0.025 270);
+  --muted-foreground: oklch(0.74 0.025 270);
   --border: oklch(0.75 0.03 270 / 0.14);
   --input: oklch(0.75 0.03 270 / 0.18);
   --accent: oklch(0.26 0.03 275 / 0.7);

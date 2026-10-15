@@ -197,7 +197,7 @@ const page = computed(() => (ui.page === 'dark'
             </p>
             <EditableText
               v-model="ui.copy.headline"
-              as="h1"
+              as="div"
               label="Sample headline"
               :fallback="DEFAULT_COPY.headline"
               class="max-w-[16ch] font-semibold tracking-tight text-balance"
