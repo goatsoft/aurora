@@ -32,6 +32,7 @@ declare module 'vue' {
     IHgBookOpen01: typeof import('~icons/hugeicons/book-open01')['default']
     IHgCancel01: typeof import('~icons/hugeicons/cancel01')['default']
     IHgColors: typeof import('~icons/hugeicons/colors')['default']
+    IHgComputer: typeof import('~icons/hugeicons/computer')['default']
     IHgCopy01: typeof import('~icons/hugeicons/copy01')['default']
     IHgCpu: typeof import('~icons/hugeicons/cpu')['default']
     IHgHome01: typeof import('~icons/hugeicons/home01')['default']
@@ -67,5 +68,6 @@ declare module 'vue' {
     StudioSection: typeof import('./components/section/StudioSection.vue')['default']
     StudioWindow: typeof import('./components/StudioWindow.vue')['default']
     Term: typeof import('./components/doc/Term.vue')['default']
+    ThemeSelect: typeof import('./components/ThemeSelect.vue')['default']
   }
 }

@@ -77,7 +77,8 @@ const { paused: sitePaused } = useSitePreferences()
         v-for="(card, i) in cards"
         :key="card.label"
         v-reveal="i * 80"
-        class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-5"
+        data-scene-theme
+        class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-background p-4 text-foreground sm:p-5"
         :class="i === cards.length - 1 ? 'col-span-2 aspect-8/5 sm:col-span-1 sm:aspect-4/5' : 'aspect-4/5'"
       >
         <div class="absolute inset-0 -z-10">

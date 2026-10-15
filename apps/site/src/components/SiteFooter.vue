@@ -11,7 +11,7 @@ const year = new Date().getFullYear()
       <div>
         <div class="flex items-center gap-2.5">
           <Mark :size="28" />
-          <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
+          <span class="text-lg font-bold tracking-tight text-foreground">Aurora</span>
         </div>
         <p class="mt-3 max-w-xs text-sm text-pretty text-muted-foreground">
           Animated WebGPU backgrounds with a CSS fallback. Made by <a

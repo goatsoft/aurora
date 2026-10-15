@@ -2,7 +2,7 @@
 import { SITE } from '@/head'
 import { useSitePreferences } from '@/lib/preferences'
 
-const { light, paused, toggleTheme, toggleMotion } = useSitePreferences()
+const { paused, toggleMotion } = useSitePreferences()
 const { y } = useWindowScroll()
 const scrolled = computed(() => y.value > 24)
 const open = ref(false)
@@ -25,7 +25,7 @@ const links = [
     >
       <nav
         class="flex items-center justify-between rounded-full py-2 pr-2 pl-4 transition-all duration-500"
-        :class="scrolled ? 'shadow-[0_10px_40px_-20px_oklch(0_0_0/0.8)] glass' : 'border border-border bg-background/95'"
+        :class="scrolled ? 'border border-border bg-surface shadow-[0_10px_40px_-20px_oklch(0_0_0/0.4)]' : 'border border-border bg-background'"
         aria-label="Main"
       >
         <RouterLink
@@ -35,9 +35,8 @@ const links = [
         >
           <Mark
             :size="32"
-            class="drop-shadow-[0_0_14px_oklch(0.75_0.14_200/0.55)]"
           />
-          <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
+          <span class="text-lg font-bold tracking-tight text-foreground">Aurora</span>
         </RouterLink>
         <div
           class="hidden items-center gap-7 text-sm md:flex"
@@ -53,22 +52,7 @@ const links = [
           </RouterLink>
         </div>
         <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex size-11 items-center justify-center rounded-full hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-5"
-            :aria-label="light ? 'Use dark theme' : 'Use light theme'"
-            :title="light ? 'Use dark theme' : 'Use light theme'"
-            @click="toggleTheme"
-          >
-            <IHgMoon02
-              v-if="light"
-              aria-hidden="true"
-            />
-            <IHgSun03
-              v-else
-              aria-hidden="true"
-            />
-          </button>
+          <ThemeSelect />
           <button
             type="button"
             class="inline-flex size-11 items-center justify-center rounded-full hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-5"
@@ -120,7 +104,7 @@ const links = [
           </Button>
           <button
             type="button"
-            class="inline-flex size-11 items-center justify-center rounded-full border border-border bg-background/80 md:hidden [&_svg]:size-5"
+            class="inline-flex size-11 items-center justify-center rounded-full border border-border bg-background md:hidden [&_svg]:size-5"
             :aria-label="open ? 'Close menu' : 'Open menu'"
             :aria-expanded="open"
             aria-controls="mobile-navigation"
@@ -134,7 +118,7 @@ const links = [
         v-if="open"
         id="mobile-navigation"
         aria-label="Mobile"
-        class="absolute inset-x-4 top-full mt-2 flex flex-col gap-1 rounded-2xl p-2 glass md:hidden"
+        class="absolute inset-x-4 top-full mt-2 flex flex-col gap-1 rounded-2xl border border-border bg-surface p-2 text-foreground shadow-xl md:hidden"
       >
         <RouterLink
           v-for="link in links"

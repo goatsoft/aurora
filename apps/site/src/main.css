@@ -34,12 +34,12 @@
   --border: oklch(0.4 0.03 270 / 0.28);
   --input: oklch(0.4 0.03 270 / 0.35);
   --accent: oklch(0.9 0.025 275);
-  --primary: oklch(0.4 0.08 182);
-  --primary-foreground: oklch(0.99 0.005 182);
+  --primary: oklch(0.43 0.17 285);
+  --primary-foreground: oklch(0.99 0.005 285);
   --spectrum-1: oklch(0.42 0.08 180);
   --spectrum-2: oklch(0.43 0.17 285);
   --spectrum-3: oklch(0.44 0.16 330);
-  --ring: oklch(0.4 0.08 182);
+  --ring: oklch(0.43 0.17 285);
 }
 
 /* Fluid type for the landing page. Each size grows with the viewport between

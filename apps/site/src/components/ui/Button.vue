@@ -9,7 +9,7 @@ const button = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-[0_0_0_1px_oklch(1_0_0/0.15)_inset,0_10px_40px_-10px_var(--spectrum-1)] hover:brightness-110',
+        default: 'bg-primary text-primary-foreground shadow-[0_0_0_1px_oklch(1_0_0/0.15)_inset,0_8px_24px_-12px_var(--primary)] hover:brightness-110',
         glass: 'text-foreground glass hover:bg-white/10',
         ghost: 'text-muted-foreground hover:text-foreground',
       },

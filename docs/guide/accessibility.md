@@ -24,7 +24,9 @@ Interaction playgrounds provide buttons as alternatives to gestures. Focus a sce
 
 ## Light and dark pages
 
-The website follows your system colour scheme until you choose a theme in the navigation. Both themes use separate text, link and focus colours; dark scene previews keep their own readable controls. Studio can preview a scene on light and dark pages, while keeping its editing panels dark.
+The website defaults to **System**, following your system colour scheme. Choose **Light** or **Dark** in the navigation to override it, or choose **System** again to resume following your device. Both themes use separate text, link and focus colours; dark scene previews keep their own readable controls. Studio can preview a scene on light and dark pages, while keeping its editing panels dark.
+
+`@goatsoft/color` provides `luminance` and `contrastRatio` for opaque OKLab/OKLCH colours, measured in sRGB. Use `contrastOn(foreground, background, canvas)` when colours have transparency; it composites them over the supplied opaque page before calculating contrast. `compositeOver` also supports sRGB and Display P3 compositing. Studio uses the composited contrast to label palette colours against the text in the selected light or dark page preview. That reading describes the selected colour on the page, rather than every pixel of a layered animation.
 
 When placing text over a background, check every part of its motion in both themes. Put text on a sufficiently opaque panel or add a scrim when the colours behind it can change. Reduced motion does not fix low contrast.
 

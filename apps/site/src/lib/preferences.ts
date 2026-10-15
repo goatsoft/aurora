@@ -1,10 +1,13 @@
 import type { InjectionKey, Ref } from 'vue'
 import { inject, onMounted, onScopeDispose, provide, ref } from 'vue'
 
+export type ThemePreference = 'system' | 'light' | 'dark'
+
 interface SitePreferences {
   paused: Ref<boolean>
   light: Ref<boolean>
-  toggleTheme: () => void
+  theme: Ref<ThemePreference>
+  setTheme: (theme: ThemePreference) => void
   toggleMotion: () => void
 }
 const key: InjectionKey<SitePreferences> = Symbol('site preferences')
@@ -24,7 +27,9 @@ const write = (name: string, value: string) => {
 export function provideSitePreferences() {
   const paused = ref(false)
   const light = ref(false)
+  const theme = ref<ThemePreference>('system')
   const applyTheme = () => {
+    light.value = theme.value === 'light' || (theme.value === 'system' && matchMedia('(prefers-color-scheme: light)').matches)
     document.documentElement.dataset['theme'] = light.value ? 'light' : 'dark'
   }
   const applyMotion = () => {
@@ -33,9 +38,10 @@ export function provideSitePreferences() {
   const preferences = {
     paused,
     light,
-    toggleTheme() {
-      light.value = !light.value
-      write('aurora:theme', light.value ? 'light' : 'dark')
+    theme,
+    setTheme(value: ThemePreference) {
+      theme.value = value
+      write('aurora:theme', value)
       applyTheme()
     },
     toggleMotion() {
@@ -47,16 +53,13 @@ export function provideSitePreferences() {
   let cleanup: (() => void) | undefined
   onMounted(() => {
     const media = matchMedia('(prefers-color-scheme: light)')
-    const sync = () => {
-      const theme = read('aurora:theme')
-      light.value = theme === 'light' || (theme !== 'dark' && media.matches)
-      applyTheme()
-    }
-    sync()
+    const saved = read('aurora:theme')
+    theme.value = saved === 'light' || saved === 'dark' ? saved : 'system'
+    applyTheme()
     paused.value = read('aurora:paused') === 'true'
     applyMotion()
-    media.addEventListener('change', sync)
-    cleanup = () => media.removeEventListener('change', sync)
+    media.addEventListener('change', applyTheme)
+    cleanup = () => media.removeEventListener('change', applyTheme)
   })
   onScopeDispose(() => cleanup?.())
   provide(key, preferences)
@@ -64,5 +67,5 @@ export function provideSitePreferences() {
 }
 
 export function useSitePreferences(): SitePreferences {
-  return inject(key, () => ({ paused: ref(false), light: ref(false), toggleTheme: () => undefined, toggleMotion: () => undefined }), true)
+  return inject(key, () => ({ paused: ref(false), light: ref(false), theme: ref<ThemePreference>('system'), setTheme: () => undefined, toggleMotion: () => undefined }), true)
 }

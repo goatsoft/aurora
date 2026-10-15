@@ -45,7 +45,8 @@ describe('composited contrast', () => {
     expect(mixed.r).toBeCloseTo(2 / 3, 5)
     expect(mixed.b).toBeCloseTo(1 / 3, 5)
     const p3 = rgbToOklab({ r: 1, g: 0.3, b: 0.1, alpha: 1 }, 'display-p3')
-    expect(compositeOver(p3, black, 'display-p3').l).toBeCloseTo(p3.l, 6)
+    const composited = compositeOver(p3, black, 'display-p3')
+    for (const channel of ['l', 'a', 'b', 'alpha'] as const) expect(composited[channel]).toBeCloseTo(p3[channel], 6)
   })
 
   it('keeps visible contrast bounded and transparent foregrounds at 1:1', () => {
