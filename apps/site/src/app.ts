@@ -14,7 +14,10 @@ export function createSite(path: string) {
   const router = createRouter({
     history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
     routes,
-    scrollBehavior: (to, _from, saved) => saved ?? (to.hash ? { el: to.hash, top: 96, behavior: 'smooth' } : { top: 0 }),
+    scrollBehavior: (to, _from, saved) => {
+      const still = !import.meta.env.SSR && (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset['paused'] === 'true')
+      return saved ?? (to.hash ? { el: to.hash, top: 96, behavior: still ? 'instant' : 'smooth' } : { top: 0 })
+    },
   })
   app.use(router)
   const head = createHead(app, path)

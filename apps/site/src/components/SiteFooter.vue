@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
-import badge from '~/assets/brand/badges/v1/made-with-inline-dark.svg?url'
+import badge from '~/assets/brand/badges/v1/made-with-inline-auto.svg?url'
 
 const year = new Date().getFullYear()
 </script>
@@ -70,6 +70,14 @@ const year = new Date().getFullYear()
               class="hover:text-foreground"
             >
               Documentation
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink
+              to="/docs/guide/accessibility"
+              class="hover:text-foreground"
+            >
+              Accessibility
             </RouterLink>
           </li>
           <li>

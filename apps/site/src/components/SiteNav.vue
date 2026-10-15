@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
+import { useSitePreferences } from '@/lib/preferences'
 
+const { light, paused, toggleTheme, toggleMotion } = useSitePreferences()
 const { y } = useWindowScroll()
 const scrolled = computed(() => y.value > 24)
 const open = ref(false)
@@ -23,7 +25,7 @@ const links = [
     >
       <nav
         class="flex items-center justify-between rounded-full py-2 pr-2 pl-4 transition-all duration-500"
-        :class="scrolled ? 'shadow-[0_10px_40px_-20px_oklch(0_0_0/0.8)] glass' : 'border border-transparent'"
+        :class="scrolled ? 'shadow-[0_10px_40px_-20px_oklch(0_0_0/0.8)] glass' : 'border border-border bg-background/95'"
         aria-label="Main"
       >
         <RouterLink
@@ -51,6 +53,39 @@ const links = [
           </RouterLink>
         </div>
         <div class="flex items-center gap-1.5">
+          <button
+            type="button"
+            class="inline-flex size-11 items-center justify-center rounded-full hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-5"
+            :aria-label="light ? 'Use dark theme' : 'Use light theme'"
+            :title="light ? 'Use dark theme' : 'Use light theme'"
+            @click="toggleTheme"
+          >
+            <IHgMoon02
+              v-if="light"
+              aria-hidden="true"
+            />
+            <IHgSun03
+              v-else
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            type="button"
+            class="inline-flex size-11 items-center justify-center rounded-full hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-5"
+            :aria-label="paused ? 'Resume animations' : 'Pause animations'"
+            :title="paused ? 'Resume animations' : 'Pause animations'"
+            :aria-pressed="paused"
+            @click="toggleMotion"
+          >
+            <IHgPlay
+              v-if="paused"
+              aria-hidden="true"
+            />
+            <IHgPause
+              v-else
+              aria-hidden="true"
+            />
+          </button>
           <Button
             variant="ghost"
             size="icon"

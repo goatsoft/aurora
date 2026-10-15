@@ -65,7 +65,7 @@ describe('gallery', () => {
         const scene = scenes[i]!.scene
         expect(preview.props('scene')).toEqual(scene)
         expect(scene.doc.layers.length).toBeGreaterThan(1)
-        expect(preview.get('a').attributes('aria-label')).toBe(`Open ${scene.doc.name} in Studio`)
+        expect(preview.get('a').attributes('aria-label')).toBe(`Open in Studio: ${scene.doc.name}`)
         expect(preview.text()).toContain(`${scene.doc.layers.length} layers`)
       }
     } finally {

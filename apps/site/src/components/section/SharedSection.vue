@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { useSitePreferences } from '@/lib/preferences'
 import { northernLights, solarWinds } from '@/lib/scenes'
 
 /** Three separate elements in one scene: one clock and one field, so the curtains cross the gaps. */
@@ -10,6 +11,8 @@ const examples = [
 ]
 const example = ref(examples[0]!)
 const cards = [{ label: 'Card one' }, { label: 'Card two' }, { label: 'Card three' }]
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
@@ -79,6 +82,7 @@ const cards = [{ label: 'Card one' }, { label: 'Card two' }, { label: 'Card thre
       >
         <div class="absolute inset-0 -z-10">
           <AuroraBackground
+            :paused="sitePaused"
             :src="example.src"
             v-bind="shared ? { scene: `shared-demo-${example.id}` } : {}"
           />

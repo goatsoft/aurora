@@ -3,12 +3,15 @@ import type { AuroraModule } from '@goatsoft/aurora'
 import { useAurora } from '@goatsoft/aurora-vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { computed, reactive, ref, useId } from 'vue'
+import { useSitePreferences } from '@/lib/preferences'
 
 const props = defineProps<{ scene: AuroraModule, kind: 'follow' | 'impulse' | 'grab', body: string }>()
 const target = ref<HTMLElement>()
 const background = ref<HTMLElement>()
 const mounted = ref(false)
 const paused = ref(false)
+const { paused: sitePaused } = useSitePreferences()
+const playbackPaused = computed(() => paused.value || sitePaused.value)
 const drag = ref(false)
 const cursor = reactive({ x: 0.5, y: 0.5, held: false })
 const keyboard = ref(false)
@@ -20,7 +23,7 @@ const { stop } = useIntersectionObserver(target, ([entry]) => {
   mounted.value = true
   stop()
 }, { rootMargin: '200px' })
-const { mode, surface } = useAurora(background, () => mounted.value ? props.scene : undefined, { paused, interactionTarget: target, drag })
+const { mode, surface } = useAurora(background, () => mounted.value ? props.scene : undefined, { paused: playbackPaused, interactionTarget: target, drag })
 const live = computed(() => mode.value === 'webgpu' && !!surface.value?.interactions)
 const css = computed(() => `position:absolute;inset:-10%;${props.scene.css.style}`)
 

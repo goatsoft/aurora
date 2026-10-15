@@ -8,7 +8,7 @@ import type { Directive } from 'vue'
  */
 export const reveal: Directive<HTMLElement, number | undefined, string, 'tilt'> = {
   mounted(el, binding) {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset['paused'] === 'true') return
     if (el.getBoundingClientRect().top < innerHeight * 0.9) return
     const tilt = binding.arg === 'tilt'
     el.style.opacity = '0'

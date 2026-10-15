@@ -4,6 +4,7 @@ import { validateDocument } from '@goatsoft/aurora'
 import { encodeShare } from '@goatsoft/aurora-editor-ui'
 import { parseAurora } from '@goatsoft/aurora-format'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { useSitePreferences } from '@/lib/preferences'
 
 /**
  * An `aurora` fence: the background running live above its source. "Edit" makes the source a text
@@ -33,13 +34,19 @@ async function openInStudio() {
   if (!doc.value) return
   window.open(`/studio/#${await encodeShare(doc.value)}`, '_blank', 'noopener')
 }
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
-  <figure class="my-6 overflow-hidden rounded-xl border border-border bg-[oklch(0.1_0.02_272)]">
+  <figure
+    data-scene-theme
+    class="my-6 overflow-hidden rounded-xl border border-border bg-[oklch(0.1_0.02_272)] text-foreground"
+  >
     <div class="relative isolate h-56 overflow-hidden border-b border-border sm:h-72">
       <AuroraBackground
         v-if="doc"
+        :paused="sitePaused"
         :src="doc"
       />
       <div class="absolute top-3 right-3 flex gap-2">
