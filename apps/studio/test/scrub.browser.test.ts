@@ -60,7 +60,7 @@ describe('ScrubField', () => {
 
   it('dims values the document doesn\'t set', () => {
     wrapper = field(0.06)
-    expect(wrapper.get('span.font-mono').classes()).toContain('text-muted-foreground')
+    expect(wrapper.get('span.font-mono').classes()).toContain('text-foreground/80')
     wrapper.unmount()
   })
 })

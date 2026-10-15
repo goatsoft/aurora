@@ -1,10 +1,15 @@
 import type { AuroraMode, AuroraSource, AuroraSurface } from '@goatsoft/aurora'
 import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
 import { mountAurora } from '@goatsoft/aurora'
-import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, watch } from 'vue'
+import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, triggerRef, watch } from 'vue'
 import { useAuroraScene } from './scene'
 
 export interface UseAuroraOptions {
+  interactionTarget?: MaybeRefOrGetter<HTMLElement | undefined>
+  drag?: MaybeRefOrGetter<boolean>
+  reducedMotion?: MaybeRefOrGetter<boolean>
+  /** Reactive playback control; leaves the authored document unchanged. */
+  paused?: MaybeRefOrGetter<boolean>
   /** Scene name; defaults to the nearest `<AuroraScene>`. */
   scene?: MaybeRefOrGetter<string | undefined>
   onError?: (error: Error) => void
@@ -62,12 +67,21 @@ export function useAurora(
     if (!el || !current) return
     const name = scene()
     surface.value = mountAurora(el, current, {
+      interactionTarget: toValue(options.interactionTarget) ?? el.parentElement ?? el,
+      drag: toValue(options.drag) ?? false,
+      reducedMotion: toValue(options.reducedMotion) ?? false,
+      paused: toValue(options.paused) ?? false,
       ...(name ? { scene: name } : {}),
       onModeChange: (next) => {
         mode.value = next
       },
       // Why it's on CSS when it could be on WebGPU; the fallback stays on screen regardless.
       ...(options.onError ? { onError: options.onError } : {}),
+    })
+    const mounted = surface.value
+    void mounted.ready.then(() => {
+      // Input can become available after the first GPU frame; refresh derived UI as well.
+      if (surface.value === mounted) triggerRef(surface)
     })
   }
 
@@ -78,6 +92,15 @@ export function useAurora(
       else mount()
     }, { immediate: true })
     watch([scene, target], () => mount())
+    watch([() => toValue(options.interactionTarget), () => toValue(options.drag)], () => {
+      const el = target.value
+      if (el) surface.value?.setInteractionTarget(toValue(options.interactionTarget) ?? el.parentElement ?? el, toValue(options.drag) ?? false)
+    })
+    watch(() => toValue(options.paused), (paused) => {
+      if (paused) surface.value?.pause()
+      else surface.value?.resume()
+    })
+    watch(() => toValue(options.reducedMotion), (reduced) => surface.value?.setReducedMotion(reduced ?? false))
   })
   onScopeDispose(() => {
     loads++

@@ -8,14 +8,14 @@
   --background: oklch(0.13 0.02 270);
   --foreground: oklch(0.96 0.01 270);
   --muted: oklch(0.22 0.02 270);
-  --muted-foreground: oklch(0.7 0.02 270);
-  --panel: oklch(0.17 0.02 270 / 0.62);
+  --muted-foreground: oklch(0.74 0.02 270);
+  --panel: oklch(0.17 0.02 270 / 0.9);
   --panel-border: oklch(1 0 0 / 0.09);
   --accent: oklch(0.26 0.03 275 / 0.7);
   --accent-foreground: oklch(0.98 0.01 270);
   --primary: oklch(0.72 0.15 250);
   --primary-foreground: oklch(0.16 0.03 265);
-  --ring: oklch(0.72 0.15 250 / 0.6);
+  --ring: oklch(0.72 0.15 250);
   --destructive: oklch(0.65 0.2 25);
   --input: oklch(1 0 0 / 0.08);
   --radius: 0.75rem;
@@ -23,7 +23,7 @@
 
 /* On a light page the chrome stays dark glass, just more solid, so it never washes out to grey. */
 .page-light {
-  --panel: oklch(0.16 0.02 270 / 0.9);
+  --panel: oklch(0.16 0.02 270 / 0.94);
   --panel-border: oklch(1 0 0 / 0.12);
 }
 
@@ -80,4 +80,13 @@
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
   to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

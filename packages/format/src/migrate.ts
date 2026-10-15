@@ -1,5 +1,5 @@
 import type { FormatIssue } from './issues'
-import { FORMAT_ID, FORMAT_VERSION } from './schema'
+import { FORMAT_ID, FORMAT_VERSION } from './runtime-schema'
 
 /** Upgrades a document from version `n` to `n + 1`. It must not mutate its input. */
 export type Migration = (doc: Readonly<Record<string, unknown>>) => Record<string, unknown>

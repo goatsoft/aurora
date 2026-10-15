@@ -17,6 +17,14 @@ const props = defineProps<{
   src: AuroraSource | string
   /** Join a named scene (defaults to the nearest `<AuroraScene>`). */
   scene?: string
+  /** Freeze the ambient animation at its current phase. */
+  paused?: boolean
+  /** A meaningful container for input, outside this decorative background. */
+  interactionTarget?: HTMLElement | undefined
+  /** Opt into pointer dragging, which reserves touch gestures on the input container. */
+  drag?: boolean
+  /** Preview reduced motion; the visitor's own preference always remains effective. */
+  reducedMotion?: boolean
 }>()
 const emit = defineEmits<{
   modeChange: [mode: AuroraMode]
@@ -27,6 +35,10 @@ defineSlots<{ default?: (props: { mode: AuroraMode }) => unknown }>()
 const host = ref<HTMLElement>()
 const { mode, surface } = useAurora(host, () => props.src, {
   scene: () => props.scene,
+  paused: () => props.paused,
+  interactionTarget: () => props.interactionTarget,
+  drag: () => props.drag,
+  reducedMotion: () => props.reducedMotion,
   onError: (error) => emit('error', error),
 })
 watch(mode, (next) => emit('modeChange', next))

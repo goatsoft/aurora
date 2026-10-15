@@ -42,6 +42,22 @@ afterEach(() => {
 const until = (check: () => boolean) => vi.waitFor(() => { expect(check()).toBe(true) }, { timeout: 5000, interval: 10 })
 
 describe('<AuroraBackground>', () => {
+  it('updates reactive playback in place while preserving the authored document', async () => {
+    const paused = ref(true)
+    const wrapper = mount(defineComponent({ setup: () => () => h(AuroraBackground, { src: heroModule, paused: paused.value }) }), { attachTo: parent })
+    await until(() => !!leases[0]?.states.length)
+    expect(leases[0]!.states[0]!.pausedAt).toBeDefined()
+    paused.value = false
+    await nextTick()
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeUndefined()
+    paused.value = true
+    await nextTick()
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeDefined()
+    expect(leases[0]!.states.at(-1)!.doc).toEqual(hero)
+    expect(leases).toHaveLength(1)
+    wrapper.unmount()
+  })
+
   it('mounts, emits mode changes, passes mode to the slot and updates in place', async () => {
     const src = ref<typeof heroModule | typeof tile>(heroModule)
     const wrapper = mount(defineComponent({

@@ -1,52 +1,66 @@
 <script setup lang="ts">
 const pillars = [
-  { icon: 'gpu', title: 'One GPU device per page', body: 'All the backgrounds on a page share one GPU device. They stop drawing when they scroll out of view or the tab is hidden.' },
-  { icon: 'css', title: 'CSS gradient fallback', body: 'Each background also has a CSS gradient that approximates it. Browsers without WebGPU show the gradient.' },
-  { icon: 'colour', title: 'Colour in OKLab', body: 'Colours blend in OKLab, so a gradient between two bright colours stays bright in the middle.' },
+  { icon: 'motion', title: 'Reduced motion & pause', body: 'Honours prefers-reduced-motion. Pause animation while keeping pointer and keyboard responses.' },
+  { icon: 'layers', title: 'Layers & interactions', body: 'Combine auroras, landscapes and effects with responses to movement, taps and drags.' },
+  { icon: 'studio', title: 'Visual editing in Studio', body: 'Edit, undo and share. Preview on light or dark pages.' },
+  { icon: 'css', title: 'CSS fallback and SSR', body: 'A CSS gradient appears immediately, including on server-rendered pages and browsers without WebGPU.' },
+  { icon: 'gpu', title: 'Pauses out of view', body: 'Off-screen and hidden tabs stop drawing. All backgrounds share one GPU device.' },
+  { icon: 'colour', title: 'Shared backgrounds', body: 'One continuous scene across panels, with OKLab colour and Display P3 support.' },
 ]
 </script>
 
 <template>
   <section
     id="features"
-    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-12 sm:py-24"
+    class="mx-auto max-w-6xl scroll-mt-24 px-6 py-10 sm:py-16"
   >
     <div
       v-reveal
-      class="text-center"
     >
       <p class="eyebrow">
-        How it works
+        Features
       </p>
-      <h2 class="mx-auto mt-4 max-w-3xl text-heading font-semibold tracking-tight text-balance">
-        Uses WebGPU when available, <span class="text-muted-foreground">with a CSS fallback.</span>
+      <h2 class="mt-3 max-w-2xl text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+        Build, preview and control <span class="text-muted-foreground">your backgrounds.</span>
       </h2>
     </div>
-    <div class="mt-14 grid gap-4 md:grid-cols-3">
+    <div class="mt-7 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
       <article
         v-for="(pillar, i) in pillars"
         :key="pillar.title"
         v-reveal="i * 90"
-        class="rounded-2xl p-6 glass"
+        class="grid grid-cols-[2rem_minmax(0,1fr)] content-start gap-x-3 gap-y-1 border-t border-border pt-4"
       >
-        <div class="grid size-11 place-items-center rounded-xl bg-linear-to-br from-spectrum-1/25 to-spectrum-2/25 text-foreground ring-1 ring-white/10">
+        <div class="row-span-2 grid size-8 place-items-center rounded-lg bg-linear-to-br from-spectrum-1/25 to-spectrum-2/25 text-foreground ring-1 ring-white/10">
           <IHgCpu
             v-if="pillar.icon === 'gpu'"
-            class="size-5"
+            class="size-4"
           />
           <IHgPaintBrush04
             v-else-if="pillar.icon === 'css'"
-            class="size-5"
+            class="size-4"
+          />
+          <IHgPause
+            v-else-if="pillar.icon === 'motion'"
+            class="size-4"
+          />
+          <IHgLayers01
+            v-else-if="pillar.icon === 'layers'"
+            class="size-4"
+          />
+          <IHgPaintBoard
+            v-else-if="pillar.icon === 'studio'"
+            class="size-4"
           />
           <IHgColors
             v-else
-            class="size-5"
+            class="size-4"
           />
         </div>
-        <h3 class="mt-5 text-lg font-semibold">
+        <h3 class="text-base font-semibold">
           {{ pillar.title }}
         </h3>
-        <p class="mt-2 text-sm/relaxed text-pretty text-muted-foreground">
+        <p class="text-sm/relaxed text-pretty text-muted-foreground">
           {{ pillar.body }}
         </p>
       </article>

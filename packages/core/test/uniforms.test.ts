@@ -80,3 +80,37 @@ describe('colours', () => {
     expect(paramValue(layer, auroraFbm, 'intensity')).toBe(1)
   })
 })
+
+describe('signal effect uniforms', () => {
+  it('writes transforms to their explicit slot even when colours are elsewhere', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { interactions: [{ type: 'follow', bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    const original = compose(input)
+    const transform = original.slots + 1
+    const shader = { ...original, slots: transform + 1, layers: original.layers.map((layer) => ({ ...layer, transform })) }
+    const frame = { width: 200, height: 100, time: 1, scroll: 0 }
+    const expected = packUniforms(input, original, frame)
+    const out = packUniforms(input, shader, { ...frame, transforms: [[0.2, -0.1, 2, 1]] })
+    expect([...out.subarray(transform * 4, transform * 4 + 4)]).toEqual(f32([0.2, -0.1, 2, 1]))
+    expect([...out.subarray(original.layers[0]!.colors * 4, original.slots * 4)]).toEqual([...expected.subarray(original.layers[0]!.colors * 4)])
+  })
+
+  it('bypasses signal distortion for reduced motion and restores the authored amount', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7 }, pixelate: { size: 8 }, vignette: {} } })
+    const shader = compose(input)
+    const out = packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: true })
+    expect(out[shader.signal! * 4]).toBe(0)
+    expect(out[shader.pixelate! * 4]).toBe(8)
+    packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: false }, out)
+    expect(out[shader.signal! * 4]).toBeCloseTo(0.7)
+    expect(input.modifiers!.signal!.amount).toBe(0.7)
+  })
+  it('updates every control in place, including zeros, without rebuilding the shader', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7, shake: 0.6, tearSize: 0.2, separation: 0.4, tracking: 0.3, frequency: 0.8, seed: 19 } } })
+    const shader = compose(input)
+    const out = packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0 })
+    expect([...out.subarray(shader.signal! * 4)]).toEqual(f32([0.7, 0.6, 0.2, 0.4, 0.3, 0.8, 19, 0]))
+    const zero = assertAurora({ ...input, modifiers: { signal: { amount: 0, shake: 0, tearSize: 0.02, separation: 0, tracking: 0, frequency: 0, seed: 0 } } })
+    expect(packUniforms(zero, shader, { width: 200, height: 100, time: 1, scroll: 0 }, out)).toBe(out)
+    expect([...out.subarray(shader.signal! * 4)]).toEqual(f32([0, 0, 0.02, 0, 0, 0, 0, 0]))
+  })
+})

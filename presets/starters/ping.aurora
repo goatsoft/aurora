@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Ping starter",
+  "palette": [
+    "oklch(0.14 0.04 265)",
+    "oklch(0.73 0.13 210)",
+    "oklch(0.88 0.09 185)"
+  ],
+  "layers": [
+    {
+      "type": "ping"
+    }
+  ]
+}

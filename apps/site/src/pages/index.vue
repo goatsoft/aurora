@@ -5,7 +5,10 @@ useHead({})
 </script>
 
 <template>
-  <main>
+  <main
+    id="main-content"
+    tabindex="-1"
+  >
     <HeroSection />
     <div
       v-reveal:tilt
@@ -15,10 +18,10 @@ useHead({})
       <HeroStudio />
     </div>
     <PillarsSection />
-    <ElementsSection />
+    <ScenesSection />
+    <ModifiersSection />
     <CodeSection />
     <StudioSection />
-    <ScenesSection />
     <SharedSection />
     <GetStartedSection />
   </main>

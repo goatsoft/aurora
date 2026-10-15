@@ -4,6 +4,7 @@ import type { AuroraDocument, AuroraLayer } from '@goatsoft/aurora-format'
 import type { RgbSpace } from '@goatsoft/color'
 import { COLOR_WGSL } from '@goatsoft/color'
 import { noiseWgsl } from './generators/noise'
+import { modifiersWgsl } from './modifiers'
 import { STD_WGSL } from './wgsl-std'
 
 /** Where each layer's values live in the uniform array, in vec4 slots. */
@@ -13,6 +14,8 @@ export interface LayerLayout {
   params: number
   /** Slot of the mask's four values, if the layer has a mask. */
   mask?: number
+  /** Slot of the transient translation and effect clock, when interactions are configured. */
+  transform?: number
   /** First of `generator.colors` consecutive colour slots. */
   colors: number
 }
@@ -25,6 +28,10 @@ export interface ComposedShader {
   slots: number
   layers: LayerLayout[]
   output: RgbSpace
+  signal?: number
+  pixelate?: number
+  vignette?: number
+  interactive?: boolean
 }
 
 const FRAME_SLOTS = 2
@@ -73,7 +80,7 @@ const FADE: Record<AuroraDocument['canvas']['fade'], string | undefined> = {
 /** The parts of a document that change the shader's code. */
 export function shaderKey(doc: AuroraDocument, output: RgbSpace): string {
   const layers = doc.layers.map((l) => [l.type, l.blend, l.mix, l.mask?.type ?? '-'].join(':'))
-  return [output, doc.canvas.fade, ...layers].join('|')
+  return [output, doc.canvas.fade, ...layers, ...(['signal', 'pixelate', 'vignette'] as const).filter((name) => !!doc.modifiers?.[name]), ...(doc.interactions?.length ? ['input'] : [])].join('|')
 }
 
 const cache = new Map<string, ComposedShader>()
@@ -93,6 +100,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
   const layers: LayerLayout[] = []
   const body: string[] = []
   let slot = FRAME_SLOTS
+  const interactive = !!doc.interactions?.length
 
   doc.layers.forEach((layer, i) => {
     const generator = lookup(layer.type)
@@ -105,27 +113,45 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
     const params = slot
     slot += Math.ceil((names.length + 1) / 4)
     const mask = layer.mask ? slot++ : undefined
+    const transform = interactive ? slot++ : undefined
     const colors = slot
     slot += generator.colors
-    layers.push(mask === undefined ? { generator, params, colors } : { generator, params, mask, colors })
+    layers.push({ generator, params, colors, ...(mask === undefined ? {} : { mask }), ...(transform === undefined ? {} : { transform }) })
 
     const base = params * 4
     const args = names.map((_, k) => scalar(base + 1 + k)).join(', ')
     const palette = Array.from({ length: generator.colors }, (_, k) => `U.v[${colors + k}].xyz`).join(', ')
-    const alpha = [`s.a * ${scalar(base)}`, ...(mask === undefined ? [] : [maskExpression(layer, mask)])].join(' * ')
+    const alpha = [`s.a * ${scalar(base)}`, ...(mask === undefined ? [] : [maskExpression(layer, mask).replace(/\bsuv\b/g, transform === undefined ? 'suv' : `(suv - U.v[${transform}].xy / U.v[1].zw)`)])].join(' * ')
     body.push(`  {
     // Layer ${i}: ${layer.type}, ${layer.blend}, mixed in ${layer.mix}
-    let s = ${prefix}render(ctx, ${prefix}Params(${args}), array<vec3f, ${generator.colors}>(${palette}));
+${transform === undefined ? '' : `    var input_ctx = ctx;\n    input_ctx.uv -= U.v[${transform}].xy;\n    input_ctx.time = mix(ctx.time, U.v[${transform}].z, U.v[${transform}].w);\n`}    let s = ${prefix}render(${transform === undefined ? 'ctx' : 'input_ctx'}, ${prefix}Params(${args}), array<vec3f, ${generator.colors}>(${palette}));
     let a = ${alpha};
     acc = blend_${layer.blend}(vec4f(${toOutput(layer, output, 's.rgb')} * a, a), acc);
   }`)
   })
 
+  const signal = doc.modifiers?.signal ? slot : undefined
+  if (signal !== undefined) {
+    slot += 2
+    noise.add('hash')
+  }
+  const pixelate = doc.modifiers?.pixelate ? slot++ : undefined
+  const vignette = doc.modifiers?.vignette ? slot++ : undefined
+  const modified = signal !== undefined || pixelate !== undefined || vignette !== undefined
+  const effect = !modified
+    ? ''
+    : `
+fn _aurora_scene(ctx: Ctx, suv: vec2f, aspect: f32) -> vec4f {
+  var acc = vec4f(0.0);
+${body.join('\n')}
+  return acc;
+}
+${modifiersWgsl(signal, pixelate)}`
   const fade = FADE[doc.canvas.fade]
   const code = `${STD_WGSL}${COLOR_WGSL}
 struct Uniforms { v: array<vec4f, ${slot}> };
 @group(0) @binding(0) var<uniform> U: Uniforms;
-${noiseWgsl(noise)}${[...modules.values()].join('\n')}
+${noiseWgsl(noise)}${[...modules.values()].join('\n')}${effect}
 @fragment fn fs(in: VOut) -> @location(0) vec4f {
   let suv = vec2f(in.uv.x, 1.0 - in.uv.y);
   let aspect = (U.v[0].x * U.v[1].z) / (U.v[0].y * U.v[1].w);
@@ -134,12 +160,17 @@ ${noiseWgsl(noise)}${[...modules.values()].join('\n')}
   ctx.res = U.v[0].xy;
   ctx.time = U.v[0].z;
   ctx.scroll = U.v[0].w;
-  var acc = vec4f(0.0);
-${body.join('\n')}
-${fade ? `  acc *= ${fade};\n` : ''}  return acc;
+${!modified ? `  var acc = vec4f(0.0);\n${body.join('\n')}` : `  var acc = ${signal === undefined ? '_aurora_scene_sample' : '_aurora_signal_render'}(ctx.uv);`}
+${vignette === undefined
+  ? ''
+  : `  let v = U.v[${vignette}];
+  let radius = length((ctx.uv - 0.5) * ctx.res / min(ctx.res.x, ctx.res.y));
+  let shade = 1.0 - v.x * smoothstep(v.y, v.y + v.z, radius);
+  if (v.x > 0.0 && acc.a > 0.0) { acc = vec4f(color_srgb_encode(color_srgb_decode(acc.rgb / acc.a) * shade) * acc.a, acc.a); }
+`}${fade ? `  acc *= ${fade};\n` : ''}  return acc;
 }
 `
-  const shader: ComposedShader = { key, code, slots: slot, layers, output }
+  const shader: ComposedShader = { key, code, slots: slot, layers, output, ...(signal === undefined ? {} : { signal }), ...(pixelate === undefined ? {} : { pixelate }), ...(vignette === undefined ? {} : { vignette }), ...(interactive ? { interactive } : {}) }
   cache.set(key, shader)
   return shader
 }

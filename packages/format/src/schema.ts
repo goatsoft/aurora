@@ -1,5 +1,8 @@
-import { COLOR_SYNTAX, parseColor } from '@goatsoft/color'
+import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
+import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './interactions-schema'
+import { Pixelate, Signal, Vignette } from './modifiers-schema'
+import { range } from './range'
 
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
 export const FORMAT_VERSION = 1
@@ -17,14 +20,6 @@ export const REDUCED_MOTION = ['still', 'slow', 'css'] as const
 export const MAX_LAYERS = 16
 export const MAX_COLORS = 16
 
-const range = (min: number, max: number, description: string) =>
-  v.pipe(
-    v.number(),
-    v.minValue(min, `must be between ${min} and ${max}`),
-    v.maxValue(max, `must be between ${min} and ${max}`),
-    v.description(description),
-  )
-
 const unit = (description: string) => range(0, 1, description)
 
 const Color = v.pipe(
@@ -34,20 +29,19 @@ const Color = v.pipe(
     const result = parseColor(dataset.value)
     if (!result.ok) addIssue({ message: result.message })
   }),
-  v.description(`A colour: ${COLOR_SYNTAX}. OKLCH is preferred.`),
-  v.examples(['oklch(0.68 0.16 245)', 'oklch(0.56 0.22 285 / 0.8)', '#4f8cff']),
+  v.description('Hex, OKLab/OKLCH or sRGB/P3; prefer OKLCH.'),
 )
 
 const Canvas = v.strictObject({
   fade: v.optional(
-    v.pipe(v.picklist(FADES), v.description('Edge fade: "y" fades top and bottom, "x" left and right.')),
+    v.pipe(v.picklist(FADES), v.description('Edge fade: y = top/bottom; x = left/right.')),
     'none',
   ),
   fixed: v.optional(
-    v.pipe(v.boolean(), v.description('Pin the background to the viewport instead of scrolling with its element.')),
+    v.pipe(v.boolean(), v.description('Pin to the viewport.')),
     false,
   ),
-  parallax: v.optional(unit('Scroll parallax: 0 scrolls with the page, 1 stays fixed.'), 0),
+  parallax: v.optional(unit('Scroll parallax: 0 moves, 1 stays fixed.'), 0),
 })
 
 const Motion = v.strictObject({
@@ -56,7 +50,7 @@ const Motion = v.strictObject({
       v.number(),
       v.minValue(0, 'must be 0 or more'),
       v.maxValue(10, 'must be 10 or less'),
-      v.description('Global time multiplier. 0 freezes the background.'),
+      v.description('Time multiplier; 0 freezes.'),
     ),
     1,
   ),
@@ -64,31 +58,47 @@ const Motion = v.strictObject({
     v.pipe(
       v.picklist(REDUCED_MOTION),
       v.description(
-        'Behaviour under prefers-reduced-motion: "still" renders one frame, "slow" runs at a tenth of the speed, "css" uses the CSS fallback.',
+        'Reduced motion: still renders once, slow uses 10% speed, css uses the fallback.',
       ),
     ),
     'still',
   ),
 })
 
+const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+
+const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'), v.maxValue(MAX_LAYERS - 1, `must be ${MAX_LAYERS - 1} or less`))
+
+/** Bind a module's normalized input to a layer control or a signal modifier control. */
+const InteractionBinding = v.strictObject({
+  layer: v.optional(LayerIndex),
+  parameter: v.pipe(v.string(), v.nonEmpty('must not be empty'), v.maxLength(64, 'must be 64 characters or fewer'), v.description('Generator control, opacity, offsetX, offsetY, time, or signal.control.')),
+  ...InteractionBindingControls,
+})
+
+const Interaction = v.strictObject({
+  ...InteractionControls,
+  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(MAX_INTERACTION_BINDINGS, `must have ${MAX_INTERACTION_BINDINGS} bindings or fewer`)),
+})
+
 const LinearMask = v.strictObject({
   type: v.literal('linear'),
-  angle: v.optional(v.pipe(v.number(), v.description('Direction in degrees, CSS convention (180 = top to bottom).')), 180),
-  start: v.optional(unit('Where the fade starts along the direction (fully opaque before it).'), 0),
-  end: v.optional(unit('Where the fade ends (fully transparent after it).'), 1),
+  angle: v.optional(v.pipe(v.number(), v.description('CSS angle in degrees (180 = downward).')), 180),
+  start: v.optional(unit('Fade start (opaque before).'), 0),
+  end: v.optional(unit('Fade end (transparent after).'), 1),
 })
 
 const RadialMask = v.strictObject({
   type: v.literal('radial'),
-  x: v.optional(unit('Centre, as a fraction of the width.'), 0.5),
-  y: v.optional(unit('Centre, as a fraction of the height.'), 0.5),
-  start: v.optional(unit('Radius where the fade starts, as a fraction of the half-diagonal.'), 0),
-  end: v.optional(unit('Radius where the fade ends.'), 1),
+  x: v.optional(unit('Centre X as a width fraction.'), 0.5),
+  y: v.optional(unit('Centre Y as a height fraction.'), 0.5),
+  start: v.optional(unit('Fade start radius, relative to the half-diagonal.'), 0),
+  end: v.optional(unit('Fade end radius.'), 1),
 })
 
 const Mask = v.pipe(
   v.variant('type', [LinearMask, RadialMask]),
-  v.description('Fades the layer out with a linear or radial ramp.'),
+  v.description('Linear or radial layer fade.'),
 )
 
 const ParamValue = v.union([v.number(), v.boolean(), v.string()])
@@ -97,31 +107,31 @@ const Layer = v.strictObject({
   type: v.pipe(
     v.string(),
     v.regex(/^[a-z][a-z\d]*(?:-[a-z\d]+)*$/, 'must be a generator id in kebab-case, like "aurora-fbm"'),
-    v.description('Generator id, for example "aurora-fbm", "mesh" or "grain".'),
+    v.description('Generator id, e.g. aurora-fbm.'),
   ),
   blend: v.optional(
-    v.pipe(v.picklist(BLEND_MODES), v.description('How this layer composites onto the layers below it.')),
+    v.pipe(v.picklist(BLEND_MODES), v.description('Blend onto the layers below.')),
     'normal',
   ),
   opacity: v.optional(unit('Layer opacity.'), 1),
   params: v.optional(
     v.pipe(
       v.record(v.string(), ParamValue),
-      v.description('Generator parameters. Each generator defines its own names, ranges and defaults.'),
+      v.description('Generator parameter names, ranges and defaults.'),
     ),
     {},
   ),
   colors: v.optional(
     v.pipe(
       v.array(v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'))),
-      v.description('Indices into the palette, in the order the generator uses them.'),
+      v.description('Palette indices, in generator order.'),
     ),
     [],
   ),
   mix: v.optional(
     v.pipe(
       v.picklist(MIX_SPACES),
-      v.description('Colour space for blending this layer\'s colours. "srgb" exists for bit-exact parity with the classic presets.'),
+      v.description('oklab mixing; srgb preserves classic parity.'),
     ),
     'oklab',
   ),
@@ -135,7 +145,7 @@ const CssImage = v.pipe(
   v.nonEmpty('must not be empty'),
   v.regex(SAFE_CSS, 'must be a single CSS image value, without ; { } < > @ or \\'),
   v.check((s) => !/url\s*\(|expression\s*\(|image-set\s*\(/i.test(s), 'must not load resources (url(), image-set())'),
-  v.description('A CSS <image>, typically a gradient: radial-gradient(in oklab, …).'),
+  v.description('CSS image, e.g. an OKLab gradient.'),
 )
 
 const Fallback = v.pipe(
@@ -146,22 +156,24 @@ const Fallback = v.pipe(
       layers: v.pipe(v.array(CssImage), v.minLength(1, 'must have at least one layer')),
     }),
   ]),
-  v.description('CSS shown without WebGPU: "auto" compiles it from the layers, "css" uses hand-tuned gradients.'),
+  v.description('CSS fallback: auto from layers, css from gradients.'),
 )
 
 export const AuroraSchema = v.pipe(
   v.strictObject({
-    $schema: v.optional(v.pipe(v.string(), v.description('JSON Schema URL, for editor autocomplete.'))),
+    $schema: v.optional(v.pipe(v.string(), v.description('JSON Schema URL for autocomplete.'))),
     format: v.pipe(v.literal(FORMAT_ID), v.description('Always "aurora".')),
-    version: v.pipe(v.literal(FORMAT_VERSION), v.description('Format version. Older files are migrated forward on load.')),
+    version: v.pipe(v.literal(FORMAT_VERSION), v.description('Version; old files migrate on load.')),
     name: v.pipe(
       v.string(),
       v.nonEmpty('must not be empty'),
       v.maxLength(120, 'must be 120 characters or fewer'),
-      v.description('Display name, shown in Studio and preset galleries.'),
+      v.description('Studio/gallery name.'),
     ),
     canvas: v.optional(Canvas, {}),
     motion: v.optional(Motion, {}),
+    modifiers: v.optional(Modifiers),
+    interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(MAX_INTERACTIONS, `must have ${MAX_INTERACTIONS} interactions or fewer`))),
     palette: v.pipe(
       v.array(Color),
       v.minLength(1, 'must have at least one colour'),
@@ -177,7 +189,7 @@ export const AuroraSchema = v.pipe(
     fallback: v.optional(Fallback, { mode: 'auto' }),
   }),
   v.title('Aurora background'),
-  v.description('An animated background for @goatsoft/aurora. Declarative: it never contains code.'),
+  v.description('Animated @goatsoft/aurora background; data only.'),
 )
 
 /** A validated `.aurora` document with every default filled in. */
@@ -187,3 +199,11 @@ export type AuroraInput = v.InferInput<typeof AuroraSchema>
 export type AuroraLayer = AuroraDocument['layers'][number]
 export type BlendMode = (typeof BLEND_MODES)[number]
 export type MixSpace = (typeof MIX_SPACES)[number]
+
+export type SignalModifier = v.InferOutput<typeof Signal>
+
+export type PixelateModifier = v.InferOutput<typeof Pixelate>
+export type VignetteModifier = v.InferOutput<typeof Vignette>
+export type AuroraInteraction = v.InferOutput<typeof Interaction>
+export type InteractionInput = v.InferInput<typeof Interaction>
+export type InteractionBindingInput = v.InferInput<typeof InteractionBinding>

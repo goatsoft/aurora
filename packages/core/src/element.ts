@@ -1,3 +1,4 @@
+import type { AuroraInteractions } from './interactions'
 import type { AuroraSource } from './module'
 import type { AuroraMode, AuroraSurface } from './surface'
 import { loadAurora } from './load'
@@ -28,11 +29,12 @@ const DEFAULT_STYLE = ':where(aurora-bg){display:block;position:absolute;inset:0
  * mode changes and `aurora-error` when a file can't be loaded or is invalid.
  */
 export class AuroraBackgroundElement extends HTMLElement {
-  static observedAttributes = ['src', 'scene']
+  static observedAttributes = ['src', 'scene', 'paused', 'drag', 'reduced-motion']
 
   private surface: AuroraSurface | undefined
   private current: AuroraSource | undefined
   private loading: AbortController | undefined
+  private inputTarget: HTMLElement | undefined
   private readonly internals = this.attachInternals()
 
   /** What the background is showing: "css" until a WebGPU frame is on screen. */
@@ -66,6 +68,44 @@ export class AuroraBackgroundElement extends HTMLElement {
     this.setAttribute('scene', value)
   }
 
+  /** Boolean attribute: pauses at the current phase without changing authored speed. */
+  get paused(): boolean {
+    return this.hasAttribute('paused')
+  }
+
+  set paused(value: boolean) {
+    this.toggleAttribute('paused', value)
+  }
+
+  get interactions(): AuroraInteractions | undefined {
+    return this.surface?.interactions
+  }
+
+  get interactionTarget(): HTMLElement {
+    return this.inputTarget ?? this.parentElement ?? this
+  }
+
+  set interactionTarget(value: HTMLElement | undefined) {
+    this.inputTarget = value
+    this.surface?.setInteractionTarget(this.interactionTarget, this.drag)
+  }
+
+  get drag(): boolean {
+    return this.hasAttribute('drag')
+  }
+
+  set drag(value: boolean) {
+    this.toggleAttribute('drag', value)
+  }
+
+  get reducedMotion(): boolean {
+    return this.hasAttribute('reduced-motion')
+  }
+
+  set reducedMotion(value: boolean) {
+    this.toggleAttribute('reduced-motion', value)
+  }
+
   connectedCallback(): void {
     this.setAttribute('aria-hidden', 'true')
     this.setState('css')
@@ -82,11 +122,15 @@ export class AuroraBackgroundElement extends HTMLElement {
   attributeChangedCallback(name: string, previous: string | null, next: string | null): void {
     if (previous === next || !this.isConnected) return
     if (name === 'src' && next) void this.load()
-    else if (name === 'scene' && this.current) {
+    else if (name === 'paused') {
+      if (this.paused) this.surface?.pause()
+      else this.surface?.resume()
+    } else if (name === 'scene' && this.current) {
       this.surface?.dispose()
       this.surface = undefined
       this.mount()
-    }
+    } else if (name === 'drag') this.surface?.setInteractionTarget(this.interactionTarget, this.drag)
+    else if (name === 'reduced-motion') this.surface?.setReducedMotion(this.reducedMotion)
   }
 
   private async load(): Promise<void> {
@@ -117,6 +161,10 @@ export class AuroraBackgroundElement extends HTMLElement {
   private mount(): void {
     const source = this.current!
     this.surface = mountAurora(this, source, {
+      interactionTarget: this.interactionTarget,
+      drag: this.drag,
+      reducedMotion: this.reducedMotion,
+      paused: this.paused,
       ...(this.scene ? { scene: this.scene } : {}),
       onModeChange: (mode) => {
         this.setState(mode)

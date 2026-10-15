@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { generatorSpec } from '@/generators/define'
 import { GENERATORS } from '@/generators/index'
 import { Renderer } from '@/renderer'
+import { compose } from '@/shader'
 import { fakeGpu, installGpuGlobals } from './fake-gpu'
 import { solid } from './solid'
 
@@ -46,6 +47,53 @@ afterEach(() => {
 })
 
 describe('Renderer', () => {
+  it('freezes the current phase, redraws on edits and resumes without including paused time', async () => {
+    const r = await renderer()
+    now = 5000
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ pausedAt: 5000, origin: 1000 }))
+    await tick()
+    expect(fake.log.writes.at(-1)![2]).toBe(4)
+    const count = fake.log.submits
+    now = 25_000
+    await tick(1000)
+    expect(fake.log.submits).toBe(count)
+    r.update(1, state({ pausedAt: 5000, origin: 1000, scroll: 0.5 }))
+    await tick()
+    expect(fake.log.submits).toBe(count + 1)
+    expect(fake.log.writes.at(-1)!.slice(2, 4)).toEqual(new Float32Array([4, 0.5]))
+    r.update(1, state({ origin: 21_000 }))
+    await tick()
+    expect(fake.log.writes.at(-1)![2]).toBe(4)
+    now = 26_000
+    await tick()
+    expect(fake.log.writes.at(-1)![2]).toBe(5)
+    r.fail()
+  })
+
+  it('renders authored speed zero once per change without scheduling idle frames', async () => {
+    const r = await renderer()
+    const frozen = assertAurora({ ...doc, motion: { speed: 0 } })
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ doc: frozen }))
+    await tick(1000)
+    expect(fake.log.submits).toBe(1)
+    expect(fake.log.writes.at(-1)![2]).toBe(0)
+    r.update(1, state({ doc: frozen, width: 200 }))
+    await tick(1000)
+    expect(fake.log.submits).toBe(2)
+    r.fail()
+  })
+
+  it.each(['still', 'slow'] as const)('disables signal distortion under reduced %s and restores it on preference changes', async (reduced) => {
+    const r = await renderer()
+    const modified = assertAurora({ ...doc, modifiers: { signal: { amount: 1 } } })
+    const offset = compose(modified).signal! * 4
+    r.attach(1, new fake.Canvas() as unknown as OffscreenCanvas, state({ doc: modified, reduced }))
+    await tick()
+    expect(fake.log.writes.at(-1)![offset]).toBe(0)
+    r.update(1, state({ doc: modified, reduced: false }))
+    await tick()
+    expect(fake.log.writes.at(-1)![offset]).toBe(1)
+  })
   it('rejects without WebGPU or an adapter', async () => {
     await expect(Renderer.create(undefined, events, { fps: 30 })).rejects.toThrow('WebGPU is not available.')
     fake.noAdapter()

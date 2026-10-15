@@ -1,6 +1,6 @@
 import type { Doc, LayerInput } from './document'
 import type { Generator } from '@goatsoft/aurora'
-import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
+import type { AuroraDocument, FormatIssue, InteractionInput } from '@goatsoft/aurora-format'
 import { GENERATORS, loadGenerators } from '@goatsoft/aurora'
 import { MAX_LAYERS } from '@goatsoft/aurora-format'
 import { computed, reactive, shallowRef, watch } from 'vue'
@@ -42,6 +42,8 @@ export interface UiState {
   preview: Preview
   page: Page
   playing: boolean
+  /** Pointer dragging is a preview opt-in, never an authored setting. */
+  dragInteractions: boolean
   reducedMotion: boolean
   scroll: number
   /** Where the split view's divider sits, 0–1. */
@@ -108,6 +110,7 @@ function createStudio() {
     preview: 'webgpu',
     page: 'dark',
     playing: true,
+    dragInteractions: false,
     reducedMotion: false,
     scroll: 0,
     split: 0.5,
@@ -176,11 +179,12 @@ function createStudio() {
   /** Layer-list edits that keep every surviving layer's id. */
   const layers = {
     /** Inserts a layer; `base` lets the same step also add the colours it brings. */
-    add(layer: LayerInput, at = history.present.doc.layers.length, base = history.present.doc) {
+    add(layer: LayerInput, at = history.present.doc.layers.length, base = history.present.doc, interaction?: InteractionInput) {
       if (full()) return
       const ids = [...history.present.ids]
       ids.splice(at, 0, ++nextId)
-      commit(ops.addLayer(base, layer, at), undefined, ids)
+      const next = ops.addLayer(base, layer, at)
+      commit(interaction ? ops.interaction(next, next.interactions?.length ?? 0, interaction) : next, undefined, ids)
       ui.layer = at
     },
     remove(i: number) {
@@ -243,8 +247,7 @@ function createStudio() {
     const ids = layerIds.value
     const visible = base.layers.map((_, i) => !ui.muted.has(ids[i]!))
     const layers = base.layers.map((layer, i) => (visible[i] ? layer : { ...layer, opacity: 0 }))
-    const speed = ui.playing ? base.motion.speed * (ui.reducedMotion && base.motion.reduced === 'slow' ? 0.1 : 1) : 0
-    return { ...base, layers, motion: { ...base.motion, speed: ui.reducedMotion && base.motion.reduced === 'still' ? 0 : speed } }
+    return { ...base, layers }
   })
 
   const file = computed(() => serialize(doc.value))

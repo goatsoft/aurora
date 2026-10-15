@@ -21,7 +21,8 @@ interface Budget {
 const budgets: Budget[] = [
   { name: '@goatsoft/aurora (main thread)', entry: 'packages/core/src/index.ts', limit: 10 * KB },
   { name: '@goatsoft/aurora worker', entry: 'packages/core/src/worker.ts', limit: 10 * KB },
-  // The element also validates files at runtime, so it carries the format's Valibot schema.
+  { name: 'interaction modules', entry: 'packages/core/src/interactions.ts', limit: 7 * KB },
+  // The element carries the format's generated Valibot validator; editor metadata stays out.
   { name: '@goatsoft/aurora/element', entry: 'packages/core/src/element.ts', limit: 14 * KB },
   { name: 'generator: aurora-fbm', entry: 'packages/core/src/generators/aurora-fbm.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: mesh-gradient', entry: 'packages/core/src/generators/mesh-gradient.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
@@ -29,6 +30,13 @@ const budgets: Budget[] = [
   { name: 'generator: linear-sweep', entry: 'packages/core/src/generators/linear-sweep.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: conic', entry: 'packages/core/src/generators/conic.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: grain', entry: 'packages/core/src/generators/grain.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: digital-rain', entry: 'packages/core/src/generators/digital-rain.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: glitch', entry: 'packages/core/src/generators/glitch.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: static', entry: 'packages/core/src/generators/static.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: radar', entry: 'packages/core/src/generators/radar.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: ping', entry: 'packages/core/src/generators/ping.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: scanlines', entry: 'packages/core/src/generators/scanlines.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
+  { name: 'generator: phosphor', entry: 'packages/core/src/generators/phosphor.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: strata', entry: 'packages/core/src/generators/strata.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: mountains', entry: 'packages/core/src/generators/mountains.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },
   { name: 'generator: treeline', entry: 'packages/core/src/generators/treeline.ts', limit: 2 * KB, external: /^@goatsoft\/|\.\/define$/ },

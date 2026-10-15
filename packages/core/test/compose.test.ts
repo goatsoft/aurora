@@ -64,3 +64,15 @@ describe('compose', () => {
     expect(() => compose(doc([{ type: 'nebula' }]))).toThrow('Unknown generator "nebula". Validate documents with validateDocument() first.')
   })
 })
+
+describe('signal effect composition', () => {
+  it('caches effect structure separately while keeping controls in uniforms', () => {
+    const plain = doc([{ type: 'aurora-fbm' }])
+    const a = assertAurora({ ...plain, modifiers: { signal: {} } })
+    const b = assertAurora({ ...plain, modifiers: { signal: { amount: 0, separation: 0.9 } } })
+    expect(compose(a)).toBe(compose(b))
+    expect(compose(a).key).not.toBe(compose(plain).key)
+    expect(compose(plain).code).not.toContain('_aurora_signal_render')
+    expect(compose(a).slots).toBe(compose(plain).slots + 2)
+  })
+})

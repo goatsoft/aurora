@@ -1,0 +1,215 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Tap to Ping",
+  "modifiers": {
+    "vignette": {
+      "amount": 0.25,
+      "radius": 0.55,
+      "softness": 0.45
+    }
+  },
+  "interactions": [
+    {
+      "type": "impulse",
+      "decay": 2.2,
+      "bindings": [
+        {
+          "layer": 1,
+          "parameter": "x",
+          "input": "x",
+          "slot": 0
+        },
+        {
+          "layer": 1,
+          "parameter": "y",
+          "input": "y",
+          "slot": 0
+        },
+        {
+          "layer": 1,
+          "parameter": "time",
+          "input": "travel",
+          "slot": 0
+        },
+        {
+          "layer": 1,
+          "parameter": "opacity",
+          "input": "strength",
+          "slot": 0
+        },
+        {
+          "layer": 2,
+          "parameter": "x",
+          "input": "x",
+          "slot": 1
+        },
+        {
+          "layer": 2,
+          "parameter": "y",
+          "input": "y",
+          "slot": 1
+        },
+        {
+          "layer": 2,
+          "parameter": "time",
+          "input": "travel",
+          "slot": 1
+        },
+        {
+          "layer": 2,
+          "parameter": "opacity",
+          "input": "strength",
+          "slot": 1
+        },
+        {
+          "layer": 3,
+          "parameter": "x",
+          "input": "x",
+          "slot": 2
+        },
+        {
+          "layer": 3,
+          "parameter": "y",
+          "input": "y",
+          "slot": 2
+        },
+        {
+          "layer": 3,
+          "parameter": "time",
+          "input": "travel",
+          "slot": 2
+        },
+        {
+          "layer": 3,
+          "parameter": "opacity",
+          "input": "strength",
+          "slot": 2
+        },
+        {
+          "layer": 4,
+          "parameter": "x",
+          "input": "x",
+          "slot": 3
+        },
+        {
+          "layer": 4,
+          "parameter": "y",
+          "input": "y",
+          "slot": 3
+        },
+        {
+          "layer": 4,
+          "parameter": "time",
+          "input": "travel",
+          "slot": 3
+        },
+        {
+          "layer": 4,
+          "parameter": "opacity",
+          "input": "strength",
+          "slot": 3
+        }
+      ]
+    }
+  ],
+  "palette": [
+    "oklch(0.11 0.035 265)",
+    "oklch(0.2 0.06 290)",
+    "oklch(0.16 0.035 210)",
+    "oklch(0.74 0.15 195)",
+    "oklch(0.87 0.1 180)",
+    "oklch(0.67 0.22 300)"
+  ],
+  "layers": [
+    {
+      "type": "mesh-gradient",
+      "colors": [
+        0,
+        1,
+        2,
+        0
+      ],
+      "params": {
+        "speed": 0.04
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0,
+      "colors": [
+        0,
+        3,
+        5
+      ],
+      "params": {
+        "background": 0,
+        "speed": 0.3,
+        "spacing": 0.6,
+        "width": 1.2,
+        "glow": 0.65,
+        "decay": 2.8,
+        "repeat": 0
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0,
+      "colors": [
+        0,
+        3,
+        5
+      ],
+      "params": {
+        "background": 0,
+        "speed": 0.3,
+        "spacing": 0.6,
+        "width": 1.2,
+        "glow": 0.65,
+        "decay": 2.8,
+        "repeat": 0
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0,
+      "colors": [
+        0,
+        3,
+        5
+      ],
+      "params": {
+        "background": 0,
+        "speed": 0.3,
+        "spacing": 0.6,
+        "width": 1.2,
+        "glow": 0.65,
+        "decay": 2.8,
+        "repeat": 0
+      }
+    },
+    {
+      "type": "ping",
+      "blend": "screen",
+      "opacity": 0,
+      "colors": [
+        0,
+        3,
+        5
+      ],
+      "params": {
+        "background": 0,
+        "speed": 0.3,
+        "spacing": 0.6,
+        "width": 1.2,
+        "glow": 0.65,
+        "decay": 2.8,
+        "repeat": 0
+      }
+    }
+  ]
+}

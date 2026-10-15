@@ -4,6 +4,7 @@ import type { AuroraDocument } from '@goatsoft/aurora-format'
 import { GENERATORS } from '@goatsoft/aurora'
 import { encodeShare, ScrubField } from '@goatsoft/aurora-editor-ui'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
+import { useSitePreferences } from '@/lib/preferences'
 import { layerThumb } from '@/lib/scenes'
 
 /**
@@ -79,12 +80,17 @@ onMounted(() => {
     studioHref.value = `/studio/#${await encodeShare(shown)}`
   }, { immediate: true })
 })
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
   <!-- A real border (with a lighter top edge) rather than a gradient showing through 1px of padding:
        that trick loses the border around the rounded corners. -->
-  <figure class="overflow-hidden rounded-2xl border border-white/10 border-t-white/25 bg-[oklch(0.12_0.012_270)] shadow-[0_40px_120px_-30px_oklch(0_0_0/0.95)]">
+  <figure
+    data-scene-theme
+    class="overflow-hidden rounded-2xl border border-white/10 border-t-white/25 bg-[oklch(0.12_0.012_270)] text-foreground shadow-[0_40px_120px_-30px_oklch(0_0_0/0.95)]"
+  >
     <div>
       <div class="grid h-11 grid-cols-[1fr_auto_1fr] items-center border-b border-white/8 px-4">
         <div class="flex gap-2">
@@ -116,7 +122,10 @@ onMounted(() => {
               :key="doc.name"
               class="absolute inset-0"
             >
-              <AuroraBackground :src="source" />
+              <AuroraBackground
+                :paused="sitePaused"
+                :src="source"
+              />
             </div>
           </Transition>
         </div>

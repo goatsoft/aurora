@@ -1,0 +1,146 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Depth Landscape",
+  "interactions": [
+    {
+      "type": "follow",
+      "smoothing": 0.72,
+      "decay": 1.2,
+      "bindings": [
+        {
+          "layer": 0,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.01
+        },
+        {
+          "layer": 0,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.006
+        },
+        {
+          "layer": 1,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.025
+        },
+        {
+          "layer": 1,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.015
+        },
+        {
+          "layer": 2,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.045
+        },
+        {
+          "layer": 2,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.027
+        },
+        {
+          "layer": 3,
+          "parameter": "offsetX",
+          "input": "x",
+          "amount": 0.08
+        },
+        {
+          "layer": 3,
+          "parameter": "offsetY",
+          "input": "y",
+          "amount": 0.048
+        }
+      ]
+    }
+  ],
+  "palette": [
+    "oklch(0.1 0.03 260)",
+    "oklch(0.18 0.05 245)",
+    "oklch(0.95 0.02 220)",
+    "oklch(0.82 0.19 160)",
+    "oklch(0.7 0.15 190)",
+    "oklch(0.55 0.15 280)",
+    "oklch(0.1 0.025 250)",
+    "oklch(0.24 0.045 245)",
+    "oklch(0.6 0.1 190)",
+    "oklch(0.05 0.01 250)",
+    "oklch(0.1 0.02 245)",
+    "oklch(0.4 0.1 175)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "seed": 9,
+        "density": 0.3,
+        "brightness": 0.8,
+        "meteors": 0.1
+      }
+    },
+    {
+      "type": "curtain",
+      "blend": "screen",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "intensity": 0.9,
+        "base": 0.78,
+        "height": 0.75,
+        "rays": 0.6,
+        "cover": 0.15,
+        "glow": 0.5,
+        "tilt": -0.15,
+        "seed": 5
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        6,
+        7,
+        8
+      ],
+      "params": {
+        "height": 0.45,
+        "ridges": 3,
+        "peaks": 2,
+        "roughness": 0.5,
+        "seed": 11,
+        "haze": 0.6,
+        "mist": 0.2,
+        "rim": 0.4
+      }
+    },
+    {
+      "type": "treeline",
+      "colors": [
+        9,
+        10,
+        11
+      ],
+      "params": {
+        "height": 0.16,
+        "density": 12,
+        "rows": 2,
+        "variation": 0.6,
+        "seed": 3,
+        "mist": 0.2
+      }
+    }
+  ]
+}

@@ -2,12 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://aurora.goatsoft.io/schema/v1.json",
   "title": "Aurora background",
-  "description": "An animated background for @goatsoft/aurora. Declarative: it never contains code.",
+  "description": "Animated @goatsoft/aurora background; data only.",
   "type": "object",
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "JSON Schema URL, for editor autocomplete."
+      "description": "JSON Schema URL for autocomplete."
     },
     "format": {
       "const": "aurora",
@@ -15,13 +15,13 @@
     },
     "version": {
       "const": 1,
-      "description": "Format version. Older files are migrated forward on load."
+      "description": "Version; old files migrate on load."
     },
     "name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 120,
-      "description": "Display name, shown in Studio and preset galleries."
+      "description": "Studio/gallery name."
     },
     "canvas": {
       "type": "object",
@@ -33,19 +33,19 @@
             "y"
           ],
           "type": "string",
-          "description": "Edge fade: \"y\" fades top and bottom, \"x\" left and right.",
+          "description": "Edge fade: y = top/bottom; x = left/right.",
           "default": "none"
         },
         "fixed": {
           "type": "boolean",
-          "description": "Pin the background to the viewport instead of scrolling with its element.",
+          "description": "Pin to the viewport.",
           "default": false
         },
         "parallax": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Scroll parallax: 0 scrolls with the page, 1 stays fixed.",
+          "description": "Scroll parallax: 0 moves, 1 stays fixed.",
           "default": 0
         }
       },
@@ -60,7 +60,7 @@
           "type": "number",
           "minimum": 0,
           "maximum": 10,
-          "description": "Global time multiplier. 0 freezes the background.",
+          "description": "Time multiplier; 0 freezes.",
           "default": 1
         },
         "reduced": {
@@ -70,7 +70,7 @@
             "css"
           ],
           "type": "string",
-          "description": "Behaviour under prefers-reduced-motion: \"still\" renders one frame, \"slow\" runs at a tenth of the speed, \"css\" uses the CSS fallback.",
+          "description": "Reduced motion: still renders once, slow uses 10% speed, css uses the fallback.",
           "default": "still"
         }
       },
@@ -78,11 +78,225 @@
       "additionalProperties": false,
       "default": {}
     },
+    "modifiers": {
+      "type": "object",
+      "properties": {
+        "signal": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Overall distortion strength. Zero leaves the scene unchanged.",
+              "default": 0.35
+            },
+            "shake": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Horizontal judder during a distortion burst.",
+              "default": 0.25
+            },
+            "tearSize": {
+              "type": "number",
+              "minimum": 0.02,
+              "maximum": 0.5,
+              "description": "Height of the bands that stretch and slip sideways, relative to the scene's height.",
+              "default": 0.15
+            },
+            "separation": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Separate colour channels around torn edges. Visible separation samples the scene three times; quiet frames use one sample.",
+              "default": 0.2
+            },
+            "tracking": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Brief vertical tracking slips during a distortion burst.",
+              "default": 0.15
+            },
+            "frequency": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2,
+              "description": "Burst cycles per second. Zero freezes the distortion while other layers can keep moving.",
+              "default": 0.5
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Choose a different distortion pattern.",
+              "default": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "pixelate": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 64,
+              "description": "Block size in canvas pixels. One leaves the scene unchanged; the CSS size depends on the rendering pixel ratio.",
+              "default": 8
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "vignette": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Edge darkness. Zero leaves the scene unchanged.",
+              "default": 0.45
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Size of the clear centre, relative to the scene's shorter side.",
+              "default": 0.45
+            },
+            "softness": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1,
+              "description": "Width of the soft transition to the dark edges, relative to the shorter scene side.",
+              "default": 0.45
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "follow",
+              "impulse",
+              "grab"
+            ],
+            "type": "string"
+          },
+          "activation": {
+            "enum": [
+              "hover",
+              "focus",
+              "both"
+            ],
+            "type": "string",
+            "default": "both"
+          },
+          "strength": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "description": "Response strength.",
+            "default": 1
+          },
+          "smoothing": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Follow easing; 0 responds immediately.",
+            "default": 0.65
+          },
+          "decay": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 5,
+            "description": "Seconds for an impulse or return to settle.",
+            "default": 1
+          },
+          "damping": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Grab spring damping; higher settles faster.",
+            "default": 0.75
+          },
+          "bindings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "layer": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 15
+                },
+                "parameter": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Generator control, opacity, offsetX, offsetY, time, or signal.control."
+                },
+                "input": {
+                  "enum": [
+                    "x",
+                    "y",
+                    "strength",
+                    "travel"
+                  ],
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": -4,
+                  "maximum": 4,
+                  "description": "Add this much to the authored control at full input; negative values repel.",
+                  "default": 1
+                },
+                "slot": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 3,
+                  "description": "Impulse slot, from newest (0) to oldest (3).",
+                  "default": 0
+                }
+              },
+              "required": [
+                "parameter",
+                "input"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 64
+          }
+        },
+        "required": [
+          "type",
+          "bindings"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
     "palette": {
       "type": "array",
       "items": {
         "type": "string",
-        "description": "A colour: oklch(L C H), oklab(L a b), color(srgb|display-p3 r g b) or #hex. OKLCH is preferred.",
+        "description": "Hex, OKLab/OKLCH or sRGB/P3; prefer OKLCH.",
         "examples": [
           "oklch(0.68 0.16 245)",
           "oklch(0.56 0.22 285 / 0.8)",
@@ -102,7 +316,7 @@
           "type": {
             "type": "string",
             "pattern": "^[a-z][a-z\\d]*(?:-[a-z\\d]+)*$",
-            "description": "Generator id, for example \"aurora-fbm\", \"mesh\" or \"grain\"."
+            "description": "Generator id, e.g. aurora-fbm."
           },
           "blend": {
             "enum": [
@@ -113,7 +327,7 @@
               "overlay"
             ],
             "type": "string",
-            "description": "How this layer composites onto the layers below it.",
+            "description": "Blend onto the layers below.",
             "default": "normal"
           },
           "opacity": {
@@ -141,7 +355,7 @@
                 }
               ]
             },
-            "description": "Generator parameters. Each generator defines its own names, ranges and defaults.",
+            "description": "Generator parameter names, ranges and defaults.",
             "default": {}
           },
           "colors": {
@@ -150,7 +364,7 @@
               "type": "integer",
               "minimum": 0
             },
-            "description": "Indices into the palette, in the order the generator uses them.",
+            "description": "Palette indices, in generator order.",
             "default": []
           },
           "mix": {
@@ -159,7 +373,7 @@
               "srgb"
             ],
             "type": "string",
-            "description": "Colour space for blending this layer's colours. \"srgb\" exists for bit-exact parity with the classic presets.",
+            "description": "oklab mixing; srgb preserves classic parity.",
             "default": "oklab"
           },
           "mask": {
@@ -172,21 +386,21 @@
                   },
                   "angle": {
                     "type": "number",
-                    "description": "Direction in degrees, CSS convention (180 = top to bottom).",
+                    "description": "CSS angle in degrees (180 = downward).",
                     "default": 180
                   },
                   "start": {
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Where the fade starts along the direction (fully opaque before it).",
+                    "description": "Fade start (opaque before).",
                     "default": 0
                   },
                   "end": {
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Where the fade ends (fully transparent after it).",
+                    "description": "Fade end (transparent after).",
                     "default": 1
                   }
                 },
@@ -205,28 +419,28 @@
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Centre, as a fraction of the width.",
+                    "description": "Centre X as a width fraction.",
                     "default": 0.5
                   },
                   "y": {
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Centre, as a fraction of the height.",
+                    "description": "Centre Y as a height fraction.",
                     "default": 0.5
                   },
                   "start": {
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Radius where the fade starts, as a fraction of the half-diagonal.",
+                    "description": "Fade start radius, relative to the half-diagonal.",
                     "default": 0
                   },
                   "end": {
                     "type": "number",
                     "minimum": 0,
                     "maximum": 1,
-                    "description": "Radius where the fade ends.",
+                    "description": "Fade end radius.",
                     "default": 1
                   }
                 },
@@ -236,7 +450,7 @@
                 "additionalProperties": false
               }
             ],
-            "description": "Fades the layer out with a linear or radial ramp."
+            "description": "Linear or radial layer fade."
           }
         },
         "required": [
@@ -274,7 +488,7 @@
                 "type": "string",
                 "minLength": 1,
                 "pattern": "^[^;{}<>@\\\\]*$",
-                "description": "A CSS <image>, typically a gradient: radial-gradient(in oklab, …)."
+                "description": "CSS image, e.g. an OKLab gradient."
               },
               "minItems": 1
             }
@@ -286,7 +500,7 @@
           "additionalProperties": false
         }
       ],
-      "description": "CSS shown without WebGPU: \"auto\" compiles it from the layers, \"css\" uses hand-tuned gradients.",
+      "description": "CSS fallback: auto from layers, css from gradients.",
       "default": {
         "mode": "auto"
       }

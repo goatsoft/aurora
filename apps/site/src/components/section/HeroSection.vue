@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { RouterLink } from 'vue-router'
+import { useSitePreferences } from '@/lib/preferences'
 import { borealis } from '@/lib/scenes'
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
@@ -10,15 +13,21 @@ import { borealis } from '@/lib/scenes'
     starts just below the fold and rises in as you scroll. The extra 7rem of bottom padding keeps the
     headline centred in the part on screen.
   -->
-  <section class="relative isolate flex min-h-[calc(100svh+7rem)] flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-64 text-center sm:pb-68">
+  <section
+    data-scene-theme
+    class="relative isolate flex min-h-[calc(100svh+7rem)] flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-64 text-center text-foreground sm:pb-68"
+  >
     <!-- The hero is itself an Aurora scene: aurora curtains, green at the horizon and magenta above, over a treeline. -->
     <div class="absolute inset-0 -z-20">
-      <AuroraBackground :src="borealis" />
+      <AuroraBackground
+        :paused="sitePaused"
+        :src="borealis"
+      />
     </div>
-    <EditInStudio
+    <HeroControls
       :src="borealis"
       label="this background"
-      position="right-6 bottom-60"
+      class="right-6 bottom-60"
     />
     <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(65%_50%_at_50%_50%,oklch(0.12_0.03_300/0.72),transparent_75%)]" />
     <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-background" />
