@@ -40,6 +40,7 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
     const base = formatOklch({ ...colors[0]!, alpha: opacity * params.background })
     const ring = formatOklch({ ...colors[1]!, alpha: opacity * 0.25 })
     const step = params.spacing * 100
-    return [`repeating-radial-gradient(circle at ${params.x * 100}% ${params.y * 100}%, transparent 0 ${step * 0.8}%, ${ring} ${step * 0.85}%, transparent ${step}%)`, `linear-gradient(${base}, ${base})`]
+    const shape = params.repeat >= 0.5 ? 'repeating-radial-gradient' : 'radial-gradient'
+    return [`${shape}(circle at ${params.x * 100}% ${params.y * 100}%, transparent 0 ${step * 0.8}%, ${ring} ${step * 0.85}%, transparent ${step}%)`, `linear-gradient(${base}, ${base})`]
   },
 })

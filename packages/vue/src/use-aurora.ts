@@ -1,7 +1,7 @@
 import type { AuroraMode, AuroraSource, AuroraSurface } from '@goatsoft/aurora'
 import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
 import { mountAurora } from '@goatsoft/aurora'
-import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, watch } from 'vue'
+import { onMounted, onScopeDispose, readonly, ref, shallowRef, toValue, triggerRef, watch } from 'vue'
 import { useAuroraScene } from './scene'
 
 export interface UseAuroraOptions {
@@ -77,6 +77,11 @@ export function useAurora(
       },
       // Why it's on CSS when it could be on WebGPU; the fallback stays on screen regardless.
       ...(options.onError ? { onError: options.onError } : {}),
+    })
+    const mounted = surface.value
+    void mounted.ready.then(() => {
+      // Input can become available after the first GPU frame; refresh derived UI as well.
+      if (surface.value === mounted) triggerRef(surface)
     })
   }
 
