@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
-import badge from '~/assets/brand/badges/v1/made-with-inline-dark.svg?url'
+import badge from '~/assets/brand/badges/v1/made-with-inline-auto.svg?url'
 
 const year = new Date().getFullYear()
 </script>
@@ -11,7 +11,7 @@ const year = new Date().getFullYear()
       <div>
         <div class="flex items-center gap-2.5">
           <Mark :size="28" />
-          <span class="text-brand text-lg font-bold tracking-tight">Aurora</span>
+          <span class="text-lg font-bold tracking-tight text-foreground">Aurora</span>
         </div>
         <p class="mt-3 max-w-xs text-sm text-pretty text-muted-foreground">
           Animated WebGPU backgrounds with a CSS fallback. Made by <a
@@ -70,6 +70,14 @@ const year = new Date().getFullYear()
               class="hover:text-foreground"
             >
               Documentation
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink
+              to="/docs/guide/accessibility"
+              class="hover:text-foreground"
+            >
+              Accessibility
             </RouterLink>
           </li>
           <li>

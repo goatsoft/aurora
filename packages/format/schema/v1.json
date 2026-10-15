@@ -183,6 +183,115 @@
       "required": [],
       "additionalProperties": false
     },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "follow",
+              "impulse",
+              "grab"
+            ],
+            "type": "string"
+          },
+          "activation": {
+            "enum": [
+              "hover",
+              "focus",
+              "both"
+            ],
+            "type": "string",
+            "default": "both"
+          },
+          "strength": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "description": "Response strength.",
+            "default": 1
+          },
+          "smoothing": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Follow easing; 0 responds immediately.",
+            "default": 0.65
+          },
+          "decay": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 5,
+            "description": "Seconds for an impulse or return to settle.",
+            "default": 1
+          },
+          "damping": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Grab spring damping; higher settles faster.",
+            "default": 0.75
+          },
+          "bindings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "layer": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 15
+                },
+                "parameter": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "Generator control, opacity, offsetX, offsetY, time, or signal.control."
+                },
+                "input": {
+                  "enum": [
+                    "x",
+                    "y",
+                    "strength",
+                    "travel"
+                  ],
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": -4,
+                  "maximum": 4,
+                  "description": "Add this much to the authored control at full input; negative values repel.",
+                  "default": 1
+                },
+                "slot": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 3,
+                  "description": "Impulse slot, from newest (0) to oldest (3).",
+                  "default": 0
+                }
+              },
+              "required": [
+                "parameter",
+                "input"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 64
+          }
+        },
+        "required": [
+          "type",
+          "bindings"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
     "palette": {
       "type": "array",
       "items": {

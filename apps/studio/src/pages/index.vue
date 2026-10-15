@@ -129,6 +129,9 @@ useEventListener(window, 'drop', (e: DragEvent) => {
       class="relative size-full overflow-hidden"
       aria-label="Aurora Studio"
     >
+      <h1 class="sr-only">
+        Aurora Studio
+      </h1>
       <Stage />
       <TopBar ref="top" />
       <LayersPanel />

@@ -40,11 +40,17 @@ describe('Studio store', () => {
     studio.ui.muted.clear()
   })
 
-  it('pauses by freezing time in the preview, without touching the document', () => {
+  it('keeps playback out of the authored document and the preview speed', () => {
+    const file = studio.file.value
+    const preview = studio.preview.value
     studio.ui.playing = false
-    expect(studio.preview.value.motion.speed).toBe(0)
+    studio.ui.reducedMotion = true
+    expect(studio.preview.value).toBe(preview)
+    expect(studio.preview.value.motion.speed).toBe(1)
     expect(studio.rendered.value.motion.speed).toBe(1)
+    expect(studio.file.value).toBe(file)
     studio.ui.playing = true
+    studio.ui.reducedMotion = false
   })
 
   it('names exactly what is wrong when a document can\'t be opened', () => {

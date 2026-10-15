@@ -136,7 +136,7 @@ defineExpose({ save: () => void save(), share, saveAs })
         <a
           href="/"
           class="group flex shrink-0 items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Aurora home"
+          aria-label="Aurora Studio home"
         >
           <img
             :src="mark"

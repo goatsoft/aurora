@@ -1,4 +1,5 @@
 import type { SetupContext } from 'vue'
+import { contrastOn, parseColor } from '@goatsoft/color'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import ColorPicker from '@/components/ColorPicker.vue'
@@ -14,6 +15,19 @@ function picker(css: string) {
 }
 
 describe('ColorPicker', () => {
+  it.each(['dark', 'light'] as const)('measures transparent palette colours over the %s page', async (page) => {
+    const wrapper = picker('oklch(0.7 0.15 250 / 0)')
+    try {
+      await wrapper.setProps({ page })
+      const text = parseColor(page === 'dark' ? 'oklch(0.96 0.01 270)' : 'oklch(0.2 0.02 270)')
+      const canvas = parseColor(page === 'dark' ? 'oklch(0.13 0.02 270)' : 'oklch(0.985 0.004 270)')
+      const palette = parseColor('oklch(0.7 0.15 250 / 0)')
+      if (!text.ok || !canvas.ok || !palette.ok) throw new Error('Invalid test colour')
+      expect(wrapper.text()).toContain(`${contrastOn(text.color, palette.color, canvas.color).toFixed(2)}:1`)
+      expect(wrapper.text()).toContain('AAA')
+    } finally { wrapper.unmount() }
+  })
+
   it('keeps typed colours exactly as written, so classic parity colours survive', async () => {
     const wrapper = picker('oklch(0.7 0.15 250)')
     const input = wrapper.get('input[aria-label="CSS colour"]')

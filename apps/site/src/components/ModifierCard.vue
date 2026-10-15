@@ -2,6 +2,7 @@
 import type { AuroraMode, AuroraModule } from '@goatsoft/aurora'
 import { AuroraBackground } from '@goatsoft/aurora-vue'
 import { computed, ref, watch } from 'vue'
+import { useSitePreferences } from '@/lib/preferences'
 import { useStudioHref } from '@/lib/studio-link'
 
 /**
@@ -56,6 +57,8 @@ function nudge(event: KeyboardEvent) {
   else return
   event.preventDefault()
 }
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
@@ -74,6 +77,7 @@ function nudge(event: KeyboardEvent) {
         :class="{ 'opacity-0': !live }"
       >
         <AuroraBackground
+          :paused="sitePaused"
           :src="scene"
           @mode-change="afterChanged"
           @error="failed = true"
@@ -128,7 +132,7 @@ function nudge(event: KeyboardEvent) {
       </p>
       <a
         :href="href"
-        :aria-label="`Open ${name} example in Studio`"
+        :aria-label="`Open in Studio: ${name} example`"
         class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
       >Open in Studio <span aria-hidden="true">↗</span></a>
     </div>

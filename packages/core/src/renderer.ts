@@ -187,7 +187,8 @@ export class Renderer {
   }
 
   private needsFrame(surface: Surface): boolean {
-    return surface.state.visible && (surface.state.reduced !== 'still' || surface.dirty)
+    const { state, dirty } = surface
+    return state.visible && (dirty || (state.pausedAt === undefined && state.reduced !== 'still' && state.doc.motion.speed > 0))
   }
 
   /** Queues the next batch: after the frame budget, or `immediate`ly for a first frame. */
@@ -265,7 +266,7 @@ export class Renderer {
           surface.buffer = device.createBuffer({ size, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST })
           surface.bind = device.createBindGroup({ layout: this.group, entries: [{ binding: 0, resource: { buffer: surface.buffer } }] })
         }
-        const seconds = state.reduced === 'still' ? 0 : ((this.now() - state.origin) / 1000) * (state.reduced === 'slow' ? 0.1 : 1)
+        const seconds = state.reduced === 'still' ? 0 : (((state.pausedAt ?? this.now()) - state.origin) / 1000) * (state.reduced === 'slow' ? 0.1 : 1)
         surface.uniforms = packUniforms(state.doc, shader, {
           width: state.scene.width,
           height: state.scene.height,
@@ -273,6 +274,7 @@ export class Renderer {
           reduced: state.reduced !== false,
           scroll: state.scroll,
           rect: state.scene.rect,
+          ...(state.transforms ? { transforms: state.transforms } : {}),
         }, surface.uniforms)
         device.queue.writeBuffer(surface.buffer, 0, surface.uniforms)
         const pass = encoder.beginRenderPass({

@@ -234,6 +234,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/guide/accessibility': RouteRecordInfo<
+      '/docs/guide/accessibility',
+      '/docs/guide/accessibility',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/guide/attribution': RouteRecordInfo<
       '/docs/guide/attribution',
       '/docs/guide/attribution',
@@ -251,6 +258,20 @@ declare module 'vue-router/auto-routes' {
     '/docs/guide/getting-started': RouteRecordInfo<
       '/docs/guide/getting-started',
       '/docs/guide/getting-started',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/guide/interaction-reference': RouteRecordInfo<
+      '/docs/guide/interaction-reference',
+      '/docs/guide/interaction-reference',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/guide/interactions': RouteRecordInfo<
+      '/docs/guide/interactions',
+      '/docs/guide/interactions',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -577,6 +598,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/guide/accessibility.md': {
+      routes:
+        | '/docs/guide/accessibility'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/guide/attribution.md': {
       routes:
         | '/docs/guide/attribution'
@@ -596,6 +625,22 @@ declare module 'vue-router/auto-routes' {
     '../../docs/guide/getting-started.md': {
       routes:
         | '/docs/guide/getting-started'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/interaction-reference.md': {
+      routes:
+        | '/docs/guide/interaction-reference'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/interactions.md': {
+      routes:
+        | '/docs/guide/interactions'
       views:
         | never
       pathParamNames:

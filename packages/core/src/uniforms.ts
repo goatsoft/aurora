@@ -16,6 +16,7 @@ export interface FrameState {
   scroll: number
   /** The surface's rectangle inside its scene, in scene UV: `[x, y, width, height]`. */
   rect?: readonly [number, number, number, number]
+  transforms?: readonly (readonly [number, number, number, number])[]
 }
 
 const FULL = [0, 0, 1, 1] as const
@@ -80,9 +81,10 @@ export function packUniforms(
     const v = doc.modifiers!.vignette!
     u.set([v.amount, v.radius, v.softness, 0], shader.vignette * 4)
   }
-  shader.layers.forEach(({ generator, params, mask, colors }, i) => {
+  shader.layers.forEach(({ generator, params, mask, transform, colors }, i) => {
     const layer = doc.layers[i]!
     const names = Object.keys(generator.params)
+    if (transform !== undefined) u.set(frame.transforms?.[i] ?? [0, 0, 0, 0], transform * 4)
     u.set([layer.opacity, ...names.map((name) => paramValue(layer, generator, name))], params * 4)
     if (mask !== undefined) {
       const m = layer.mask!

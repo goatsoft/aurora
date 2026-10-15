@@ -1,0 +1,151 @@
+import type { Backend, LeaseListener, SurfaceState } from '@goatsoft/aurora'
+import { configureAurora, setBackends } from '@goatsoft/aurora'
+import { decodeShare } from '@goatsoft/aurora-editor-ui'
+import { mount, RouterLinkStub } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { defineComponent, h } from 'vue'
+import InteractionPlayground from '@/components/InteractionPlayground.vue'
+import InteractionsSection from '@/components/section/InteractionsSection.vue'
+import { interactionCards } from '@/lib/interactions'
+import { provideSitePreferences } from '@/lib/preferences'
+import '@/main.css'
+
+const leases: { listener: LeaseListener, states: SurfaceState[], released: boolean }[] = []
+const backend: Backend = {
+  acquire(listener) {
+    const lease = { listener, states: [] as SurfaceState[], released: false }
+    leases.push(lease)
+    return { ready: Promise.resolve(true), attach: (_, state) => lease.states.push(state) > 0, update: (state) => { lease.states.push(state) }, release: () => { lease.released = true } }
+  },
+  stats: () => Promise.resolve(undefined),
+}
+beforeEach(() => {
+  leases.length = 0
+  configureAurora({ worker: false })
+  setBackends({ main: backend, worker: backend })
+})
+afterEach(() => {
+  localStorage.removeItem('aurora:paused')
+  delete document.documentElement.dataset['paused']
+  delete document.documentElement.dataset['theme']
+  setBackends(undefined)
+  configureAurora({ worker: true })
+})
+const until = (check: () => boolean) => vi.waitFor(() => expect(check()).toBe(true), { timeout: 8000 })
+
+describe('gallery interaction playgrounds', () => {
+  it('reports and disables site-paused playback, preserving a separate local pause', async () => {
+    const card = interactionCards[0]!
+    const Harness = defineComponent({
+      setup() {
+        const preferences = provideSitePreferences()
+        return () => h('div', [h('button', { 'onClick': () => preferences.toggleMotion(), 'aria-label': 'Toggle site playback' }), h(InteractionPlayground, { scene: card.scene, body: card.body, kind: 'follow' })])
+      },
+    })
+    const wrapper = mount(Harness, { attachTo: document.body, global: { stubs: { EditInStudio: true } } })
+    try {
+      await until(() => !!leases[0]?.states.length)
+      const local = () => wrapper.getComponent(InteractionPlayground).findAll('button')[0]!
+      await local().trigger('click')
+      expect(local().text()).toBe('Play')
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Paused site-wide')
+      expect(local().attributes('aria-pressed')).toBe('true')
+      expect(local().attributes('aria-label')).toBe(`${card.scene.doc.name} paused site-wide`)
+      expect(local().attributes('disabled')).toBeDefined()
+      expect(local().attributes('title')).toBeUndefined()
+      const explanation = wrapper.get(`[id="${local().attributes('aria-describedby')!}"]`)
+      expect(explanation.isVisible()).toBe(true)
+      expect(explanation.text()).toContain('Resume them using the control beside Edit')
+      expect(local().attributes('aria-describedby')).toBe(explanation.attributes('id'))
+      const target = wrapper.get('[aria-label="Aurora Follow interaction playground"]')
+      ;(target.element as HTMLElement).focus()
+      expect(document.activeElement).toBe(target.element)
+      expect(target.attributes('aria-describedby')!.split(' ')).toContain(explanation.attributes('id'))
+      expect(leases[0]!.states.at(-1)!.pausedAt).toBeDefined()
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Play')
+      expect(local().attributes('disabled')).toBeUndefined()
+      expect(explanation.text()).toBe('')
+      expect(target.attributes('aria-describedby')!.split(' ')).not.toContain(explanation.attributes('id'))
+      await local().trigger('click')
+      await until(() => leases[0]!.states.at(-1)!.pausedAt === undefined)
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Paused site-wide')
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Pause')
+    } finally { wrapper.unmount() }
+  })
+
+  it('opens an editable interaction in Studio and keeps the guide separate', async () => {
+    const wrapper = mount(InteractionsSection, { global: { stubs: { InteractionPlayground: true, RouterLink: RouterLinkStub } } })
+    try {
+      expect(wrapper.get('h2').text()).toBe('Interactions')
+      expect(wrapper.findAllComponents(InteractionPlayground).map((card) => card.props('scene'))).toEqual(interactionCards.map((card) => card.scene))
+      expect(wrapper.getComponent(RouterLinkStub).props('to')).toBe('/docs/guide/interactions')
+      const build = wrapper.findAll('a').find((link) => link.text().includes('Build an interaction'))!
+      await until(() => build.attributes('href')?.startsWith('/studio/#a=') ?? false)
+      expect(await decodeShare(build.attributes('href')!.split('#')[1]!)).toEqual(interactionCards[0]!.scene.doc)
+      expect(interactionCards.map((card) => card.scene.doc.name)).toEqual(['Aurora Follow', 'Depth Landscape', 'Tap to Ping', 'Grab the Signal', 'Signal Response'])
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('pauses ambient animation and emits keyboard pulses without editing the shared preset', async () => {
+    const card = interactionCards.find((item) => item.id === 'tap-to-ping')!
+    const before = JSON.stringify(card.scene.doc)
+    const wrapper = mount(InteractionPlayground, { props: { scene: card.scene, body: card.body, kind: 'impulse' }, attachTo: document.body, global: { stubs: { EditInStudio: true } } })
+    try {
+      await until(() => !!leases[0]?.states.length)
+      expect(wrapper.text()).toContain('CSS fallback')
+      expect(wrapper.findAll('button').find((button) => button.text() === 'Emit pulse')!.attributes('disabled')).toBeDefined()
+      leases[0]!.listener.frame()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.text()).toContain('Tap to respond')
+      await wrapper.get('[aria-label="Pause Tap to Ping"]').trigger('click')
+      await until(() => leases[0]!.states.at(-1)!.pausedAt !== undefined)
+      const phase = leases[0]!.states.at(-1)!.pausedAt
+      const target = wrapper.get('[aria-label="Tap to Ping interaction playground"]')
+      expect(target.attributes('aria-hidden')).toBeUndefined()
+      expect(wrapper.get('[aria-hidden="true"]').attributes('tabindex')).toBeUndefined()
+      await target.trigger('keydown', { key: 'ArrowRight' })
+      await target.trigger('keydown', { key: 'Enter' })
+      await until(() => leases[0]!.states.at(-1)!.doc.layers[1]!.opacity > 0)
+      expect(leases[0]!.states.at(-1)!.doc.layers[1]!.params['x']).toBeCloseTo(0.58)
+      expect(leases[0]!.states.at(-1)!.pausedAt).toBe(phase)
+      expect(JSON.stringify(card.scene.doc)).toBe(before)
+      await target.trigger('keydown', { key: 'Escape' })
+      await until(() => leases[0]!.states.at(-1)!.doc.layers[1]!.opacity === 0)
+    } finally {
+      wrapper.unmount()
+    }
+    expect(leases[0]!.released).toBe(true)
+  })
+
+  it('opts into dragging without remounting, supports grab/pull/release buttons and restores scrolling', async () => {
+    const card = interactionCards.find((item) => item.id === 'grab-the-signal')!
+    const wrapper = mount(InteractionPlayground, { props: { scene: card.scene, body: card.body, kind: 'grab' }, attachTo: document.body, global: { stubs: { EditInStudio: true } } })
+    try {
+      await until(() => !!leases[0]?.states.length)
+      leases[0]!.listener.frame()
+      await wrapper.vm.$nextTick()
+      const target = wrapper.get('[aria-label="Grab the Signal interaction playground"]')
+      expect(getComputedStyle(target.element).touchAction).not.toBe('none')
+      await wrapper.get('input[type="checkbox"]').setValue(true)
+      await until(() => getComputedStyle(target.element).touchAction === 'none')
+      expect(leases).toHaveLength(1)
+      const button = (text: string) => wrapper.findAll('button').find((element) => element.text() === text)!
+      await button('Grab').trigger('click')
+      await button('Pull right').trigger('click')
+      await until(() => (leases[0]!.states.at(-1)!.transforms?.[0]?.[0] ?? 0) > 0)
+      await button('Release').trigger('click')
+      await until(() => Math.abs(leases[0]!.states.at(-1)!.transforms?.[0]?.[0] ?? 1) < 0.001)
+      await wrapper.get('input[type="checkbox"]').setValue(false)
+      await until(() => getComputedStyle(target.element).touchAction !== 'none')
+      expect(leases).toHaveLength(1)
+    } finally {
+      wrapper.unmount()
+    }
+  })
+})

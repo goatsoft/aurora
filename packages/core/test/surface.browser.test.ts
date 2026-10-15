@@ -31,11 +31,11 @@ const until = (check: () => boolean, timeout = 8000) => vi.waitFor(() => {
 }, { timeout, interval: 20 })
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const nativeMedia = window.matchMedia.bind(window)
 function stubMedia(matches: Record<string, boolean>) {
-  const real = window.matchMedia.bind(window)
   vi.spyOn(window, 'matchMedia').mockImplementation((query) => (query in matches
     ? { matches: matches[query]!, media: query, addEventListener() {}, removeEventListener() {} } as unknown as MediaQueryList
-    : real(query)))
+    : nativeMedia(query)))
 }
 
 /** A backend driven by the test: it records states and lets the test fire frames and failures. */
@@ -98,6 +98,109 @@ describe('mountAurora with the real renderer', () => {
 })
 
 describe('mountAurora', () => {
+  it('previews reduced motion without changing speed and cannot override a visitor preference', async () => {
+    stubMedia({ '(prefers-reduced-motion: reduce)': false })
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    const source = doc({ motion: { speed: 2, reduced: 'slow' }, modifiers: { signal: { amount: 0.8 } } })
+    const surface = mountAurora(host, source, { reducedMotion: true })
+    await surface.ready
+    await until(() => !!leases[0]?.states.length)
+    expect(leases[0]!.states.at(-1)).toMatchObject({ reduced: 'slow', doc: { motion: { speed: 2 }, modifiers: { signal: { amount: 0.8 } } } })
+    leases[0]!.listener.frame()
+    expect((surface.element.lastElementChild as HTMLElement).style.transition).toBe('none')
+    surface.setReducedMotion(false)
+    expect(leases[0]!.states.at(-1)!.reduced).toBe(false)
+    surface.dispose()
+    stubMedia({ '(prefers-reduced-motion: reduce)': true })
+    const preferred = mountAurora(host, source, { reducedMotion: true })
+    await until(() => !!leases[1]?.states.length)
+    preferred.setReducedMotion(false)
+    expect(leases[1]!.states.at(-1)!.reduced).toBe('slow')
+    preferred.dispose()
+  })
+
+  it('pauses at the current phase and resumes without altering speed or resetting CSS drift', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    let time = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => time)
+    const surface = mountAurora(host, hero)
+    await until(() => !!leases[0]?.states.length)
+    const fallback = surface.element.firstElementChild as HTMLElement
+    const animation = fallback.style.animationName
+    const origin = leases[0]!.states.at(-1)!.origin
+    time = 5000
+    surface.pause()
+    const frozen = leases[0]!.states.at(-1)!
+    expect(surface.paused).toBe(true)
+    expect(frozen.pausedAt! - frozen.origin).toBe(4000)
+    expect(fallback.style.animationPlayState).toBe('paused')
+    time = 25_000
+    surface.pause()
+    surface.update(doc({ name: 'Paused edit' }))
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBe(frozen.pausedAt)
+    expect(leases[0]!.states.at(-1)!.doc.motion.speed).toBe(hero.motion.speed)
+    surface.resume()
+    expect(surface.paused).toBe(false)
+    expect(leases[0]!.states.at(-1)!.origin).toBe(origin + 20_000)
+    expect(leases[0]!.states.at(-1)!.pausedAt).toBeUndefined()
+    expect(fallback.style.animationPlayState).toBe('running')
+    expect(fallback.style.animationName).toBe(animation)
+    surface.resume()
+    expect(leases[0]!.states.at(-1)!.origin).toBe(origin + 20_000)
+    surface.dispose()
+    surface.pause()
+    expect(surface.paused).toBe(false)
+  })
+
+  it('starts paused before the first frame', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    const surface = mountAurora(host, hero, { paused: true })
+    await until(() => !!leases[0]?.states.length)
+    expect(leases[0]!.states[0]!.pausedAt).toBe(leases[0]!.states[0]!.origin)
+    expect(surface.paused).toBe(true)
+    surface.dispose()
+  })
+
+  it('pauses a running shared scene when a paused member mounts', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    let time = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => time)
+    const first = mountAurora(host, hero, { scene: 'paused-mount' })
+    const neighbour = document.body.appendChild(document.createElement('div'))
+    neighbour.style.cssText = host.style.cssText
+    let second: ReturnType<typeof mountAurora> | undefined
+    try {
+      await until(() => !!leases[0]?.states.length)
+      const origin = leases[0]!.states.at(-1)!.origin
+      expect(first.paused).toBe(false)
+      time = 5000
+      second = mountAurora(neighbour, hero, { scene: 'paused-mount', paused: true })
+      await until(() => !!leases[1]?.states.length)
+      expect(first.paused).toBe(true)
+      expect(second.paused).toBe(true)
+      for (const lease of leases) {
+        expect(lease.states.at(-1)!.origin).toBe(origin)
+        expect(lease.states.at(-1)!.pausedAt! - origin).toBe(4000)
+      }
+      expect((first.element.firstElementChild as HTMLElement).style.animationPlayState).toBe('paused')
+      time = 9000
+      first.resume()
+      expect(second.paused).toBe(false)
+      for (const lease of leases) {
+        expect(lease.states.at(-1)!.origin).toBe(origin + 4000)
+        expect(lease.states.at(-1)!.pausedAt).toBeUndefined()
+      }
+    } finally {
+      first.dispose()
+      second?.dispose()
+      neighbour.remove()
+    }
+  })
+
   it('sends the renderer plain data, even for a Proxy from framework state', async () => {
     // A Vue ref or reactive is a Proxy, which postMessage can't copy: posting one took the worker
     // down for every background on the page.
@@ -321,6 +424,24 @@ describe('mountAurora', () => {
     expect(last(0).scene).toEqual({ width: 320, height: 90, rect: [0, 0, 0.5, 1] })
     expect(last(1).scene).toEqual({ width: 320, height: 90, rect: [0.5, 0, 0.5, 1] })
     expect(last(0).origin).toBe(last(1).origin)
+    sa.pause()
+    expect(sa.paused).toBe(true)
+    expect(sb.paused).toBe(true)
+    expect(last(0).pausedAt).toBe(last(1).pausedAt)
+    expect((sb.element.firstElementChild as HTMLElement).style.animationPlayState).toBe('paused')
+    const c = document.createElement('div')
+    c.style.cssText = a.style.cssText
+    row.append(c)
+    const sc = mountAurora(c, hero, { scene: 'landing' })
+    await until(() => !!leases[2]?.states.length)
+    expect(sc.paused).toBe(true)
+    expect(last(2).pausedAt).toBe(last(0).pausedAt)
+    sb.resume()
+    expect(sa.paused).toBe(false)
+    expect(sc.paused).toBe(false)
+    expect(last(0).origin).toBe(last(1).origin)
+    expect(last(2).origin).toBe(last(0).origin)
+    sc.dispose()
     sa.dispose()
     sb.dispose()
     row.remove()

@@ -36,7 +36,9 @@ describe('gallery', () => {
       expect(wrapper.get('#modifiers h2').text()).toBe('Modifiers')
       expect(wrapper.get('#modifiers').text()).not.toContain('Give the whole scene a finishing touch.')
       expect(wrapper.findAll('section').filter((section) => galleryGroups.some((group) => section.attributes('id') === group.id)).reduce((count, section) => count + section.findAll('article').length, 0)).toBe(cards.length)
-      expect(wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to'))).toEqual(cards.map((card) => `/docs/generators/${card.id}`))
+      const links = wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to') as string)
+      expect(links.filter((link) => link.startsWith('/docs/generators/'))).toEqual(cards.map((card) => `/docs/generators/${card.id}`))
+      expect(links).toContain('/docs/guide/interactions')
       for (const group of galleryGroups) {
         expect(wrapper.get(`nav a[href="#${group.id}"]`).text()).toContain(group.name)
         const section = wrapper.get(`section#${group.id}`)
@@ -63,7 +65,7 @@ describe('gallery', () => {
         const scene = scenes[i]!.scene
         expect(preview.props('scene')).toEqual(scene)
         expect(scene.doc.layers.length).toBeGreaterThan(1)
-        expect(preview.get('a').attributes('aria-label')).toBe(`Open ${scene.doc.name} in Studio`)
+        expect(preview.get('a').attributes('aria-label')).toBe(`Open in Studio: ${scene.doc.name}`)
         expect(preview.text()).toContain(`${scene.doc.layers.length} layers`)
       }
     } finally {

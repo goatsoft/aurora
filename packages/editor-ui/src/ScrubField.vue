@@ -123,11 +123,11 @@ function key(event: KeyboardEvent) {
     <span
       v-else
       class="relative z-10 ml-auto font-mono text-xs tabular"
-      :class="set ? 'text-foreground' : 'text-muted-foreground'"
+      :class="set ? 'text-foreground' : 'text-foreground/80'"
     >
       {{ display }}<span
         v-if="unit"
-        class="ml-0.5 text-muted-foreground"
+        class="ml-0.5 text-foreground/80"
       >{{ unit === 'deg' ? '°' : unit }}</span>
     </span>
   </div>

@@ -15,7 +15,7 @@ export function runtimeSchema(source: string, name: string): string {
     const visitor: ts.Visitor = (node) => {
       if (ts.isIdentifier(node) && node.text === 'AuroraSchema') return ts.factory.createIdentifier('AuroraValidationSchema')
       if (ts.isStringLiteral(node)) {
-        const imports: Record<string, string> = { './range': './runtime-range', './modifiers-schema': './runtime-modifiers' }
+        const imports: Record<string, string> = { './range': './runtime-range', './modifiers-schema': './runtime-modifiers', './interactions-schema': './runtime-interactions' }
         if (ts.isImportDeclaration(node.parent) && imports[node.text]) return ts.factory.createStringLiteral(imports[node.text]!, true)
       }
       if (ts.isParameter(node) && ts.isIdentifier(node.name) && node.name.text === 'description'

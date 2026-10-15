@@ -68,7 +68,11 @@ watch(here, () => (menu.value = false))
     </aside>
 
     <!-- At least as tall as the sidebar can be, so a short page doesn't push the sticky sidebar up and cut it off. -->
-    <main class="min-w-0 pb-48 lg:min-h-[calc(100dvh-7rem)]">
+    <main
+      id="main-content"
+      tabindex="-1"
+      class="min-w-0 pb-48 lg:min-h-[calc(100dvh-7rem)]"
+    >
       <article><slot /></article>
       <nav
         v-if="prev || next"

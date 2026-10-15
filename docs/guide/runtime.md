@@ -80,3 +80,23 @@ Palettes are written in OKLCH, and Aurora blends colours in OKLab rather than sR
 ## Reduced motion
 
 Aurora honours `prefers-reduced-motion`. Each file chooses how, with `motion.reduced`: a still frame (the default), a tenth of the speed, or the CSS fallback.
+
+## Playback controls
+
+Pause independently of the visitor's motion preference. A pause keeps the current animation phase and authored speed; resuming continues smoothly from that phase.
+
+```ts
+import { mountAurora } from '@goatsoft/aurora'
+import hero from './hero.aurora'
+
+const background = mountAurora(host, hero, { paused: true })
+background.resume()
+background.pause()
+console.log(background.paused)
+```
+
+Named scenes share playback as well as geometry. Pausing or resuming any member pauses or resumes the whole scene. Mounting a member with `paused: true` also pauses an already running scene. Members that join later inherit its current clock and pause state.
+
+Vue accepts `<AuroraBackground :src="hero" :paused="paused" />`, or `useAurora(host, hero, { paused })` with a ref or getter. The custom element accepts `<aurora-bg src="/hero.aurora" paused>` and a boolean `element.paused` property.
+
+Paused backgrounds redraw when their document or size changes, then stop scheduling frames. Documents with `motion.speed: 0` also render only on changes, but freeze the authored clock at zero rather than preserving a live phase. Playback state is temporary: it is never saved in the `.aurora` file or recorded in Studio's undo history. The CSS fallback pauses its drift as well. Reduced-motion preferences still apply while playing.

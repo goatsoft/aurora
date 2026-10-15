@@ -4,12 +4,18 @@ import galleryHero from '@/backgrounds/gallery-hero.aurora'
 import { useHead } from '@/head'
 import { galleryGroups } from '@/lib/gallery'
 import { sceneGroups } from '@/lib/gallery-scenes'
+import { useSitePreferences } from '@/lib/preferences'
 
 useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes and animated generators: night skies, landscapes, weather and Tech. Make any background yours in Aurora Studio.' })
+
+const { paused: sitePaused } = useSitePreferences()
 </script>
 
 <template>
-  <main>
+  <main
+    id="main-content"
+    tabindex="-1"
+  >
     <section
       aria-label="Gallery introduction"
       class="relative isolate overflow-hidden"
@@ -18,7 +24,10 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
         class="pointer-events-none absolute inset-0 -z-20"
         aria-hidden="true"
       >
-        <AuroraBackground :src="galleryHero" />
+        <AuroraBackground
+          :paused="sitePaused"
+          :src="galleryHero"
+        />
       </div>
       <div class="pointer-events-none absolute inset-0 -z-10 bg-background/55 sm:bg-linear-to-r sm:from-background/80 sm:via-background/50 sm:to-transparent" />
       <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-b from-transparent to-background" />
@@ -49,15 +58,19 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
             class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >Modifiers</a>
           <a
+            href="#interactions"
+            class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >Interactions</a>
+          <a
             href="#generator-library"
             class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-background/60 px-5 py-2 text-sm transition-colors hover:bg-background/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >Individual generators ↓</a>
         </nav>
       </div>
-      <EditInStudio
+      <HeroControls
         :src="galleryHero"
         label="Prism sky"
-        position="right-6 bottom-16"
+        class="right-6 bottom-16"
       />
     </section>
     <div class="mx-auto max-w-6xl px-6 pb-12">
@@ -92,6 +105,7 @@ useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes an
         </div>
       </section>
       <ModifiersSection embedded />
+      <InteractionsSection />
       <div
         id="generator-library"
         class="scroll-mt-24 pt-20 sm:pt-32"

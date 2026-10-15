@@ -14,6 +14,8 @@ export interface LayerLayout {
   params: number
   /** Slot of the mask's four values, if the layer has a mask. */
   mask?: number
+  /** Slot of the transient translation and effect clock, when interactions are configured. */
+  transform?: number
   /** First of `generator.colors` consecutive colour slots. */
   colors: number
 }
@@ -29,6 +31,7 @@ export interface ComposedShader {
   signal?: number
   pixelate?: number
   vignette?: number
+  interactive?: boolean
 }
 
 const FRAME_SLOTS = 2
@@ -77,7 +80,7 @@ const FADE: Record<AuroraDocument['canvas']['fade'], string | undefined> = {
 /** The parts of a document that change the shader's code. */
 export function shaderKey(doc: AuroraDocument, output: RgbSpace): string {
   const layers = doc.layers.map((l) => [l.type, l.blend, l.mix, l.mask?.type ?? '-'].join(':'))
-  return [output, doc.canvas.fade, ...layers, ...(['signal', 'pixelate', 'vignette'] as const).filter((name) => !!doc.modifiers?.[name])].join('|')
+  return [output, doc.canvas.fade, ...layers, ...(['signal', 'pixelate', 'vignette'] as const).filter((name) => !!doc.modifiers?.[name]), ...(doc.interactions?.length ? ['input'] : [])].join('|')
 }
 
 const cache = new Map<string, ComposedShader>()
@@ -97,6 +100,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
   const layers: LayerLayout[] = []
   const body: string[] = []
   let slot = FRAME_SLOTS
+  const interactive = !!doc.interactions?.length
 
   doc.layers.forEach((layer, i) => {
     const generator = lookup(layer.type)
@@ -109,17 +113,18 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
     const params = slot
     slot += Math.ceil((names.length + 1) / 4)
     const mask = layer.mask ? slot++ : undefined
+    const transform = interactive ? slot++ : undefined
     const colors = slot
     slot += generator.colors
-    layers.push(mask === undefined ? { generator, params, colors } : { generator, params, mask, colors })
+    layers.push({ generator, params, colors, ...(mask === undefined ? {} : { mask }), ...(transform === undefined ? {} : { transform }) })
 
     const base = params * 4
     const args = names.map((_, k) => scalar(base + 1 + k)).join(', ')
     const palette = Array.from({ length: generator.colors }, (_, k) => `U.v[${colors + k}].xyz`).join(', ')
-    const alpha = [`s.a * ${scalar(base)}`, ...(mask === undefined ? [] : [maskExpression(layer, mask)])].join(' * ')
+    const alpha = [`s.a * ${scalar(base)}`, ...(mask === undefined ? [] : [maskExpression(layer, mask).replace(/\bsuv\b/g, transform === undefined ? 'suv' : `(suv - U.v[${transform}].xy / U.v[1].zw)`)])].join(' * ')
     body.push(`  {
     // Layer ${i}: ${layer.type}, ${layer.blend}, mixed in ${layer.mix}
-    let s = ${prefix}render(ctx, ${prefix}Params(${args}), array<vec3f, ${generator.colors}>(${palette}));
+${transform === undefined ? '' : `    var input_ctx = ctx;\n    input_ctx.uv -= U.v[${transform}].xy;\n    input_ctx.time = mix(ctx.time, U.v[${transform}].z, U.v[${transform}].w);\n`}    let s = ${prefix}render(${transform === undefined ? 'ctx' : 'input_ctx'}, ${prefix}Params(${args}), array<vec3f, ${generator.colors}>(${palette}));
     let a = ${alpha};
     acc = blend_${layer.blend}(vec4f(${toOutput(layer, output, 's.rgb')} * a, a), acc);
   }`)
@@ -165,7 +170,7 @@ ${vignette === undefined
 `}${fade ? `  acc *= ${fade};\n` : ''}  return acc;
 }
 `
-  const shader: ComposedShader = { key, code, slots: slot, layers, output, ...(signal === undefined ? {} : { signal }), ...(pixelate === undefined ? {} : { pixelate }), ...(vignette === undefined ? {} : { vignette }) }
+  const shader: ComposedShader = { key, code, slots: slot, layers, output, ...(signal === undefined ? {} : { signal }), ...(pixelate === undefined ? {} : { pixelate }), ...(vignette === undefined ? {} : { vignette }), ...(interactive ? { interactive } : {}) }
   cache.set(key, shader)
   return shader
 }

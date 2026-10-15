@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Oklch } from '@goatsoft/color'
 import { ScrubField } from '@goatsoft/aurora-editor-ui'
-import { contrastRatio, gamutMap, inGamut, maxChroma, oklabToOklch, oklchToOklab, parseColor } from '@goatsoft/color'
+import { contrastOn, gamutMap, inGamut, maxChroma, oklabToOklch, oklchToOklab, parseColor } from '@goatsoft/color'
 import { snap } from '@/editor/document'
 
 /**
@@ -139,7 +139,8 @@ function release() {
 const oklab = computed(() => oklchToOklab(lch))
 const gamut = computed(() => (inGamut(oklab.value) ? 'sRGB' : inGamut(oklab.value, 'display-p3') ? 'P3' : 'Out of P3'))
 const pageText = computed(() => oklchToOklab(props.page === 'dark' ? { l: 0.96, c: 0.01, h: 270, alpha: 1 } : { l: 0.2, c: 0.02, h: 270, alpha: 1 }))
-const contrast = computed(() => contrastRatio(oklab.value, pageText.value))
+const pageBackground = computed(() => oklchToOklab(props.page === 'dark' ? { l: 0.13, c: 0.02, h: 270, alpha: 1 } : { l: 0.985, c: 0.004, h: 270, alpha: 1 }))
+const contrast = computed(() => contrastOn(pageText.value, oklab.value, pageBackground.value))
 const harmonies = computed(() => [
   { label: 'Complement', h: 180 },
   { label: 'Triad', h: 120 },

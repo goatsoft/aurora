@@ -1,5 +1,6 @@
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
+import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './interactions-schema'
 import { Pixelate, Signal, Vignette } from './modifiers-schema'
 import { range } from './range'
 
@@ -65,6 +66,20 @@ const Motion = v.strictObject({
 })
 
 const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+
+const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'), v.maxValue(MAX_LAYERS - 1, `must be ${MAX_LAYERS - 1} or less`))
+
+/** Bind a module's normalized input to a layer control or a signal modifier control. */
+const InteractionBinding = v.strictObject({
+  layer: v.optional(LayerIndex),
+  parameter: v.pipe(v.string(), v.nonEmpty('must not be empty'), v.maxLength(64, 'must be 64 characters or fewer'), v.description('Generator control, opacity, offsetX, offsetY, time, or signal.control.')),
+  ...InteractionBindingControls,
+})
+
+const Interaction = v.strictObject({
+  ...InteractionControls,
+  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(MAX_INTERACTION_BINDINGS, `must have ${MAX_INTERACTION_BINDINGS} bindings or fewer`)),
+})
 
 const LinearMask = v.strictObject({
   type: v.literal('linear'),
@@ -158,6 +173,7 @@ export const AuroraSchema = v.pipe(
     canvas: v.optional(Canvas, {}),
     motion: v.optional(Motion, {}),
     modifiers: v.optional(Modifiers),
+    interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(MAX_INTERACTIONS, `must have ${MAX_INTERACTIONS} interactions or fewer`))),
     palette: v.pipe(
       v.array(Color),
       v.minLength(1, 'must have at least one colour'),
@@ -188,3 +204,6 @@ export type SignalModifier = v.InferOutput<typeof Signal>
 
 export type PixelateModifier = v.InferOutput<typeof Pixelate>
 export type VignetteModifier = v.InferOutput<typeof Vignette>
+export type AuroraInteraction = v.InferOutput<typeof Interaction>
+export type InteractionInput = v.InferInput<typeof Interaction>
+export type InteractionBindingInput = v.InferInput<typeof InteractionBinding>

@@ -25,7 +25,7 @@ const href = useStudioHref(() => props.scene)
       </p>
       <a
         :href="href"
-        :aria-label="`Open ${scene.doc.name} in Studio`"
+        :aria-label="`Open in Studio: ${scene.doc.name}`"
         class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
       >
         Open in Studio <span aria-hidden="true">↗</span>

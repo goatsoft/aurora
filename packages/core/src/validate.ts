@@ -1,5 +1,5 @@
 import type { AuroraDocument, FormatIssue } from '@goatsoft/aurora-format'
-import { jsonPath, suggest } from '@goatsoft/aurora-format'
+import { jsonPath, MODIFIERS, suggest } from '@goatsoft/aurora-format'
 import { generatorIds, GENERATORS, loadGenerators } from './generators/index'
 
 /**
@@ -46,6 +46,31 @@ export function checkDocument(doc: AuroraDocument): FormatIssue[] {
         issues.push({ path, message: `must be between ${spec.min} and ${spec.max}, got ${value}.` })
       }
     }
+  })
+  doc.interactions?.forEach((interaction, i) => {
+    interaction.bindings.forEach((binding, j) => {
+      const path = jsonPath(['interactions', i, 'bindings', j])
+      if (interaction.type !== 'impulse') {
+        if (binding.slot !== 0) issues.push({ path: `${path}.slot`, message: `must be 0 for a ${interaction.type} interaction; only impulse interactions have multiple samples.` })
+        if (binding.input === 'travel') issues.push({ path: `${path}.input`, message: `must not be "travel" for a ${interaction.type} interaction; only impulse interactions emit elapsed time.` })
+      }
+      if (binding.parameter.startsWith('signal.')) {
+        if (binding.layer !== undefined) issues.push({ path: `${path}.layer`, message: 'must be omitted for a signal modifier binding.' })
+        if (!doc.modifiers?.signal) issues.push({ path: `${path}.parameter`, message: 'requires a signal modifier in $.modifiers.signal.' })
+        else if (!Object.hasOwn(MODIFIERS.signal.controls, binding.parameter.slice(7))) issues.push({ path: `${path}.parameter`, message: `is not a signal control: ${JSON.stringify(binding.parameter)}.` })
+        return
+      }
+      const layer = binding.layer === undefined ? undefined : doc.layers[binding.layer]
+      if (!layer) {
+        issues.push({ path: `${path}.layer`, message: `must reference an existing layer (0–${doc.layers.length - 1}).` })
+        return
+      }
+      const generator = GENERATORS[layer.type]
+      if (generator && !['opacity', 'offsetX', 'offsetY', 'time'].includes(binding.parameter) && !Object.hasOwn(generator.params, binding.parameter)) {
+        const hint = suggest(binding.parameter, Object.keys(generator.params))
+        issues.push({ path: `${path}.parameter`, message: `is not a parameter of ${generator.id}.${hint ? ` Did you mean "${hint}"?` : ''}` })
+      }
+    })
   })
   return issues
 }

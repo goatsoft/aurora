@@ -13,7 +13,7 @@ import { generatorIcon } from '@/lib/generators'
  */
 const studio = useStudio()
 const { ui } = studio
-const tab = ref<'layer' | 'document' | 'modifiers'>('layer')
+const tab = ref<'layer' | 'document' | 'modifiers' | 'interactions'>('layer')
 
 const index = computed(() => ui.layer)
 const layer = computed(() => studio.rendered.value.layers[index.value])
@@ -127,7 +127,7 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
     <div class="shrink-0 p-1.5">
       <Segmented
         v-model="tab"
-        :options="[{ value: 'layer', label: 'Layer' }, { value: 'document', label: 'Document' }, { value: 'modifiers', label: 'Modifiers' }]"
+        :options="[{ value: 'layer', label: 'Layer' }, { value: 'document', label: 'Document' }, { value: 'modifiers', label: 'Modifiers' }, { value: 'interactions', label: 'Interactions' }]"
         size="sm"
       />
     </div>
@@ -454,6 +454,9 @@ const reducedOptions = REDUCED_MOTION.map((value) => ({ value, label: { still: '
 
       <template v-else-if="tab === 'modifiers'">
         <ModifiersPanel />
+      </template>
+      <template v-else-if="tab === 'interactions'">
+        <InteractionsPanel />
       </template>
 
       <template v-else-if="tab === 'document'">

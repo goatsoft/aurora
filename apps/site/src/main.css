@@ -1,17 +1,18 @@
 @import "tailwindcss";
 @source "../../../packages/editor-ui/src";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *, [data-scene-theme], [data-scene-theme] *));
 
 /*
   Aurora tokens: a polar night ground, and the mark's own spectrum
   (cyan #43f4dc → violet #8c83ff → orchid #ee82ed, assets/brand).
 */
-:root {
+:root, [data-scene-theme] {
+  color-scheme: dark;
   --background: oklch(0.13 0.025 272);
   --surface: oklch(0.18 0.03 272);
   --foreground: oklch(0.95 0.012 270);
-  --muted-foreground: oklch(0.7 0.025 270);
+  --muted-foreground: oklch(0.74 0.025 270);
   --border: oklch(0.75 0.03 270 / 0.14);
   --input: oklch(0.75 0.03 270 / 0.18);
   --accent: oklch(0.26 0.03 275 / 0.7);
@@ -20,8 +21,25 @@
   --spectrum-1: oklch(0.86 0.14 180);
   --spectrum-2: oklch(0.7 0.16 285);
   --spectrum-3: oklch(0.78 0.17 330);
-  --ring: oklch(0.84 0.13 182 / 0.6);
+  --ring: oklch(0.84 0.13 182);
   --radius: 0.75rem;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --background: oklch(0.985 0.005 272);
+  --surface: oklch(0.955 0.012 272);
+  --foreground: oklch(0.23 0.025 272);
+  --muted-foreground: oklch(0.43 0.025 270);
+  --border: oklch(0.4 0.03 270 / 0.28);
+  --input: oklch(0.4 0.03 270 / 0.35);
+  --accent: oklch(0.9 0.025 275);
+  --primary: oklch(0.43 0.17 285);
+  --primary-foreground: oklch(0.99 0.005 285);
+  --spectrum-1: oklch(0.42 0.08 180);
+  --spectrum-2: oklch(0.43 0.17 285);
+  --spectrum-3: oklch(0.44 0.16 330);
+  --ring: oklch(0.43 0.17 285);
 }
 
 /* Fluid type for the landing page. Each size grows with the viewport between
@@ -61,6 +79,7 @@
   * { @apply border-border outline-ring/50; }
   html { scroll-behavior: smooth; }
   body { @apply bg-background text-foreground font-sans antialiased; text-rendering: optimizeLegibility; }
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
   ::selection { background: color-mix(in oklab, var(--spectrum-2) 45%, transparent); }
 }
 
@@ -84,7 +103,7 @@
 @keyframes brand-cycle { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
 
 @utility glass {
-  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  background: color-mix(in oklab, var(--surface) 95%, transparent);
   backdrop-filter: saturate(160%) blur(18px);
   -webkit-backdrop-filter: saturate(160%) blur(18px);
   border: 1px solid var(--border);
@@ -142,6 +161,14 @@
 .shiki .line.diff.add { @apply -mx-4 inline-block w-[calc(100%+2rem)] bg-emerald-400/10 px-4; }
 .shiki .line.diff.remove { @apply -mx-4 inline-block w-[calc(100%+2rem)] bg-rose-400/10 px-4 opacity-70; }
 .shiki.has-focused .line:not(.focused) { @apply opacity-40 blur-[0.5px]; }
+
+:root[data-theme="light"] .prose .code-block { background: var(--surface); }
+:root[data-theme="light"] .prose .callout-warning .callout-title { color: oklch(0.4 0.08 65); }
+:root[data-theme="light"] .prose .callout-danger .callout-title { color: oklch(0.4 0.14 25); }
+:root[data-theme="light"] .shiki, :root[data-theme="light"] .shiki span { color: var(--shiki-light); }
+:root[data-theme="light"] [data-scene-theme] .shiki, :root[data-theme="light"] [data-scene-theme] .shiki span { color: var(--shiki-dark); }
+:root[data-paused="true"] *, :root[data-paused="true"] *::before, :root[data-paused="true"] *::after { animation-play-state: paused !important; }
+:root[data-paused="true"] .animate-rise, :root[data-paused="true"] .animate-mark-in { animation: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }

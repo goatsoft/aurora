@@ -65,7 +65,12 @@ describe.each(IDS)('%s on WebGPU', (id) => {
     const params = Object.fromEntries(Object.entries(GENERATORS[id]!.params).map(([name, spec]) => [name, spec[bound]]))
     const pixels = await frame(document(id, params), 0.25, 32, 18)
     expect(pixels).toHaveLength(32 * 18 * 4)
-    expect(Array.from(pixels).filter((_, i) => i % 4 === 3).every((v) => v === 255)).toBe(true)
+    const alpha = Array.from(pixels).filter((_, i) => i % 4 === 3)
+    if (id === 'ping' && params['background'] === 0) {
+      expect(Math.min(...alpha)).toBe(0)
+      expect(Math.max(...alpha)).toBeGreaterThan(0)
+      expect(Math.max(...alpha)).toBeLessThan(255)
+    } else expect(alpha.every((v) => v === 255)).toBe(true)
   })
 
   it('has reviewed motion across desktop, portrait and ultrawide frames', async () => {
