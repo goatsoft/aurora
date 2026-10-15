@@ -1,5 +1,11 @@
 # @goatsoft/color
 
+## 0.3.0
+
+### Minor Changes
+
+- 9ce137a: Add `compositeOver` for CSS alpha compositing in sRGB or Display P3, and `contrastOn` for WCAG contrast against a known canvas. Keep opaque `contrastRatio` comparisons unchanged.
+
 ## 0.1.1
 
 ### Patch Changes
