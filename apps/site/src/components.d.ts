@@ -59,6 +59,7 @@ declare module 'vue' {
     ModifierCard: typeof import('./components/ModifierCard.vue')['default']
     ModifiersSection: typeof import('./components/section/ModifiersSection.vue')['default']
     PillarsSection: typeof import('./components/section/PillarsSection.vue')['default']
+    PlaybackToggle: typeof import('./components/PlaybackToggle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScenesSection: typeof import('./components/section/ScenesSection.vue')['default']

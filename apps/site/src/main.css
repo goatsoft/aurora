@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @source "../../../packages/editor-ui/src";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *, [data-scene-theme], [data-scene-theme] *));
 
 /*
   Aurora tokens: a polar night ground, and the mark's own spectrum

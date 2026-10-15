@@ -4,6 +4,7 @@ import { contrastRatio, parseColor } from '@goatsoft/color'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
+import AuroraDemo from '@/components/doc/AuroraDemo.vue'
 import CodeGroup from '@/components/doc/CodeGroup.vue'
 import HeroControls from '@/components/HeroControls.vue'
 import LazyBackground from '@/components/LazyBackground.vue'
@@ -36,6 +37,60 @@ afterEach(() => {
 })
 
 describe('site accessibility preferences', () => {
+  it('lets a direct docs visitor pause demos without putting playback in navigation', async () => {
+    const Docs = defineComponent({
+      setup() {
+        provideSitePreferences()
+        return () => h('div', [h(SiteNav), h(AuroraDemo, { source: JSON.stringify(interactionCards[0]!.scene.doc), code: '' })])
+      },
+    })
+    const wrapper = mount(Docs, { attachTo: document.body, global: { stubs: { RouterLink: RouterLinkStub, AuroraBackground: true } } })
+    try {
+      expect(wrapper.getComponent(SiteNav).find('button[aria-pressed]').exists()).toBe(false)
+      const demo = wrapper.getComponent(AuroraDemo)
+      await demo.get('[aria-label="Pause animations"]').trigger('click')
+      expect(demo.getComponent(AuroraBackground).props('paused')).toBe(true)
+      expect(localStorage.getItem('aurora:paused')).toBe('true')
+      expect(demo.get('[aria-label="Resume animations"]').attributes('aria-pressed')).toBe('true')
+      await demo.get('[aria-label="Resume animations"]').trigger('click')
+      expect(demo.getComponent(AuroraBackground).props('paused')).toBe(false)
+    } finally { wrapper.unmount() }
+  })
+
+  it('keeps dark utilities active for dark pages and scene islands on light pages', async () => {
+    const fixture = mount(defineComponent({ render: () => h('div', [h('span', { class: 'text-black dark:text-white' }, 'Page'), h('div', { 'data-scene-theme': '' }, h('span', { class: 'text-black dark:text-white' }, 'Scene'))]) }), { attachTo: document.body })
+    try {
+      const [page, scene] = fixture.findAll('span')
+      document.documentElement.dataset['theme'] = 'light'
+      expect(getComputedStyle(page!.element).color).toBe('rgb(0, 0, 0)')
+      expect(getComputedStyle(scene!.element).color).toBe('rgb(255, 255, 255)')
+      document.documentElement.dataset['theme'] = 'dark'
+      expect(getComputedStyle(page!.element).color).toBe('rgb(255, 255, 255)')
+    } finally { fixture.unmount() }
+  })
+
+  it('updates mobile browser chrome for explicit themes and System', async () => {
+    const metas = ['light', 'dark'].map((scheme) => {
+      const meta = document.createElement('meta')
+      meta.name = 'theme-color'
+      meta.media = `(prefers-color-scheme: ${scheme})`
+      document.head.append(meta)
+      return meta
+    })
+    const wrapper = mountPreferences()
+    try {
+      await wrapper.get('select').setValue('light')
+      expect(metas.map((meta) => meta.content)).toEqual(['#fafafd', '#fafafd'])
+      await wrapper.get('select').setValue('dark')
+      expect(metas.map((meta) => meta.content)).toEqual(['#090a14', '#090a14'])
+      await wrapper.get('select').setValue('system')
+      expect(metas.every((meta) => meta.content === (matchMedia('(prefers-color-scheme: light)').matches ? '#fafafd' : '#090a14'))).toBe(true)
+    } finally {
+      wrapper.unmount()
+      metas.forEach((meta) => meta.remove())
+    }
+  })
+
   it('keeps playback beside the hero edit link and out of the shared navigation', () => {
     const wrapper = mountPreferences()
     try {

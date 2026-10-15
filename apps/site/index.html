@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#090a14" />
+    <meta name="theme-color" content="#090a14" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafd" media="(prefers-color-scheme: light)" />
     <script data-eager>
       try {
         const theme = localStorage.getItem('aurora:theme')
@@ -12,6 +13,9 @@
         document.documentElement.dataset.paused = localStorage.getItem('aurora:paused') === 'true' ? 'true' : 'false'
       } catch {
         document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+      }
+      for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+        meta.content = document.documentElement.dataset.theme === 'light' ? '#fafafd' : '#090a14'
       }
     </script>
     <!--head-->

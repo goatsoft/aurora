@@ -12,7 +12,7 @@ Aurora backgrounds are decorative. They stay `aria-hidden`, never receive keyboa
 
 Aurora honours `prefers-reduced-motion`. The default is a still frame; a document can instead request slower animation or its CSS fallback. Signal distortion is disabled under reduced motion. Interactive scenes remove spring overshoot and replace travelling impulses with a quiet, still response.
 
-Give visitors a visible way to stop animation as well. The Aurora website has a **Pause animations** button beside Edit on the homepage and gallery heroes. It pauses backgrounds throughout the site, including the gallery and documentation demos, and remembers the choice. Each interaction playground also has its own pause control. Studio's Play/Pause control holds the current frame without editing the document.
+Give visitors a visible way to stop animation as well. The Aurora website has a **Pause animations** button beside Edit on the homepage and gallery heroes, and in each documentation demo. It pauses backgrounds throughout the site and remembers the choice. Each interaction playground also has its own pause control; while the site is paused, it displays **Paused site-wide** and stays disabled. Studio's Play/Pause control holds the current frame without editing the document.
 
 For your own site, connect a labelled button to `background.pause()` and `background.resume()`, or the Vue `paused` prop. Resuming preserves the animation's phase. A manual resume never overrides the visitor's reduced-motion preference. See [runtime playback controls](/docs/guide/runtime#playback-controls).
 

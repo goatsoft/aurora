@@ -3,9 +3,11 @@ import { configureAurora, setBackends } from '@goatsoft/aurora'
 import { decodeShare } from '@goatsoft/aurora-editor-ui'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { defineComponent, h } from 'vue'
 import InteractionPlayground from '@/components/InteractionPlayground.vue'
 import InteractionsSection from '@/components/section/InteractionsSection.vue'
 import { interactionCards } from '@/lib/interactions'
+import { provideSitePreferences } from '@/lib/preferences'
 import '@/main.css'
 
 const leases: { listener: LeaseListener, states: SurfaceState[], released: boolean }[] = []
@@ -23,12 +25,47 @@ beforeEach(() => {
   setBackends({ main: backend, worker: backend })
 })
 afterEach(() => {
+  localStorage.removeItem('aurora:paused')
+  delete document.documentElement.dataset['paused']
+  delete document.documentElement.dataset['theme']
   setBackends(undefined)
   configureAurora({ worker: true })
 })
 const until = (check: () => boolean) => vi.waitFor(() => expect(check()).toBe(true), { timeout: 8000 })
 
 describe('gallery interaction playgrounds', () => {
+  it('reports and disables site-paused playback, preserving a separate local pause', async () => {
+    const card = interactionCards[0]!
+    const Harness = defineComponent({
+      setup() {
+        const preferences = provideSitePreferences()
+        return () => h('div', [h('button', { 'onClick': () => preferences.toggleMotion(), 'aria-label': 'Toggle site playback' }), h(InteractionPlayground, { scene: card.scene, body: card.body, kind: 'follow' })])
+      },
+    })
+    const wrapper = mount(Harness, { attachTo: document.body, global: { stubs: { EditInStudio: true } } })
+    try {
+      await until(() => !!leases[0]?.states.length)
+      const local = () => wrapper.getComponent(InteractionPlayground).findAll('button')[0]!
+      await local().trigger('click')
+      expect(local().text()).toBe('Play')
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Paused site-wide')
+      expect(local().attributes('aria-pressed')).toBe('true')
+      expect(local().attributes('aria-label')).toBe(`${card.scene.doc.name} paused site-wide`)
+      expect(local().attributes('disabled')).toBeDefined()
+      expect(leases[0]!.states.at(-1)!.pausedAt).toBeDefined()
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Play')
+      expect(local().attributes('disabled')).toBeUndefined()
+      await local().trigger('click')
+      await until(() => leases[0]!.states.at(-1)!.pausedAt === undefined)
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Paused site-wide')
+      await wrapper.get('[aria-label="Toggle site playback"]').trigger('click')
+      expect(local().text()).toBe('Pause')
+    } finally { wrapper.unmount() }
+  })
+
   it('opens an editable interaction in Studio and keeps the guide separate', async () => {
     const wrapper = mount(InteractionsSection, { global: { stubs: { InteractionPlayground: true, RouterLink: RouterLinkStub } } })
     try {

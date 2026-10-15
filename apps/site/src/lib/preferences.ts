@@ -31,6 +31,7 @@ export function provideSitePreferences() {
   const applyTheme = () => {
     light.value = theme.value === 'light' || (theme.value === 'system' && matchMedia('(prefers-color-scheme: light)').matches)
     document.documentElement.dataset['theme'] = light.value ? 'light' : 'dark'
+    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) meta.content = light.value ? '#fafafd' : '#090a14'
   }
   const applyMotion = () => {
     document.documentElement.dataset['paused'] = String(paused.value)

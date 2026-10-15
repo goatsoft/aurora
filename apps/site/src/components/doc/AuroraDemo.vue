@@ -49,7 +49,8 @@ const { paused: sitePaused } = useSitePreferences()
         :paused="sitePaused"
         :src="doc"
       />
-      <div class="absolute top-3 right-3 flex gap-2">
+      <div class="absolute top-3 right-3 flex items-center gap-2">
+        <PlaybackToggle />
         <Button
           size="sm"
           variant="glass"

@@ -114,12 +114,14 @@ function blur() {
       </p>
       <div class="mt-4 flex flex-wrap gap-2">
         <button
-          class="min-h-11 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          :aria-label="`${paused ? 'Play' : 'Pause'} ${scene.doc.name}`"
-          :aria-pressed="paused"
+          class="min-h-11 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring disabled:opacity-70"
+          :aria-label="sitePaused ? `${scene.doc.name} paused site-wide` : `${playbackPaused ? 'Play' : 'Pause'} ${scene.doc.name}`"
+          :aria-pressed="playbackPaused"
+          :disabled="sitePaused"
+          :title="sitePaused ? 'Resume animations using a hero or demo playback control.' : undefined"
           @click="paused = !paused"
         >
-          {{ paused ? 'Play' : 'Pause' }}
+          {{ sitePaused ? 'Paused site-wide' : playbackPaused ? 'Play' : 'Pause' }}
         </button>
         <button
           v-if="kind === 'follow'"
