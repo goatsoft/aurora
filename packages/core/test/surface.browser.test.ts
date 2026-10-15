@@ -164,6 +164,43 @@ describe('mountAurora', () => {
     surface.dispose()
   })
 
+  it('pauses a running shared scene when a paused member mounts', async () => {
+    const { backend, leases } = scripted()
+    setBackends({ worker: backend, main: backend })
+    let time = 1000
+    vi.spyOn(performance, 'now').mockImplementation(() => time)
+    const first = mountAurora(host, hero, { scene: 'paused-mount' })
+    const neighbour = document.body.appendChild(document.createElement('div'))
+    neighbour.style.cssText = host.style.cssText
+    let second: ReturnType<typeof mountAurora> | undefined
+    try {
+      await until(() => !!leases[0]?.states.length)
+      const origin = leases[0]!.states.at(-1)!.origin
+      expect(first.paused).toBe(false)
+      time = 5000
+      second = mountAurora(neighbour, hero, { scene: 'paused-mount', paused: true })
+      await until(() => !!leases[1]?.states.length)
+      expect(first.paused).toBe(true)
+      expect(second.paused).toBe(true)
+      for (const lease of leases) {
+        expect(lease.states.at(-1)!.origin).toBe(origin)
+        expect(lease.states.at(-1)!.pausedAt! - origin).toBe(4000)
+      }
+      expect((first.element.firstElementChild as HTMLElement).style.animationPlayState).toBe('paused')
+      time = 9000
+      first.resume()
+      expect(second.paused).toBe(false)
+      for (const lease of leases) {
+        expect(lease.states.at(-1)!.origin).toBe(origin + 4000)
+        expect(lease.states.at(-1)!.pausedAt).toBeUndefined()
+      }
+    } finally {
+      first.dispose()
+      second?.dispose()
+      neighbour.remove()
+    }
+  })
+
   it('sends the renderer plain data, even for a Proxy from framework state', async () => {
     // A Vue ref or reactive is a Proxy, which postMessage can't copy: posting one took the worker
     // down for every background on the page.
