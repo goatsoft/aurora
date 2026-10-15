@@ -9,6 +9,28 @@ const member = (left: number, top: number, width: number, height: number): Scene
 })
 
 describe('scenes', () => {
+  it('shares pause state and the resumed phase, including members that join later', () => {
+    const a = member(0, 0, 100, 100)
+    const b = member(100, 0, 100, 100)
+    const sa = joinScene('playback', a, 1000)
+    const sb = joinScene('playback', b, 2000)
+    sa.pause(5000)
+    sb.pause(9000)
+    const c = member(200, 0, 100, 100)
+    const sc = joinScene('playback', c, 10_000)
+    expect([sa.pausedAt, sb.pausedAt, sc.pausedAt]).toEqual([5000, 5000, 5000])
+    sb.resume(25_000)
+    sa.resume(30_000)
+    expect([sa.origin, sb.origin, sc.origin]).toEqual([21_000, 21_000, 21_000])
+    expect([sa.pausedAt, sb.pausedAt, sc.pausedAt]).toEqual([undefined, undefined, undefined])
+    expect(a.changed).toHaveBeenCalled()
+    expect(b.changed).toHaveBeenCalled()
+    expect(c.changed).toHaveBeenCalled()
+    sa.leave()
+    sb.leave()
+    sc.leave()
+  })
+
   it('shares one clock and one field across members', () => {
     const a = member(0, 0, 400, 300)
     const b = member(400, 0, 400, 300)

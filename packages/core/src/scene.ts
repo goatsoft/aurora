@@ -14,6 +14,7 @@ export interface SceneGeometry {
 
 interface Scene {
   origin: number
+  pausedAt: number | undefined
   members: Set<SceneMember>
 }
 
@@ -23,17 +24,29 @@ const scenes = new Map<string, Scene>()
  * Joins a named scene. Members share one clock and one document-space field, so separate panels
  * read as one continuous background. The scene ends with its last member.
  */
-export function joinScene(name: string, member: SceneMember, now: number): { origin: number, notify: () => void, leave: () => void } {
+export function joinScene(name: string, member: SceneMember, now: number) {
   let scene = scenes.get(name)
   if (!scene) {
-    scene = { origin: now, members: new Set() }
+    scene = { origin: now, pausedAt: undefined, members: new Set() }
     scenes.set(name, scene)
   }
   const current = scene
   current.members.add(member)
   for (const other of current.members) if (other !== member) other.changed()
   return {
-    origin: current.origin,
+    get origin() { return current.origin },
+    get pausedAt() { return current.pausedAt },
+    pause(at: number) {
+      if (current.pausedAt !== undefined) return
+      current.pausedAt = at
+      for (const other of current.members) other.changed()
+    },
+    resume(at: number) {
+      if (current.pausedAt === undefined) return
+      current.origin += at - current.pausedAt
+      current.pausedAt = undefined
+      for (const other of current.members) other.changed()
+    },
     /** Tells the other members this one moved or resized, so they recompute their part. */
     notify() {
       for (const other of current.members) if (other !== member) other.changed()

@@ -14,6 +14,8 @@ export interface LayerLayout {
   params: number
   /** Slot of the mask's four values, if the layer has a mask. */
   mask?: number
+  /** Slot of the transient translation and effect clock, when interactions are configured. */
+  transform?: number
   /** First of `generator.colors` consecutive colour slots. */
   colors: number
 }
@@ -114,7 +116,7 @@ export function compose(doc: AuroraDocument, output: RgbSpace, lookup: Generator
     const transform = interactive ? slot++ : undefined
     const colors = slot
     slot += generator.colors
-    layers.push(mask === undefined ? { generator, params, colors } : { generator, params, mask, colors })
+    layers.push({ generator, params, colors, ...(mask === undefined ? {} : { mask }), ...(transform === undefined ? {} : { transform }) })
 
     const base = params * 4
     const args = names.map((_, k) => scalar(base + 1 + k)).join(', ')

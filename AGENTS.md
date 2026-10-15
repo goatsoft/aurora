@@ -77,6 +77,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - **Size**, minified with dependencies bundled and gzipped. `pnpm size` measures them and `pnpm verify` fails when one is over; `scripts/size.ts` holds the list.
   - Main-thread runtime and worker: 10 kB each.
+  - Lazy interaction modules (controller, physics and bindings, with dependencies): 7 kB.
   - `@goatsoft/aurora/element`: 14 kB, since it carries the format's generated Valibot validator; editor metadata is excluded (ADR-0012).
   - Each generator: 2 kB. The shared noise library: 3 kB, shipped once however many generators use it.
 - **Runtime.** One worker and one GPU device per page, a shared 30 fps budget, frames gated on the previous submit completing, and 0.5x device pixel ratio capped at 1280 px per axis, all configurable through `configureAurora({ fps, pixelRatio, maxPixels })`. First frame within 100 ms of attach on an M1.

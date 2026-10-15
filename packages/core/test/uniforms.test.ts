@@ -82,6 +82,18 @@ describe('colours', () => {
 })
 
 describe('signal effect uniforms', () => {
+  it('writes transforms to their explicit slot even when colours are elsewhere', () => {
+    const input = doc([{ type: 'aurora-fbm' }], { interactions: [{ type: 'follow', bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    const original = compose(input)
+    const transform = original.slots + 1
+    const shader = { ...original, slots: transform + 1, layers: original.layers.map((layer) => ({ ...layer, transform })) }
+    const frame = { width: 200, height: 100, time: 1, scroll: 0 }
+    const expected = packUniforms(input, original, frame)
+    const out = packUniforms(input, shader, { ...frame, transforms: [[0.2, -0.1, 2, 1]] })
+    expect([...out.subarray(transform * 4, transform * 4 + 4)]).toEqual(f32([0.2, -0.1, 2, 1]))
+    expect([...out.subarray(original.layers[0]!.colors * 4, original.slots * 4)]).toEqual([...expected.subarray(original.layers[0]!.colors * 4)])
+  })
+
   it('bypasses signal distortion for reduced motion and restores the authored amount', () => {
     const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7 }, pixelate: { size: 8 }, vignette: {} } })
     const shader = compose(input)

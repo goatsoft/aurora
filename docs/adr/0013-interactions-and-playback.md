@@ -8,7 +8,7 @@ Status: accepted. Implements issue #42.
 
 Pointer positions, gestures, velocities, active impulses and playback never enter the document. A lazily loaded main-thread controller samples them at the configured frame budget and sends plain rendering state through the existing backend. No shader is compiled for each input event. Unconfigured documents retain their shader and golden images. Configured documents add one vec4 per layer for transient translation and an optional independent effect clock.
 
-Ambient pause stores a frozen epoch and advances the clock origin by the duration of each pause when resuming. The renderer draws a paused or speed-zero surface only when dirty. Input may redraw a paused surface until its response settles without advancing ambient time. CSS drift uses `animation-play-state`.
+Ambient pause stores a frozen epoch and advances the clock origin by the duration of each pause when resuming. Named scenes own this clock: pausing or resuming any member affects every member, and later members inherit the current phase and pause state. The renderer draws a paused or speed-zero surface only when dirty. Input may redraw a paused surface until its response settles without advancing ambient time. CSS drift uses `animation-play-state`.
 
 ## Input and accessibility
 

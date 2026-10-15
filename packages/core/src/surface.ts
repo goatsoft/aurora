@@ -46,9 +46,9 @@ export interface AuroraSurface {
   /** Rebind input without remounting the background or resetting its ambient phase. */
   setInteractionTarget: (target: HTMLElement, drag?: boolean) => void
   setReducedMotion: (reduced: boolean) => void
-  /** Freeze at the current animation phase, without changing the document. */
+  /** Freeze at the current phase. Pauses every member of a named scene together. */
   pause: () => void
-  /** Continue from the frozen phase. */
+  /** Continue from the frozen phase, including every member of a named scene. */
   resume: () => void
   /** The element Aurora added to the host. */
   readonly element: HTMLElement
@@ -220,7 +220,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     root.style.position = doc.canvas.fixed ? 'fixed' : 'absolute'
     const drift = mode === 'css' && css.drift > 0 && !prefersReduced()
     fallback.style.cssText = `position:absolute;inset:-10%;${css.style}${drift ? `;animation:aurora-drift ${css.drift}s ease-in-out infinite;will-change:transform` : ''}`
-    fallback.style.animationPlayState = pausedAt === undefined ? 'running' : 'paused'
+    fallback.style.animationPlayState = clockPausedAt() === undefined ? 'running' : 'paused'
     // While a plain document's generators are still loading, its fallback would be missing their
     // layers: show nothing of ours yet (a server-rendered fallback underneath covers it).
     const incomplete = loading && !precompiled && !loaded()
@@ -232,14 +232,19 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       const r = root.getBoundingClientRect()
       return doc.canvas.fixed ? r : { left: r.left + scrollX, top: r.top + scrollY, width: r.width, height: r.height }
     },
-    changed: () => push(),
+    changed: () => {
+      fallback.style.animationPlayState = clockPausedAt() === undefined ? 'running' : 'paused'
+      push()
+    },
   }
   const scene = options.scene ? joinScene(options.scene, member, epochNow()) : undefined
-  let origin = scene?.origin ?? pausedAt ?? epochNow()
+  let origin = pausedAt ?? epochNow()
+  const clockPausedAt = () => scene ? scene.pausedAt : pausedAt
 
   const output = () => outputFor(doc)
 
   function state(): SurfaceState {
+    const frozen = clockPausedAt()
     const r = root.getBoundingClientRect()
     const ratio = renderRatio(devicePixelRatio, r.width, r.height)
     const geometry = options.scene ? sceneGeometry(options.scene, member) : { width: r.width, height: r.height, rect: [0, 0, 1, 1] as const }
@@ -251,8 +256,8 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
       scroll: doc.canvas.fixed ? (scrollY / Math.max(1, innerHeight)) * doc.canvas.parallax : 0,
       visible: visible && !document.hidden,
       reduced: reduced(),
-      origin,
-      ...(pausedAt === undefined ? {} : { pausedAt }),
+      origin: scene?.origin ?? origin,
+      ...(frozen === undefined ? {} : { pausedAt: frozen }),
       ...(transforms ? { transforms } : {}),
       output: output(),
     }
@@ -268,14 +273,23 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   }
 
   function pause() {
-    if (disposed || pausedAt !== undefined) return
+    if (disposed || clockPausedAt() !== undefined) return
+    if (scene) {
+      scene.pause(epochNow())
+      return
+    }
     pausedAt = epochNow()
     fallback.style.animationPlayState = 'paused'
     push()
   }
 
   function resume() {
-    if (disposed || pausedAt === undefined) return
+    if (disposed || clockPausedAt() === undefined) return
+    if (scene) {
+      scene.resume(epochNow())
+      return
+    }
+    if (pausedAt === undefined) return
     origin += epochNow() - pausedAt
     pausedAt = undefined
     fallback.style.animationPlayState = 'running'
@@ -322,29 +336,28 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
 
   /** Whether the current document's generators are still loading. */
   let loading = true
+  let inputReady = Promise.resolve()
   /** Loads the built-in generators the document uses, then repaints; unknown generators mean CSS. */
   const prepare = () => {
     loading = true
-    return loadGenerators(doc.layers.map((layer) => layer.type)).finally(() => {
+    const revision = ++inputRevision
+    const current = doc
+    // Fetch input alongside generators, but never hold up the authored first frame for it.
+    const controller = doc.interactions ? import('./interactions') : undefined
+    const ready = loadGenerators(doc.layers.map((layer) => layer.type)).finally(() => {
       loading = false
     }).then(settled, failed)
-  }
-  async function settled() {
-    if (disposed) return
-    const revision = ++inputRevision
-    mark('generators', surfaceId)
-    const current = doc
     if (!doc.interactions) {
       interactions?.dispose()
       interactions = undefined
       transforms = undefined
       rendered = doc
-    } else if (interactions) interactions.configure(doc)
-    else {
-      try {
-        const { InteractionController } = await import('./interactions')
-        if (isDisposed() || current !== doc || revision !== inputRevision) return
-        interactions = new InteractionController(doc, {
+    }
+    inputReady = Promise.all([ready, controller]).then(([, module]) => {
+      if (!module || isDisposed() || current !== doc || revision !== inputRevision || !loaded()) return
+      if (interactions) interactions.configure(doc)
+      else {
+        interactions = new module.InteractionController(doc, {
           target: interactionTarget,
           drag,
           rect: () => state().scene.rect,
@@ -356,11 +369,14 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
             push()
           },
         })
-        interactions.setVisible(visible && !document.hidden)
-      } catch (error) {
-        report('Aurora: interaction modules failed to load.', error)
       }
-    }
+      interactions.setVisible(visible && !document.hidden)
+    }).catch((error: unknown) => report('Aurora: interaction modules failed to load.', error))
+    return ready
+  }
+  function settled() {
+    if (disposed) return
+    mark('generators', surfaceId)
     paintFallback()
     if (!loaded()) {
       const missing = doc.layers.map((l) => l.type).filter((type) => !(type in GENERATORS))
@@ -383,7 +399,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     interactions = undefined
     transforms = undefined
     rendered = doc
-    if (loaded()) void settled()
+    generatorsReady = prepare()
   }
   function setReducedMotion(value: boolean) {
     if (disposed || forceReduced === value) return
@@ -426,6 +442,7 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
     report('Aurora: WebGPU is present but no renderer could start; showing the CSS fallback.')
   }
 
+  if (options.paused) scene?.pause(pausedAt!)
   paintFallback()
   const io = new IntersectionObserver(([entry]) => {
     visible = !!entry?.isIntersecting
@@ -495,11 +512,11 @@ export function mountAurora(host: HTMLElement, source: AuroraSource, options: Mo
   options.signal?.addEventListener('abort', dispose, { once: true })
   if (options.signal?.aborted) dispose()
   else void start()
-  const ready = generatorsReady
+  const ready = Promise.all([generatorsReady, inputReady]).then(() => undefined)
 
   return {
     get mode() { return mode },
-    get paused() { return pausedAt !== undefined },
+    get paused() { return clockPausedAt() !== undefined },
     get interactions() { return interactions },
     setInteractionTarget,
     setReducedMotion,

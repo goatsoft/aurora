@@ -95,6 +95,8 @@ background.pause()
 console.log(background.paused)
 ```
 
+Named scenes share playback as well as geometry. Pausing or resuming any member pauses or resumes the whole scene. Members that join later inherit its current clock and pause state.
+
 Vue accepts `<AuroraBackground :src="hero" :paused="paused" />`, or `useAurora(host, hero, { paused })` with a ref or getter. The custom element accepts `<aurora-bg src="/hero.aurora" paused>` and a boolean `element.paused` property.
 
 Paused backgrounds redraw when their document or size changes, then stop scheduling frames. Documents with `motion.speed: 0` also render only on changes, but freeze the authored clock at zero rather than preserving a live phase. Playback state is temporary: it is never saved in the `.aurora` file or recorded in Studio's undo history. The CSS fallback pauses its drift as well. Reduced-motion preferences still apply while playing.
