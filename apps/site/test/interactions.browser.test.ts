@@ -1,5 +1,6 @@
 import type { Backend, LeaseListener, SurfaceState } from '@goatsoft/aurora'
 import { configureAurora, setBackends } from '@goatsoft/aurora'
+import { decodeShare } from '@goatsoft/aurora-editor-ui'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import InteractionPlayground from '@/components/InteractionPlayground.vue'
@@ -28,12 +29,15 @@ afterEach(() => {
 const until = (check: () => boolean) => vi.waitFor(() => expect(check()).toBe(true), { timeout: 8000 })
 
 describe('gallery interaction playgrounds', () => {
-  it('shows all five compositions with their modules and documentation link', () => {
+  it('opens an editable interaction in Studio and keeps the guide separate', async () => {
     const wrapper = mount(InteractionsSection, { global: { stubs: { InteractionPlayground: true, RouterLink: RouterLinkStub } } })
     try {
       expect(wrapper.get('h2').text()).toBe('Interactions')
       expect(wrapper.findAllComponents(InteractionPlayground).map((card) => card.props('scene'))).toEqual(interactionCards.map((card) => card.scene))
       expect(wrapper.getComponent(RouterLinkStub).props('to')).toBe('/docs/guide/interactions')
+      const build = wrapper.findAll('a').find((link) => link.text().includes('Build an interaction'))!
+      await until(() => build.attributes('href')?.startsWith('/studio/#a=') ?? false)
+      expect(await decodeShare(build.attributes('href')!.split('#')[1]!)).toEqual(interactionCards[0]!.scene.doc)
       expect(interactionCards.map((card) => card.scene.doc.name)).toEqual(['Aurora Follow', 'Depth Landscape', 'Tap to Ping', 'Grab the Signal', 'Signal Response'])
     } finally {
       wrapper.unmount()
