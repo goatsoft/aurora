@@ -5,6 +5,7 @@ import { mount, RouterLinkStub } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import CodeGroup from '@/components/doc/CodeGroup.vue'
+import HeroControls from '@/components/HeroControls.vue'
 import LazyBackground from '@/components/LazyBackground.vue'
 import PillarsSection from '@/components/section/PillarsSection.vue'
 import SharedSection from '@/components/section/SharedSection.vue'
@@ -16,7 +17,7 @@ import '@/main.css'
 const Harness = defineComponent({
   setup() {
     provideSitePreferences()
-    return () => h('div', [h(SiteNav), h('div', { class: 'relative h-20' }, [h(LazyBackground, { src: interactionCards[0]!.scene })])])
+    return () => h('div', [h(SiteNav), h('div', { class: 'relative h-20' }, [h(LazyBackground, { src: interactionCards[0]!.scene }), h(HeroControls, { src: interactionCards[0]!.scene })])])
   },
 })
 const mountPreferences = () => mount(Harness, { attachTo: document.body, global: { stubs: { RouterLink: RouterLinkStub, AuroraBackground: true } } })
@@ -35,6 +36,19 @@ afterEach(() => {
 })
 
 describe('site accessibility preferences', () => {
+  it('keeps playback beside the hero edit link and out of the shared navigation', () => {
+    const wrapper = mountPreferences()
+    try {
+      const controls = wrapper.get('[role="group"][aria-label="Background controls"]')
+      const pause = controls.get('button[aria-label="Pause animations"]')
+      expect(pause.attributes('aria-pressed')).toBe('false')
+      expect(controls.get('a').attributes('aria-label')).toContain('in Studio')
+      expect(wrapper.getComponent(SiteNav).find('button[aria-pressed]').exists()).toBe(false)
+      expect(getComputedStyle(pause.element).width).toBe('44px')
+      expect(getComputedStyle(pause.element).height).toBe('44px')
+    } finally { wrapper.unmount() }
+  })
+
   it('follows system theme changes until the visitor makes a choice, then removes its listener', async () => {
     const nativeMatchMedia = window.matchMedia.bind(window)
     const media = nativeMatchMedia('(prefers-color-scheme: light)')

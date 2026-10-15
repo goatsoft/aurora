@@ -22,6 +22,7 @@ declare module 'vue' {
     EditInStudio: typeof import('./components/EditInStudio.vue')['default']
     GalleryScene: typeof import('./components/GalleryScene.vue')['default']
     GetStartedSection: typeof import('./components/section/GetStartedSection.vue')['default']
+    HeroControls: typeof import('./components/HeroControls.vue')['default']
     HeroSection: typeof import('./components/section/HeroSection.vue')['default']
     HeroStudio: typeof import('./components/HeroStudio.vue')['default']
     IHgArrowDown01: typeof import('~icons/hugeicons/arrow-down01')['default']

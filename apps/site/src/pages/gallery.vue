@@ -67,10 +67,10 @@ const { paused: sitePaused } = useSitePreferences()
           >Individual generators ↓</a>
         </nav>
       </div>
-      <EditInStudio
+      <HeroControls
         :src="galleryHero"
         label="Prism sky"
-        position="right-6 bottom-16"
+        class="right-6 bottom-16"
       />
     </section>
     <div class="mx-auto max-w-6xl px-6 pb-12">

@@ -24,10 +24,10 @@ const { paused: sitePaused } = useSitePreferences()
         :src="borealis"
       />
     </div>
-    <EditInStudio
+    <HeroControls
       :src="borealis"
       label="this background"
-      position="right-6 bottom-60"
+      class="right-6 bottom-60"
     />
     <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(65%_50%_at_50%_50%,oklch(0.12_0.03_300/0.72),transparent_75%)]" />
     <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-background" />

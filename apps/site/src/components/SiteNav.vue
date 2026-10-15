@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { SITE } from '@/head'
-import { useSitePreferences } from '@/lib/preferences'
-
-const { paused, toggleMotion } = useSitePreferences()
 const { y } = useWindowScroll()
 const scrolled = computed(() => y.value > 24)
 const open = ref(false)
@@ -53,23 +50,6 @@ const links = [
         </div>
         <div class="flex items-center gap-1.5">
           <ThemeSelect />
-          <button
-            type="button"
-            class="inline-flex size-11 items-center justify-center rounded-full hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-5"
-            :aria-label="paused ? 'Resume animations' : 'Pause animations'"
-            :title="paused ? 'Resume animations' : 'Pause animations'"
-            :aria-pressed="paused"
-            @click="toggleMotion"
-          >
-            <IHgPlay
-              v-if="paused"
-              aria-hidden="true"
-            />
-            <IHgPause
-              v-else
-              aria-hidden="true"
-            />
-          </button>
           <Button
             variant="ghost"
             size="icon"
