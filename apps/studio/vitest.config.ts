@@ -7,7 +7,9 @@ import studio from './vite.config'
  * loads the built unplugin, so this runs after `pnpm build`, in `pnpm test:apps`.
  */
 export default mergeConfig(studio, defineConfig({
-  optimizeDeps: { include: ['vue', '@vue/test-utils', 'reka-ui', '@vueuse/core', 'motion-v'] },
+  // Pre-bundle everything the tests reach up front: a dependency discovered mid-run makes Vite reload
+  // the page, which can fail whichever test file is importing at that moment.
+  optimizeDeps: { include: ['vue', '@vue/test-utils', 'reka-ui', '@vueuse/core', 'motion-v', 'class-variance-authority', 'clsx', 'tailwind-merge'] },
   test: {
     name: 'studio',
     root: import.meta.dirname,
