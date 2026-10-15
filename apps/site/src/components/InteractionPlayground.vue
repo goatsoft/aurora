@@ -18,6 +18,7 @@ const keyboard = ref(false)
 const gestures = computed(() => ({ grab: props.scene.doc.interactions?.some((module) => module.type === 'grab'), impulse: props.scene.doc.interactions?.some((module) => module.type === 'impulse') }))
 const instruction = computed(() => `Focus the scene: arrows ${props.kind === 'impulse' ? 'choose the target' : 'move'}${gestures.value.impulse ? ', Enter emits a pulse' : ''}${gestures.value.grab ? ', G grabs or releases' : ''}, Escape resets. Playback can stay paused while you interact.`)
 const help = `interaction-${useId()}`
+const pauseHelp = `${help}-playback`
 const { stop } = useIntersectionObserver(target, ([entry]) => {
   if (!entry?.isIntersecting) return
   mounted.value = true
@@ -75,7 +76,7 @@ function blur() {
       role="group"
       tabindex="0"
       :aria-label="`${scene.doc.name} interaction playground`"
-      :aria-describedby="help"
+      :aria-describedby="sitePaused ? `${help} ${pauseHelp}` : help"
       class="relative isolate aspect-video overflow-hidden bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       @keydown="key"
       @blur="blur"
@@ -118,7 +119,7 @@ function blur() {
           :aria-label="sitePaused ? `${scene.doc.name} paused site-wide` : `${playbackPaused ? 'Play' : 'Pause'} ${scene.doc.name}`"
           :aria-pressed="playbackPaused"
           :disabled="sitePaused"
-          :title="sitePaused ? 'Resume animations using a hero or demo playback control.' : undefined"
+          :aria-describedby="sitePaused ? pauseHelp : undefined"
           @click="paused = !paused"
         >
           {{ sitePaused ? 'Paused site-wide' : playbackPaused ? 'Play' : 'Pause' }}
@@ -164,6 +165,15 @@ function blur() {
           Reset
         </button>
       </div>
+      <p
+        :id="pauseHelp"
+        class="text-xs/relaxed text-muted-foreground"
+        :class="sitePaused ? 'mt-3' : undefined"
+      >
+        <template v-if="sitePaused">
+          Animations are paused site-wide. Resume them using the control beside Edit in the page hero or in a documentation demo.
+        </template>
+      </p>
       <label
         v-if="kind === 'grab'"
         class="mt-4 flex min-h-11 w-fit items-center gap-3 text-sm"
