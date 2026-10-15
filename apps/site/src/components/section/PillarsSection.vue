@@ -1,8 +1,11 @@
 <script setup lang="ts">
 const pillars = [
-  { icon: 'gpu', title: 'One GPU device per page', body: 'All the backgrounds on a page share one GPU device. They stop drawing when they scroll out of view or the tab is hidden.' },
-  { icon: 'css', title: 'CSS gradient fallback', body: 'Each background also has a CSS gradient that approximates it. Browsers without WebGPU show the gradient.' },
-  { icon: 'colour', title: 'Colour in OKLab', body: 'Colours blend in OKLab, so a gradient between two bright colours stays bright in the middle.' },
+  { icon: 'motion', title: 'Reduced motion and playback', body: 'Honours prefers-reduced-motion. Pause and resume without restarting the animation; pointer and keyboard responses still work while paused.' },
+  { icon: 'layers', title: 'Layered scenes and interactions', body: 'Layer auroras, landscapes, weather and gradients. Add scan lines, static or signal distortion, then make the scene respond to movement, taps and drags.' },
+  { icon: 'studio', title: 'Visual editing in Studio', body: 'Edit colours, layers and interactions in your browser. Preview on light or dark pages, undo changes, and save or share your .aurora file.' },
+  { icon: 'css', title: 'CSS fallback and SSR', body: 'A generated CSS gradient appears before WebGPU starts and stays available in browsers without it. Works with server-rendered pages.' },
+  { icon: 'gpu', title: 'Pauses out of view', body: 'Backgrounds pause off-screen and in hidden tabs. Every background on the page shares one GPU device and a configurable frame budget.' },
+  { icon: 'colour', title: 'Shared backgrounds', body: 'Carry a continuous background across separate cards or panels. Colours blend in OKLab, with sRGB and Display P3 support.' },
 ]
 </script>
 
@@ -16,10 +19,10 @@ const pillars = [
       class="text-center"
     >
       <p class="eyebrow">
-        How it works
+        Features
       </p>
       <h2 class="mx-auto mt-4 max-w-3xl text-heading font-semibold tracking-tight text-balance">
-        Uses WebGPU when available, <span class="text-muted-foreground">with a CSS fallback.</span>
+        Build, preview and control <span class="text-muted-foreground">your backgrounds.</span>
       </h2>
     </div>
     <div class="mt-14 grid gap-4 md:grid-cols-3">
@@ -36,6 +39,18 @@ const pillars = [
           />
           <IHgPaintBrush04
             v-else-if="pillar.icon === 'css'"
+            class="size-5"
+          />
+          <IHgPause
+            v-else-if="pillar.icon === 'motion'"
+            class="size-5"
+          />
+          <IHgLayers01
+            v-else-if="pillar.icon === 'layers'"
+            class="size-5"
+          />
+          <IHgPaintBoard
+            v-else-if="pillar.icon === 'studio'"
             class="size-5"
           />
           <IHgColors
