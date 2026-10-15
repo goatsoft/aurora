@@ -1,5 +1,6 @@
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
+import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './interactions-schema'
 import { Pixelate, Signal, Vignette } from './modifiers-schema'
 import { range } from './range'
 
@@ -72,19 +73,12 @@ const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.min
 const InteractionBinding = v.strictObject({
   layer: v.optional(LayerIndex),
   parameter: v.pipe(v.string(), v.nonEmpty('must not be empty'), v.maxLength(64, 'must be 64 characters or fewer'), v.description('Generator control, opacity, offsetX, offsetY, time, or signal.control.')),
-  input: v.picklist(['x', 'y', 'strength', 'travel']),
-  amount: v.optional(range(-4, 4, 'Add this much to the authored control at full input; negative values repel.'), 1),
-  slot: v.optional(v.pipe(range(0, 3, 'Impulse slot, from newest (0) to oldest (3).'), v.integer('must be a whole number')), 0),
+  ...InteractionBindingControls,
 })
 
 const Interaction = v.strictObject({
-  type: v.picklist(['follow', 'impulse', 'grab']),
-  activation: v.optional(v.picklist(['hover', 'focus', 'both']), 'both'),
-  strength: v.optional(range(0, 2, 'Response strength.'), 1),
-  smoothing: v.optional(unit('Follow easing; 0 responds immediately.'), 0.65),
-  decay: v.optional(range(0.05, 5, 'Seconds for an impulse or return to settle.'), 1),
-  damping: v.optional(unit('Grab spring damping; higher settles faster.'), 0.75),
-  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(64, 'must have 64 bindings or fewer')),
+  ...InteractionControls,
+  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(MAX_INTERACTION_BINDINGS, `must have ${MAX_INTERACTION_BINDINGS} bindings or fewer`)),
 })
 
 const LinearMask = v.strictObject({
@@ -179,7 +173,7 @@ export const AuroraSchema = v.pipe(
     canvas: v.optional(Canvas, {}),
     motion: v.optional(Motion, {}),
     modifiers: v.optional(Modifiers),
-    interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(8, 'must have 8 interactions or fewer'))),
+    interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(MAX_INTERACTIONS, `must have ${MAX_INTERACTIONS} interactions or fewer`))),
     palette: v.pipe(
       v.array(Color),
       v.minLength(1, 'must have at least one colour'),

@@ -1,6 +1,7 @@
 // Generated from schema.ts; metadata stays in the authoring schema. Regenerate with pnpm test -u.
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
+import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './runtime-interactions'
 import { Pixelate, Signal, Vignette } from './runtime-modifiers'
 import { range } from './runtime-range'
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
@@ -38,18 +39,11 @@ const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.min
 const InteractionBinding = v.strictObject({
   layer: v.optional(LayerIndex),
   parameter: v.pipe(v.string(), v.nonEmpty('must not be empty'), v.maxLength(64, 'must be 64 characters or fewer')),
-  input: v.picklist(['x', 'y', 'strength', 'travel']),
-  amount: v.optional(range(-4, 4), 1),
-  slot: v.optional(v.pipe(range(0, 3), v.integer('must be a whole number')), 0),
+  ...InteractionBindingControls,
 })
 const Interaction = v.strictObject({
-  type: v.picklist(['follow', 'impulse', 'grab']),
-  activation: v.optional(v.picklist(['hover', 'focus', 'both']), 'both'),
-  strength: v.optional(range(0, 2), 1),
-  smoothing: v.optional(unit(), 0.65),
-  decay: v.optional(range(0.05, 5), 1),
-  damping: v.optional(unit(), 0.75),
-  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(64, 'must have 64 bindings or fewer')),
+  ...InteractionControls,
+  bindings: v.pipe(v.array(InteractionBinding), v.minLength(1, 'must have at least one binding'), v.maxLength(MAX_INTERACTION_BINDINGS, `must have ${MAX_INTERACTION_BINDINGS} bindings or fewer`)),
 })
 const LinearMask = v.strictObject({
   type: v.literal('linear'),
@@ -93,7 +87,7 @@ export const AuroraValidationSchema = v.strictObject({
   canvas: v.optional(Canvas, {}),
   motion: v.optional(Motion, {}),
   modifiers: v.optional(Modifiers),
-  interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(8, 'must have 8 interactions or fewer'))),
+  interactions: v.optional(v.pipe(v.array(Interaction), v.minLength(1, 'must have at least one interaction'), v.maxLength(MAX_INTERACTIONS, `must have ${MAX_INTERACTIONS} interactions or fewer`))),
   palette: v.pipe(v.array(Color), v.minLength(1, 'must have at least one colour'), v.maxLength(MAX_COLORS, `must have ${MAX_COLORS} colours or fewer`)),
   layers: v.pipe(v.array(Layer), v.minLength(1, 'must have at least one layer'), v.maxLength(MAX_LAYERS, `must have ${MAX_LAYERS} layers or fewer`)),
   fallback: v.optional(Fallback, { mode: 'auto' }),

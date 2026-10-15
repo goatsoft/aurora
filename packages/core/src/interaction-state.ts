@@ -1,5 +1,5 @@
 import type { AuroraDocument, AuroraInteraction, ModifierControl } from '@goatsoft/aurora-format'
-import { MODIFIERS } from '@goatsoft/aurora-format'
+import { INTERACTION_BINDING_CONTROLS, MODIFIERS } from '@goatsoft/aurora-format'
 import { GENERATORS } from './generators/index'
 
 export interface InteractionSample {
@@ -18,6 +18,7 @@ export interface InteractionFrame {
 }
 
 const zero = (): InteractionSample => ({ x: 0, y: 0, strength: 0, travel: 0 })
+const PULSES = INTERACTION_BINDING_CONTROLS.slot.max + 1
 export const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, Number.isFinite(value) ? value : 0))
 const small = (value: number) => Math.abs(value) < 0.0001 ? 0 : value
 
@@ -68,7 +69,7 @@ export class InteractionState {
   activate(x: number, y: number, now: number): void {
     if (this.config.type !== 'impulse') return
     this.pulses.unshift({ x: clamp(x) - 0.5, y: clamp(y) - 0.5, start: now })
-    this.pulses.length = Math.min(4, this.pulses.length)
+    this.pulses.length = Math.min(PULSES, this.pulses.length)
   }
 
   grab(x: number, y: number, now: number): void {
@@ -96,7 +97,7 @@ export class InteractionState {
     this.previous = now
     if (config.type === 'impulse') {
       this.pulses = this.pulses.filter((pulse) => now - pulse.start < config.decay * 1000)
-      const samples = Array.from({ length: 4 }, (_, slot) => {
+      const samples = Array.from({ length: PULSES }, (_, slot) => {
         const pulse = this.pulses[slot]
         if (!pulse) return zero()
         const age = Math.max(0, (now - pulse.start) / 1000)

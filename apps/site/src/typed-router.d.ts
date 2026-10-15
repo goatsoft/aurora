@@ -262,6 +262,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/guide/interaction-reference': RouteRecordInfo<
+      '/docs/guide/interaction-reference',
+      '/docs/guide/interaction-reference',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/guide/interactions': RouteRecordInfo<
       '/docs/guide/interactions',
       '/docs/guide/interactions',
@@ -618,6 +625,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/guide/getting-started.md': {
       routes:
         | '/docs/guide/getting-started'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/guide/interaction-reference.md': {
+      routes:
+        | '/docs/guide/interaction-reference'
       views:
         | never
       pathParamNames:

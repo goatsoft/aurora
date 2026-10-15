@@ -4,6 +4,7 @@ import fc from 'fast-check'
 import ts from 'typescript'
 import * as v from 'valibot'
 import { describe, expect, inject, it } from 'vitest'
+import interactionSource from '@/interactions-schema.ts?raw'
 import { toFormatIssue } from '@/issues'
 import modifierSource from '@/modifiers-schema.ts?raw'
 import rangeSource from '@/range.ts?raw'
@@ -25,7 +26,7 @@ function rules(value: unknown): unknown {
 
 describe('runtime schema generation', () => {
   it('generates lean validators without changing authoring constraints', async () => {
-    for (const [source, target, authored] of [['schema.ts', 'runtime-schema.ts', schemaSource], ['modifiers-schema.ts', 'runtime-modifiers.ts', modifierSource], ['range.ts', 'runtime-range.ts', rangeSource]] as const) {
+    for (const [source, target, authored] of [['schema.ts', 'runtime-schema.ts', schemaSource], ['modifiers-schema.ts', 'runtime-modifiers.ts', modifierSource], ['interactions-schema.ts', 'runtime-interactions.ts', interactionSource], ['range.ts', 'runtime-range.ts', rangeSource]] as const) {
       const text = runtimeSchema(authored, source)
       const [formatted] = await formatter.lintText(text, { filePath: `${root}/packages/format/src/${target}` })
       expect(formatted!.messages.filter((message) => message.severity === 2)).toEqual([])

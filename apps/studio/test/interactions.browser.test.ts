@@ -1,4 +1,5 @@
 import { loadGenerators } from '@goatsoft/aurora'
+import { INTERACTION_BINDING_CONTROLS, INTERACTION_CONTROLS, INTERACTIONS } from '@goatsoft/aurora-format'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
@@ -11,6 +12,25 @@ await loadGenerators()
 const studio = useStudio()
 
 describe('Studio interaction controls', () => {
+  it.each(Object.keys(INTERACTIONS) as (keyof typeof INTERACTIONS)[])('uses shared controls, defaults and bounds for %s', (type) => {
+    studio.open({ ...starter(), interactions: [{ type, bindings: [{ layer: 0, parameter: 'offsetX', input: 'x' }] }] })
+    const wrapper = mount(InteractionsPanel, { attachTo: document.body })
+    try {
+      for (const key of INTERACTIONS[type].controls) {
+        const control = INTERACTION_CONTROLS[key]
+        const slider = wrapper.get(`[role="slider"][aria-label="${control.label}"]`)
+        expect(slider.attributes('aria-valuemin')).toBe(String(control.min))
+        expect(slider.attributes('aria-valuemax')).toBe(String(control.max))
+        expect(slider.attributes('aria-valuenow')).toBe(String(control.default))
+      }
+      const amount = wrapper.get('[role="slider"][aria-label="Response amount"]')
+      expect(amount.attributes('aria-valuemin')).toBe(String(INTERACTION_BINDING_CONTROLS.amount.min))
+      expect(amount.attributes('aria-valuemax')).toBe(String(INTERACTION_BINDING_CONTROLS.amount.max))
+      if (type === 'impulse') expect(wrapper.get('[role="slider"][aria-label="Pulse slot"]').attributes('aria-valuemax')).toBe(String(INTERACTION_BINDING_CONTROLS.slot.max))
+      else expect(wrapper.find('[role="slider"][aria-label="Pulse slot"]').exists()).toBe(false)
+    } finally { wrapper.unmount() }
+  })
+
   it('adds, edits and removes modules with history, and adds Ping in the same undo step', async () => {
     studio.open(starter())
     const wrapper = mount(InteractionsPanel, { attachTo: document.body })

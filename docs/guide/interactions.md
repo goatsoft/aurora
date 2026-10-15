@@ -27,7 +27,7 @@ Add a Follow module to your `.aurora` file. Here, horizontal and vertical moveme
 
 `x` and `y` are centered scene coordinates: left/top is −0.5, the center is 0, and right/bottom is 0.5. Bindings add to the authored value and clamp to the generator's normal range. Negative amounts repel. Give distant layers small offset amounts and foreground layers larger ones to create depth parallax.
 
-`strength` scales the response from 0 to 2. `smoothing` controls Follow's easing from 0 (immediate) to 1. `decay` controls return duration in seconds. `activation` chooses `hover`, `focus` or `both` (the default). Moving away returns the scene to its authored appearance. Follow's `strength` input reflects movement and decays when input stops, so interference can settle while the pointer stays in place.
+`strength` scales the response. `smoothing` controls Follow's easing, and `decay` controls return duration in seconds. `activation` chooses hover, focus or either. See the generated [interaction reference](interaction-reference.md) for defaults, ranges and available controls. Moving away returns the scene to its authored appearance. Follow's `strength` input reflects movement and decays when input stops, so interference can settle while the pointer stays in place.
 
 Bindings can target an existing numeric generator parameter, `opacity`, `offsetX`, `offsetY` or an independent layer `time`. A binding without a layer can target a signal control such as `signal.amount`, provided the document has a signal modifier. For example, bind Follow's `strength` to `signal.amount` for interference that responds to movement.
 
@@ -48,11 +48,11 @@ Use an Impulse module with a Ping layer authored at zero opacity and `params: { 
 }
 ```
 
-Each tap starts an effect that decays to rest. `travel` is the number of seconds since activation; it advances independently of ambient playback, so a paused background can still emit a travelling ring. The module holds at most four impulses. `slot: 0` selects the newest, and slots 1–3 select older active pulses. Bind each slot to another Ping layer for overlapping rings. Taps on links, buttons, form controls and editable content do not activate a gesture. Scrolling a touch container does not become a tap.
+Each tap starts an effect that decays to rest. `travel` is the number of seconds since activation; it advances independently of ambient playback, so a paused background can still emit a travelling ring. Pulse slots select the newest or older active impulses; see [binding controls](interaction-reference.md#bindings). Bind each slot to another Ping layer for overlapping rings. Taps on links, buttons, form controls and editable content do not activate a gesture. Scrolling a touch container does not become a tap.
 
 ## Grab and release
 
-A Grab module uses the displacement from the drag's starting point. Bind its `x`/`y` to layer offsets, or its `strength` to signal distortion. Releasing supplies a bounded velocity and returns the scene with a spring. `damping` ranges from 0 to 1; higher values settle more quickly. Pointer cancellation and multiple touches reset the gesture.
+A Grab module uses the displacement from the drag's starting point. Bind its `x`/`y` to layer offsets, or its `strength` to signal distortion. Releasing supplies a bounded velocity and returns the scene with a spring. Higher `damping` values settle more quickly. Pointer cancellation and multiple touches reset the gesture.
 
 Pointer dragging is opt-in because it reserves touch gestures on the chosen container. In Vue, pass `drag` to the background and select the container explicitly:
 

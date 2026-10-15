@@ -2,25 +2,20 @@
 import type { Doc } from '@/editor/document'
 import type { InteractionBindingInput, InteractionInput } from '@goatsoft/aurora-format'
 import { ScrubField } from '@goatsoft/aurora-editor-ui'
-import { MODIFIERS } from '@goatsoft/aurora-format'
+import { INTERACTION_ACTIVATION, INTERACTION_BINDING_CONTROLS, INTERACTION_CONTROLS, INTERACTION_INPUTS, INTERACTION_LIMITS, INTERACTIONS, MODIFIERS } from '@goatsoft/aurora-format'
 import { useStudio } from '@/editor/studio'
 
 const studio = useStudio()
 const modules = computed(() => studio.rendered.value.interactions ?? [])
-const names = { follow: 'Follow', impulse: 'Impulse', grab: 'Grab & Release' }
-const descriptions = { follow: 'Light follows the pointer, then eases back to rest.', impulse: 'A tap emits a pulse that fades away.', grab: 'Pull the scene, then release it into a spring.' }
-const controls = [
-  { key: 'strength' as const, label: 'Strength', max: 2, min: 0, default: 1 },
-  { key: 'smoothing' as const, label: 'Smoothing', max: 1, min: 0, default: 0.65 },
-  { key: 'decay' as const, label: 'Settle time', max: 5, min: 0.05, default: 1 },
-  { key: 'damping' as const, label: 'Damping', max: 1, min: 0, default: 0.75 },
-]
+const controls = (type: InteractionInput['type']) => INTERACTIONS[type].controls.map((key) => ({ key, ...INTERACTION_CONTROLS[key] }))
+const activationOptions = Object.entries(INTERACTION_ACTIVATION.options).map(([value, label]) => ({ value, label }))
+const inputs = (type: InteractionInput['type']) => Object.entries(INTERACTION_INPUTS).filter(([value]) => value !== 'travel' || type === 'impulse').map(([value, label]) => ({ value, label }))
 
 function commit(index: number, module: InteractionInput | undefined, group?: string, base: Doc = studio.doc.value) {
   studio.commit(studio.ops.interaction(base, index, module), group)
 }
 function add(type: InteractionInput['type']) {
-  if (modules.value.length >= 8) return
+  if (modules.value.length >= INTERACTION_LIMITS.modules) return
   if (type === 'impulse') {
     const layer = studio.doc.value.layers.length
     const module: InteractionInput = { type, decay: 2, bindings: [
@@ -91,14 +86,14 @@ const targets = computed(() => [
   >
     <div class="grid gap-2">
       <Button
-        v-for="type in (['follow', 'impulse', 'grab'] as const)"
+        v-for="(spec, type) in INTERACTIONS"
         :key="type"
         size="sm"
         class="justify-start"
-        :disabled="modules.length >= 8"
+        :disabled="modules.length >= INTERACTION_LIMITS.modules"
         @click="add(type)"
       >
-        <IHgAdd01 />{{ names[type] }}
+        <IHgAdd01 />{{ spec.label }}
       </Button>
     </div>
     <p class="mt-3 text-[11px] leading-relaxed text-muted-foreground">
@@ -117,13 +112,13 @@ const targets = computed(() => [
   <Section
     v-for="(module, index) in modules"
     :key="index"
-    :title="names[module.type]"
-    :hint="descriptions[module.type]"
+    :title="INTERACTIONS[module.type].label"
+    :hint="INTERACTIONS[module.type].hint"
   >
     <template #action>
       <Button
         size="icon-sm"
-        :aria-label="`Remove ${names[module.type]} interaction`"
+        :aria-label="`Remove ${INTERACTIONS[module.type].label} interaction`"
         @click="() => { commit(index, undefined); studio.seal() }"
       >
         <IHgDelete02 />
@@ -132,26 +127,27 @@ const targets = computed(() => [
     <Row label="Activation">
       <Select
         :model-value="module.activation"
-        :options="[{ value: 'both', label: 'Hover or focus' }, { value: 'hover', label: 'Hover' }, { value: 'focus', label: 'Focus' }]"
+        :options="activationOptions"
         label="Interaction activation"
         @update:model-value="(value) => { set(index, 'activation', value); studio.seal() }"
       />
     </Row>
     <template
-      v-for="control in controls"
+      v-for="control in controls(module.type)"
       :key="control.key"
     >
       <Row
-        v-if="control.key !== 'smoothing' || module.type === 'follow'"
-        v-show="control.key !== 'damping' || module.type === 'grab'"
         :label="control.label"
+        :hint="control.description"
       >
         <ScrubField
           :label="control.label"
+          :description="control.description"
+          :unit="'unit' in control ? control.unit : undefined"
           :model-value="module[control.key]"
           :min="control.min"
           :max="control.max"
-          :step="0.01"
+          :step="control.step"
           :default="control.default"
           :set="studio.doc.value.interactions?.[index]?.[control.key] !== undefined"
           @update:model-value="(value) => set(index, control.key, value)"
@@ -190,22 +186,23 @@ const targets = computed(() => [
       <Row label="Input">
         <Select
           :model-value="value.input"
-          :options="[{ value: 'x', label: 'Horizontal' }, { value: 'y', label: 'Vertical' }, { value: 'strength', label: 'Strength' }, ...(module.type === 'impulse' ? [{ value: 'travel', label: 'Elapsed time' }] : [])]"
+          :options="inputs(module.type)"
           label="Response input"
           @update:model-value="(v) => { editBinding(index, slot, { input: v as InteractionBindingInput['input'] }); studio.seal() }"
         />
       </Row>
       <Row
-        label="Amount"
-        hint="Negative amounts repel. Values are clamped to the control's normal range."
+        :label="INTERACTION_BINDING_CONTROLS.amount.label"
+        :hint="INTERACTION_BINDING_CONTROLS.amount.description"
       >
         <ScrubField
-          label="Response amount"
+          :label="`Response ${INTERACTION_BINDING_CONTROLS.amount.label.toLowerCase()}`"
+          :description="INTERACTION_BINDING_CONTROLS.amount.description"
           :model-value="value.amount"
-          :min="-4"
-          :max="4"
-          :step="0.01"
-          :default="1"
+          :min="INTERACTION_BINDING_CONTROLS.amount.min"
+          :max="INTERACTION_BINDING_CONTROLS.amount.max"
+          :step="INTERACTION_BINDING_CONTROLS.amount.step"
+          :default="INTERACTION_BINDING_CONTROLS.amount.default"
           :set="studio.doc.value.interactions?.[index]?.bindings[slot]?.amount !== undefined"
           @update:model-value="(amount) => editBinding(index, slot, { amount })"
           @reset="resetBinding(index, slot, 'amount')"
@@ -214,16 +211,17 @@ const targets = computed(() => [
       </Row>
       <Row
         v-if="module.type === 'impulse'"
-        label="Pulse slot"
-        hint="0 is newest; 1–3 are older active pulses."
+        :label="INTERACTION_BINDING_CONTROLS.slot.label"
+        :hint="INTERACTION_BINDING_CONTROLS.slot.description"
       >
         <ScrubField
-          label="Pulse slot"
+          :label="INTERACTION_BINDING_CONTROLS.slot.label"
+          :description="INTERACTION_BINDING_CONTROLS.slot.description"
           :model-value="value.slot"
-          :min="0"
-          :max="3"
-          :step="1"
-          :default="0"
+          :min="INTERACTION_BINDING_CONTROLS.slot.min"
+          :max="INTERACTION_BINDING_CONTROLS.slot.max"
+          :step="INTERACTION_BINDING_CONTROLS.slot.step"
+          :default="INTERACTION_BINDING_CONTROLS.slot.default"
           :set="studio.doc.value.interactions?.[index]?.bindings[slot]?.slot !== undefined"
           @update:model-value="(pulse) => editBinding(index, slot, { slot: pulse })"
           @reset="resetBinding(index, slot, 'slot')"
@@ -234,7 +232,7 @@ const targets = computed(() => [
     <Button
       size="sm"
       class="mt-3"
-      :disabled="module.bindings.length >= 64"
+      :disabled="module.bindings.length >= INTERACTION_LIMITS.bindings"
       @click="() => { binding(index, module.bindings.length, { layer: studio.ui.layer, parameter: 'offsetX', input: 'x', amount: 0.12 }); studio.seal() }"
     >
       <IHgAdd01 />Add response
