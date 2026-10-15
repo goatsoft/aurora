@@ -1,5 +1,21 @@
 # @goatsoft/aurora-vue
 
+## 0.3.0
+
+### Minor Changes
+
+- 9ce137a: Add phase-preserving playback controls: `surface.pause()` / `resume()`, a Vue `paused` prop and composable option, and the custom element's boolean `paused` attribute. Paused backgrounds and documents with speed zero redraw only when their state changes. Studio uses playback state without replacing the authored speed. Named scenes share playback: mounting a paused member pauses the whole scene.
+- 9ce137a: Add lazily loaded Follow, Impulse and Grab & Release controllers with declarative parameter/modifier bindings, per-layer translations and independent effect clocks. Input is coalesced to the configured frame budget, remains separate from authored documents and can redraw paused backgrounds. Expose keyboard equivalents and explicit container/drag options, honor reduced motion, and clean up capture/listeners on cancellation, visibility changes and disposal.
+
+### Patch Changes
+
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [34be6e5]
+- Updated dependencies [34be6e5]
+  - @goatsoft/aurora@0.3.0
+
 ## 0.2.0
 
 ### Patch Changes

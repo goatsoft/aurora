@@ -1,5 +1,18 @@
 # @goatsoft/aurora-unplugin
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [34be6e5]
+- Updated dependencies [34be6e5]
+  - @goatsoft/aurora-format@0.3.0
+  - @goatsoft/aurora@0.3.0
+
 ## 0.2.0
 
 ### Patch Changes

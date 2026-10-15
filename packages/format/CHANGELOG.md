@@ -1,5 +1,23 @@
 # @goatsoft/aurora-format
 
+## 0.3.0
+
+### Minor Changes
+
+- 9ce137a: Add optional declarative Follow, Impulse and Grab & Release modules, normalized input bindings and bounded response settings to `.aurora` documents. Export shared interaction metadata that generates validation, Studio controls and the reference. Serialize interaction settings without saving transient input or playback state.
+- 34be6e5: Add optional scene-wide signal distortion with coherent tearing, stretch, shake, vertical tracking slips and colour separation. Preserve existing rendering when omitted, expose declarative controls and validation, and apply the effect to Signal Lost. Studio can edit, save and share the effect with undo support.
+  
+  Add independent Pixelate and Vignette modifiers, with resolution-aware display blocks and alpha-preserving edge shading. Studio groups all three under Modifiers, separately from generators.
+  
+  Disable signal distortion under reduced motion and skip extra colour samples between visible bursts. Export a shared modifier control spec for Studio and generated validation/reference docs; keep Pixelate units explicit as canvas pixels.
+  
+  Keep complete Studio and editor descriptions while deriving lean runtime validators from the authoring schemas. Generate string literals safely with apostrophe, backslash and Unicode handling.
+
+### Patch Changes
+
+- Updated dependencies [9ce137a]
+  - @goatsoft/color@0.3.0
+
 ## 0.1.1
 
 ### Patch Changes

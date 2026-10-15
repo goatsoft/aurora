@@ -1,5 +1,31 @@
 # @goatsoft/aurora
 
+## 0.3.0
+
+### Minor Changes
+
+- 9ce137a: Add phase-preserving playback controls: `surface.pause()` / `resume()`, a Vue `paused` prop and composable option, and the custom element's boolean `paused` attribute. Paused backgrounds and documents with speed zero redraw only when their state changes. Studio uses playback state without replacing the authored speed. Named scenes share playback: mounting a paused member pauses the whole scene.
+- 9ce137a: Add Ping's Background and Repeat controls, allowing transparent single-pulse overlays for interactive scenes while keeping existing defaults unchanged.
+- 9ce137a: Add lazily loaded Follow, Impulse and Grab & Release controllers with declarative parameter/modifier bindings, per-layer translations and independent effect clocks. Input is coalesced to the configured frame budget, remains separate from authored documents and can redraw paused backgrounds. Expose keyboard equivalents and explicit container/drag options, honor reduced motion, and clean up capture/listeners on cancellation, visibility changes and disposal.
+- 34be6e5: Add optional scene-wide signal distortion with coherent tearing, stretch, shake, vertical tracking slips and colour separation. Preserve existing rendering when omitted, expose declarative controls and validation, and apply the effect to Signal Lost. Studio can edit, save and share the effect with undo support.
+  
+  Add independent Pixelate and Vignette modifiers, with resolution-aware display blocks and alpha-preserving edge shading. Studio groups all three under Modifiers, separately from generators.
+  
+  Disable signal distortion under reduced motion and skip extra colour samples between visible bursts. Export a shared modifier control spec for Studio and generated validation/reference docs; keep Pixelate units explicit as canvas pixels.
+  
+  Keep complete Studio and editor descriptions while deriving lean runtime validators from the authoring schemas. Generate string literals safely with apostrophe, backslash and Unicode handling.
+- 34be6e5: Add digital rain, glitch, electronic static, radar and ping generators with CSS fallbacks and art-directed cyberpunk presets.
+  
+  Add scan lines and phosphor display textures, and refine Signal Lost with a quieter CRT finish.
+
+### Patch Changes
+
+- Updated dependencies [9ce137a]
+- Updated dependencies [9ce137a]
+- Updated dependencies [34be6e5]
+  - @goatsoft/aurora-format@0.3.0
+  - @goatsoft/color@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
