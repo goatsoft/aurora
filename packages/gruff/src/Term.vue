@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { HoverCardContent, HoverCardPortal, HoverCardRoot, HoverCardTrigger } from 'reka-ui'
-import { glossary } from 'virtual:gruff'
+import { RouterLink } from 'vue-router'
+import { useDocs } from './docs'
 
 /** A glossary term's first use on a page: a link to its entry, with the definition on hover. */
 const props = defineProps<{ id: string }>()
-const entry = glossary.find((e) => e.id === props.id)
+const docs = useDocs()
+const entry = docs.data.glossary.find((e) => e.id === props.id)
 </script>
 
 <template>
@@ -14,7 +16,7 @@ const entry = glossary.find((e) => e.id === props.id)
   >
     <HoverCardTrigger as-child>
       <RouterLink
-        :to="`/docs/glossary#${props.id}`"
+        :to="`${docs.glossaryRoute}#${props.id}`"
         class="font-[inherit]! text-inherit! decoration-muted-foreground/60! decoration-dotted! underline-offset-4"
       >
         <slot />

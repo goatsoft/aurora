@@ -7,6 +7,6 @@
     "outDir": "../../node_modules/.cache/tsc/gruff",
     "emitDeclarationOnly": true
   },
-  "include": ["src", "test", "client.d.ts"],
+  "include": ["src", "src/**/*.vue", "test", "client.d.ts"],
   "references": [{ "path": "../format" }]
 }

@@ -77,13 +77,15 @@ export default defineConfig(
   {
     // File-based routes and ui primitives: filenames are URL segments or deliberate single words,
     // and optional props are typed as optional rather than given defaults.
-    files: ['apps/*/src/pages/**/*.vue', 'apps/*/src/components/ui/**/*.vue', 'packages/vue/src/**/*.vue'],
+    // gruff's names (`Term`, `DocPage`) are what its Markdown output refers to.
+    files: ['apps/*/src/pages/**/*.vue', 'apps/*/src/components/ui/**/*.vue', 'packages/vue/src/**/*.vue', 'packages/gruff/src/**/*.{ts,vue}'],
     rules: { 'vue/multi-word-component-names': 'off', 'vue/require-default-prop': 'off' },
   },
   // Tailwind: canonical classes (`w-254`, not `w-[1016px]`), a consistent order, and no unknown,
   // duplicate or conflicting classes, checked against each app's own theme. `lint:fix` rewrites them.
-  ...TAILWIND_APPS.map((app) => ({
-    files: [`${app}/src/**/*.{ts,vue}`],
+  // gruff's docs components use the theme tokens a site provides, so they are checked against the site's.
+  ...[...TAILWIND_APPS.map((app) => ({ app, files: [`${app}/src/**/*.{ts,vue}`] })), { app: 'apps/site', files: ['packages/gruff/src/**/*.vue'] }].map(({ app, files }) => ({
+    files,
     plugins: { 'better-tailwindcss': betterTailwindcss },
     // Resolved from the app, where tailwindcss is installed.
     settings: { 'better-tailwindcss': { cwd: app, entryPoint: 'src/main.css' } },

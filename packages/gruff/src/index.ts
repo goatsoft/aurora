@@ -2,6 +2,7 @@ import type { HighlightOptions } from './highlight'
 import type { LinkOptions } from './links'
 import type { MarkdownIt } from 'markdown-it'
 import type { Plugin } from 'vite'
+import { dirname } from 'node:path'
 import Markdown from 'unplugin-vue-markdown/vite'
 import { containers } from './containers'
 import { glossaryLinks, parseGlossary } from './glossary'
@@ -26,9 +27,9 @@ export interface GruffOptions extends LinkOptions {
 const VIRTUAL = 'virtual:gruff'
 
 /**
- * gruff: our rustic-and-ready static site generator. Markdown files become Vue components
+ * gruff: the rough and ready static site generator. Markdown files become Vue components
  * (unplugin-vue-markdown) with heading anchors and an outline, Shiki code blocks, callouts and
- * code groups, live `aurora` demos, GitHub-style links that work in the repo and on the site,
+ * code groups, custom fences (live demos), GitHub-style links that work in the repo and on the site,
  * wikilinks and glossary terms. `virtual:gruff` exports the search index, the pages (titles, for
  * navigation) and the glossary; use
  * `prerender` after building to write static HTML for every route.
@@ -53,6 +54,22 @@ export function gruff(options: GruffOptions): Plugin[] {
     }) as Plugin,
     {
       name: 'gruff',
+      // The page list is built once, so the dev server rebuilds it when pages come and go.
+      // Page folders can sit outside Vite's root (a repo's docs/), so they are watched here.
+      configureServer(server) {
+        const dirs = new Set(options.pages().map(({ file }) => dirname(file)))
+        for (const dir of dirs) server.watcher.add(dir)
+        const isPage = (file: string) => file.endsWith('.md') && options.route(file) !== undefined
+        const stale = (reload: boolean) => {
+          const module = server.moduleGraph.getModuleById(`\0${VIRTUAL}`)
+          if (module) server.moduleGraph.invalidateModule(module)
+          if (reload) server.ws.send({ type: 'full-reload' })
+        }
+        server.watcher.on('add', (file) => isPage(file) && stale(true))
+        server.watcher.on('unlink', (file) => isPage(file) && stale(true))
+        // An edit can change a title, order or the search text: the next load picks it up.
+        server.watcher.on('change', (file) => isPage(file) && stale(false))
+      },
       resolveId: (id) => (id === VIRTUAL ? `\0${VIRTUAL}` : undefined),
       async load(id) {
         if (id !== `\0${VIRTUAL}`) return undefined
@@ -75,7 +92,7 @@ export { containers } from './containers'
 export { glossaryLinks, parseGlossary } from './glossary'
 export type { GlossaryEntry } from './glossary'
 export { createCodeHighlighter, highlight, parseInfo } from './highlight'
-export type { HighlightOptions } from './highlight'
+export type { Fence, HighlightOptions } from './highlight'
 export { links } from './links'
 export type { LinkOptions } from './links'
 export { idleLoader, pageCharacters, prerender } from './prerender'

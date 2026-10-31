@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import type { SearchDocument } from '@goatsoft/gruff'
+import type { SearchDocument } from './search'
 import MiniSearch from 'minisearch'
 import { DialogContent, DialogOverlay, DialogPortal, DialogRoot, DialogTitle, DialogTrigger } from 'reka-ui'
-import { searchFields, searchIndex } from 'virtual:gruff'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useDocs } from './docs'
 
 /** Docs search: the build-time index, loaded on first open; ⌘K or / opens it. */
+const docs = useDocs()
+const { icons } = docs
 const open = ref(false)
 const query = ref('')
 const selected = ref(0)
@@ -13,7 +17,7 @@ let index: MiniSearch<SearchDocument> | undefined
 
 const results = computed(() => {
   if (!open.value || !query.value.trim()) return []
-  index ??= MiniSearch.loadJSON<SearchDocument>(searchIndex, searchFields)
+  index ??= MiniSearch.loadJSON<SearchDocument>(docs.data.searchIndex, docs.data.searchFields)
   return index.search(query.value, { prefix: true, fuzzy: 0.2, boost: { title: 3, section: 2 } }).slice(0, 8)
     .map((r) => ({ id: String(r.id), title: String(r['title']), section: String(r['section'] ?? '') }))
 })
@@ -27,14 +31,18 @@ function go(id: string | undefined) {
 }
 
 const isMac = ref(true)
-onMounted(() => (isMac.value = /Mac|iP/.test(navigator.userAgent)))
-useEventListener('keydown', (event: KeyboardEvent) => {
+function shortcut(event: KeyboardEvent) {
   const typing = event.target instanceof HTMLElement && /INPUT|TEXTAREA/.test(event.target.tagName)
   if ((event.key === 'k' && (event.metaKey || event.ctrlKey)) || (event.key === '/' && !typing)) {
     event.preventDefault()
     open.value = true
   }
+}
+onMounted(() => {
+  isMac.value = /Mac|iP/.test(navigator.userAgent)
+  window.addEventListener('keydown', shortcut)
 })
+onBeforeUnmount(() => window.removeEventListener('keydown', shortcut))
 function keys(event: KeyboardEvent) {
   if (event.key === 'ArrowDown') selected.value = Math.min(selected.value + 1, results.value.length - 1)
   else if (event.key === 'ArrowUp') selected.value = Math.max(selected.value - 1, 0)
@@ -47,7 +55,10 @@ function keys(event: KeyboardEvent) {
 <template>
   <DialogRoot v-model:open="open">
     <DialogTrigger class="flex w-full items-center gap-2 rounded-lg border border-border bg-surface/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-      <IHgSearch01 class="size-4" /> Search docs
+      <component
+        :is="icons.search"
+        class="size-4"
+      /> Search docs
       <kbd class="ml-auto rounded-sm border border-border px-1.5 font-mono text-[11px]">{{ isMac ? '⌘' : 'Ctrl ' }}K</kbd>
     </DialogTrigger>
     <DialogPortal>
@@ -60,7 +71,10 @@ function keys(event: KeyboardEvent) {
           Search the docs
         </DialogTitle>
         <div class="flex items-center gap-3 border-b border-border px-4">
-          <IHgSearch01 class="size-5 text-muted-foreground" />
+          <component
+            :is="icons.search"
+            class="size-5 text-muted-foreground"
+          />
           <input
             v-model="query"
             placeholder="Search the docs"
@@ -103,7 +117,7 @@ function keys(event: KeyboardEvent) {
           v-else
           class="p-6 text-center text-sm text-muted-foreground"
         >
-          Guides, generators, the format and every decision.
+          {{ docs.searchHint }}
         </p>
       </DialogContent>
     </DialogPortal>
