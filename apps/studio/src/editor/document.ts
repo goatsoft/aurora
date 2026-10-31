@@ -84,6 +84,14 @@ export function layerColors(layer: LayerInput, paletteLength: number, count: num
   return Array.from({ length: count }, (_, k) => source[k % source.length]!)
 }
 
+/** Writes out the palette indices of every layer that has no `colors` of its own, so palette edits leave them unchanged. */
+function writeOutColors(d: Doc, count: (type: string) => number) {
+  const length = d.palette.length
+  for (const layer of d.layers) {
+    if (!layer.colors?.length) layer.colors = layerColors(layer, length, count(layer.type))
+  }
+}
+
 export const ops = {
   /** Add, replace or remove a declarative module; gesture state never enters this operation. */
   interaction: (doc: Doc, index: number, value: InteractionInput | undefined) => edit(doc, (d) => {
@@ -127,7 +135,12 @@ export const ops = {
     d.palette[index] = css
   }),
 
-  addColor: (doc: Doc, css: string) => edit(doc, (d) => {
+  /**
+   * Appends a palette colour. Layers that cycle through the palette would start reading it, so their
+   * current colours are written out first. `count` gives a generator's number of colours.
+   */
+  addColor: (doc: Doc, css: string, count: (type: string) => number) => edit(doc, (d) => {
+    writeOutColors(d, count)
     d.palette.push(css)
   }),
 
@@ -149,9 +162,7 @@ export const ops = {
    */
   ownColor: (doc: Doc, i: number, slot: number, count: (type: string) => number) => edit(doc, (d) => {
     const length = d.palette.length
-    for (const layer of d.layers) {
-      if (!layer.colors?.length) layer.colors = layerColors(layer, length, count(layer.type))
-    }
+    writeOutColors(d, count)
     const layer = layerAt(d, i)
     const colors = layerColors(layer, length, count(layer.type))
     d.palette.push(d.palette[colors[slot]!]!)

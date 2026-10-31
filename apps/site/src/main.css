@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @source "../../../packages/editor-ui/src";
+/* gruff's docs components (built: a published site would point at node_modules/@goatsoft/gruff/dist). */
+@source "../../../packages/gruff/src";
 
 @custom-variant dark (&:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *, [data-scene-theme], [data-scene-theme] *));
 

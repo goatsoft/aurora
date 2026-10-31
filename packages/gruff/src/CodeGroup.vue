@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 /**
  * Tabs over the code blocks gruff renders inside `::: code-group`. The labels come prerendered as
  * `tabs`; the first block shows before hydration, so there is no shift when tabs come alive.

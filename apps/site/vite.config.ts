@@ -110,6 +110,12 @@ export default defineConfig({
       pages: () => pages(),
       repoUrl: `${REPO}/blob/develop/`,
       glossary: join(docs, 'glossary.md'),
+      // An `aurora` fence is a live background: <AuroraDemo> renders the JSON next to its source, editable in place.
+      highlight: {
+        fences: {
+          aurora: (source, code, md) => `<AuroraDemo source="${md.utils.escapeHtml(source)}" code="${md.utils.escapeHtml(code(source, 'json'))}" />\n`,
+        },
+      },
       // Docs pages get the docs layout; snippets in src/content render bare, for the landing page.
       layout: (id) => (id.includes('/src/content/') ? null : 'DocPage'),
     }),

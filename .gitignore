@@ -12,3 +12,5 @@ dist-server/
 assets/brand/badges/v1/
 # Copied from the root LICENSE when a package is packed (scripts/prepack.ts).
 packages/*/LICENSE
+# The manifest prepack.ts saves while it packs; postpack.ts puts it back.
+packages/*/package.json.prepack

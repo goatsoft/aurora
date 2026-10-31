@@ -6,7 +6,7 @@
     "noEmit": true,
     "declaration": false,
     "declarationMap": false,
-    "types": ["node", "vite/client", "@goatsoft/aurora-unplugin/client", "unplugin-icons/types/vue"],
+    "types": ["node", "vite/client", "@goatsoft/aurora-unplugin/client", "unplugin-icons/types/vue", "@goatsoft/gruff/client"],
     "allowImportingTsExtensions": true
   },
   "include": ["test", "src", "src/**/*.vue", "vite.config.ts", "vitest.config.ts", "prerender.ts"]

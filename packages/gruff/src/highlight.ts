@@ -6,9 +6,17 @@ import { createHighlighter } from 'shiki'
 export interface HighlightOptions {
   themes?: { light: BundledTheme, dark: BundledTheme }
   langs?: BundledLanguage[]
+  /**
+   * Custom fences by language: each returns the HTML for its block, in place of a code block.
+   * Aurora's site renders `aurora` fences as live demos this way.
+   */
+  fences?: Record<string, Fence>
 }
 
-const DEFAULT_LANGS: BundledLanguage[] = ['ts', 'js', 'vue', 'html', 'css', 'json', 'jsonc', 'sh', 'wgsl', 'md', 'yaml', 'diff']
+/** Renders a custom fence. `code(source, lang)` highlights like any other block; `md.utils.escapeHtml` escapes attributes. */
+export type Fence = (source: string, code: (source: string, lang: string) => string, md: MarkdownIt) => string
+
+const DEFAULT_LANGS: BundledLanguage[] = ['ts', 'js', 'vue', 'html', 'css', 'json', 'jsonc', 'sh', 'md', 'yaml', 'diff', 'toml', 'wgsl', 'luau', 'lua']
 
 /** `ts [vite.config.ts]` → the language and an optional title. */
 export function parseInfo(info: string): { lang: string, title: string | undefined } {
@@ -22,8 +30,7 @@ export function parseInfo(info: string): { lang: string, title: string | undefin
  * CSS), with `// [!code highlight]`, `// [!code ++]` / `// [!code --]` and `// [!code focus]`
  * notation. A `[title]` after the language names the file (and the tab in a code-group).
  *
- * A fence with the language `aurora` is a live background: `<AuroraDemo>` renders the JSON next to
- * its highlighted source, editable in place.
+ * `fences` takes over chosen languages, for live demos and the like.
  */
 export async function createCodeHighlighter(options: HighlightOptions = {}) {
   const themes = options.themes ?? { light: 'github-light', dark: 'github-dark-dimmed' }
@@ -47,9 +54,8 @@ export async function highlight(md: MarkdownIt, options: HighlightOptions = {}):
     const token = tokens[idx]!
     const { lang, title } = parseInfo(token.info)
     const source = token.content
-    if (lang === 'aurora') {
-      return `<AuroraDemo source="${md.utils.escapeHtml(source)}" code="${md.utils.escapeHtml(code(source, 'json'))}" />\n`
-    }
+    const fence = options.fences?.[lang]
+    if (fence) return fence(source, code, md)
     const head = title ? `<div class="code-title">${md.utils.escapeHtml(title)}</div>` : ''
     return `<div class="code-block" data-lang="${md.utils.escapeHtml(lang)}"${title ? ` data-title="${md.utils.escapeHtml(title)}"` : ''}>${head}${code(source, lang)}<CopyButton code="${md.utils.escapeHtml(source)}" /></div>\n`
   }
