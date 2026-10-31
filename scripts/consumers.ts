@@ -100,7 +100,9 @@ for (const dir of PUBLISHED) {
   for (const [subpath, targets] of Object.entries(manifest.exports)) {
     const conditions = typeof targets === 'string' ? { default: targets } : targets
     for (const [condition, target] of Object.entries(conditions)) {
-      if (condition !== SOURCE_CONDITION && !files.includes(target.replace(/^\.\//, ''))) {
+      if (condition === SOURCE_CONDITION) {
+        fail(`${name}: exports["${subpath}"] still has the ${SOURCE_CONDITION} condition, which points at unpublished sources (scripts/prepack.ts takes it out)`)
+      } else if (!files.includes(target.replace(/^\.\//, ''))) {
         fail(`${name}: exports["${subpath}"].${condition} is ${target}, which isn't in the tarball`)
       }
     }
