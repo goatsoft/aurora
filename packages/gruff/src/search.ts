@@ -31,14 +31,16 @@ export interface PageInfo {
   description: string | undefined
   /** Frontmatter `order`, for sorting navigation; pages without one sort after, by title. */
   order: number | undefined
+  /** Frontmatter `sidebarTitle`: a shorter label for navigation. The page keeps `title` everywhere else. */
+  sidebarTitle: string | undefined
 }
 
 /** A page's title (frontmatter, else its first `#` heading as plain text, else its route) and description. */
 export function pageInfo(file: string, route: string): PageInfo {
   const { content, data } = matter(readFileSync(file, 'utf8'))
-  const meta = data as { title?: string, description?: string, order?: number }
+  const meta = data as { title?: string, description?: string, order?: number, sidebarTitle?: string }
   const heading = /^#\s+(.+)$/m.exec(content)?.[1]?.replace(/[`*_]/g, '').trim()
-  return { route, title: meta.title ?? heading ?? route, description: meta.description, order: meta.order }
+  return { route, title: meta.title ?? heading ?? route, description: meta.description, order: meta.order, sidebarTitle: meta.sidebarTitle }
 }
 
 /**

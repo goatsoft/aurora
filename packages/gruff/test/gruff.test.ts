@@ -20,7 +20,7 @@ async function render(markdown: string, env: Record<string, unknown> = { id: pag
   containers(md)
   links(md, { root, route, repoUrl: 'https://github.com/goatsoft/aurora/blob/main/' })
   glossaryLinks(md, join(fixtures, 'glossary.md'))
-  await highlight(md)
+  await highlight(md, { fences: { demo: (source, code, md) => `<Demo source="${md.utils.escapeHtml(source)}" code="${md.utils.escapeHtml(code(source, 'json'))}" />\n` } })
   return { html: md.render(markdown, env), env }
 }
 
@@ -52,13 +52,13 @@ describe('markdown', () => {
     expect(html).toMatch(/<CodeGroup :tabs='\[&quot;pnpm&quot;\]'>\n<div class="code-block" data-lang="sh" data-title="pnpm">/)
   })
 
-  it('highlights code in both themes with notation, and renders aurora fences live', async () => {
-    const { html } = await render('```ts [a.ts]\nconst x = 1 // [!code highlight]\n```\n\n```aurora\n{"a":1}\n```\n')
+  it('highlights code in both themes with notation, and hands custom fences to their renderer', async () => {
+    const { html } = await render('```ts [a.ts]\nconst x = 1 // [!code highlight]\n```\n\n```demo\n{"a":1}\n```\n')
     expect(html).toContain('<div class="code-title">a.ts</div>')
     expect(html).toContain('class="line highlighted"')
     expect(html).toContain('--shiki-dark:')
     expect(html).toContain('<CopyButton code="const x = 1 // [!code highlight]\n" />')
-    expect(html).toMatch(/<AuroraDemo source="\{&quot;a&quot;:1\}\n" code="&lt;pre/)
+    expect(html).toMatch(/<Demo source="\{&quot;a&quot;:1\}\n" code="&lt;pre/)
   })
 
   it('links the first use of each glossary term, longest name first, outside links', async () => {
@@ -90,9 +90,9 @@ describe('search', () => {
   it('titles pages from frontmatter, else the first heading as plain text', () => {
     const dir = mkdtempSync(join(tmpdir(), 'gruff-'))
     writeFileSync(join(dir, 'a.md'), '# Aurora (`aurora-fbm`)\n')
-    writeFileSync(join(dir, 'b.md'), '---\ntitle: Bee\norder: 2\n---\n# Ignored\n')
+    writeFileSync(join(dir, 'b.md'), '---\ntitle: Bee\nsidebarTitle: B\norder: 2\n---\n# Ignored\n')
     expect(pageInfo(join(dir, 'a.md'), '/a')).toEqual({ route: '/a', title: 'Aurora (aurora-fbm)', description: undefined, order: undefined })
-    expect(pageInfo(join(dir, 'b.md'), '/b')).toMatchObject({ title: 'Bee', order: 2 })
+    expect(pageInfo(join(dir, 'b.md'), '/b')).toMatchObject({ title: 'Bee', sidebarTitle: 'B', order: 2 })
   })
 })
 
@@ -252,6 +252,37 @@ describe('the Vite plugin', () => {
       expect(virtual.searchFields).toEqual(SEARCH_FIELDS)
       expect(virtual.pages).toEqual([{ route: '/docs', title: 'Aurora docs', description: 'Start here.' }])
       expect(virtual.glossary).toHaveLength(2)
+    } finally {
+      await server.close()
+    }
+  })
+
+  it('rebuilds the page list in dev when pages come, go or change', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'gruff-watch-'))
+    writeFileSync(join(dir, 'a.md'), '# A\n')
+    const list = () => readdirSync(dir).filter((name) => name.endsWith('.md')).map((name) => ({ file: join(dir, name), route: `/${name.slice(0, -3)}` }))
+    const server = await createServer({
+      root: fixtures,
+      logLevel: 'silent',
+      configFile: false,
+      plugins: [...gruff({ root: dir, route: (file) => (file.startsWith(dir) ? '/x' : undefined), repoUrl: 'https://example.com/', pages: list }), vue({ include: [/\.vue$/, /\.md$/] })],
+      server: { middlewareMode: true, hmr: false },
+    })
+    try {
+      const send = vi.spyOn(server.ws, 'send')
+      const titles = async () => ((await server.ssrLoadModule('virtual:gruff')) as { pages: { title: string }[] }).pages.map(({ title }) => title)
+      expect(await titles()).toEqual(['A'])
+      writeFileSync(join(dir, 'b.md'), '# B\n')
+      server.watcher.emit('add', join(dir, 'b.md'))
+      expect(await titles()).toEqual(['A', 'B'])
+      expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
+      send.mockClear()
+      writeFileSync(join(dir, 'a.md'), '# Renamed\n')
+      server.watcher.emit('change', join(dir, 'a.md'))
+      expect(await titles()).toEqual(['Renamed', 'B'])
+      expect(send).not.toHaveBeenCalled()
+      server.watcher.emit('change', join(fixtures, 'glossary.txt'))
+      expect(send).not.toHaveBeenCalled()
     } finally {
       await server.close()
     }

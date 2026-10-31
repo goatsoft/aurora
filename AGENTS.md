@@ -27,7 +27,7 @@ packages/format   @goatsoft/aurora-format   .aurora schema, validation, migratio
 packages/core     @goatsoft/aurora          WebGPU runtime, WGSL composer, CSS fallback; /element is <aurora-bg>, /load is loadAurora
 packages/vue      @goatsoft/aurora-vue      <AuroraBackground>, useAurora(), <AuroraScene> (`<script setup>` SFCs)
 packages/unplugin @goatsoft/aurora-unplugin .aurora imports: build-time validation, typed modules, HMR
-packages/gruff    @goatsoft/gruff (private) Markdown → Vue pages, live aurora fences, search, prerender (ADR-0008)
+packages/gruff    @goatsoft/gruff           Markdown → Vue pages, search, prerender; /vue docs components (ADR-0008, ADR-0014)
 apps/sample       Vite + Vue SSR app using all of the above
 apps/studio       Aurora Studio, the builder (vue-router 5 file routes, reka-ui + Tailwind 4, motion-v)
 apps/site         aurora.goatsoft.io: landing page, /docs from docs/, hosted Studio at /studio/
@@ -106,7 +106,7 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 - Formatting: 2 spaces, single quotes, no semicolons. Run `pnpm lint:fix`; don't hand-format.
 - `import type` for type-only imports, and every type import comes first. Then `node:` built-ins, packages, `~/` and `@/`, relative paths, and side-effect imports such as CSS, each sorted (lint enforces it).
 - Tailwind classes in their canonical form (`min-h-svh`, not `min-h-[100svh]`) and in Tailwind's order, with no unknown, duplicate or conflicting classes. Lint checks them against each app's own `src/main.css`.
-- **No `<style>` blocks or decorative inline styles in SFCs. Dynamic CSS custom properties driven by component state (for example, a comparison divider) are allowed.** Style with Tailwind 4 (PostCSS) classes. Published components may only bind styles computed by core (`FILL_STYLE`, the compiled CSS fallback), since they can't rely on a consumer's Tailwind build.
+- **No `<style>` blocks or decorative inline styles in SFCs. Dynamic CSS custom properties driven by component state (for example, a comparison divider) are allowed.** Style with Tailwind 4 (PostCSS) classes. Published components may only bind styles computed by core (`FILL_STYLE`, the compiled CSS fallback), since they can't rely on a consumer's Tailwind build. The one exception is `@goatsoft/gruff/vue`: its docs components are a site's chrome, styled with Tailwind classes against the theme tokens listed in `packages/gruff/docs/components.md`, and sites add its `dist` with `@source` (ADR-0014). Lint checks its classes against `apps/site`'s theme.
 - No parent-relative paths (`../`; lint enforces it). In tests and apps, `@/x` is the current package's `src/x` and `~/x` is the repo root (`~/presets/classic/hero.aurora`); filesystem code uses `inject('root')` in tests or Vite's `searchForWorkspaceRoot()`. Package `src/` uses same-folder `./` imports only, because aliases would leak into published declarations.
 - WebGPU only. No WebGL or GLSL path, ever; the fallback is CSS.
 - `.aurora` files are declarative JSON and must never carry executable code or WGSL.

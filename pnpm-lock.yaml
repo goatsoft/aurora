@@ -341,9 +341,18 @@ importers:
       markdown-it:
         specifier: ^15.0.2
         version: 15.0.2
+      reka-ui:
+        specifier: ^2.11.0
+        version: 2.11.0(vue@3.5.43(typescript@5.9.3))
       vite:
         specifier: ^8.3.4
         version: 8.3.4(@types/node@24.19.2)(jiti@2.7.0)(yaml@2.9.1)
+      vue:
+        specifier: ^3.5.43
+        version: 3.5.43(typescript@5.9.3)
+      vue-router:
+        specifier: ^5.4.0
+        version: 5.4.0(@vue/compiler-sfc@3.5.43)(rolldown@1.2.13)(vite@8.3.4(@types/node@24.19.2)(jiti@2.7.0)(yaml@2.9.1))(vue@3.5.43(typescript@5.9.3))
 
   packages/unplugin:
     dependencies:

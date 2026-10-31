@@ -1,0 +1,45 @@
+<svg version="1.1" viewBox="0 0 325 325" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="titaniumBezel" x1=".1" x2=".9" y2="1">
+   <stop stop-color="#67e8f9" offset="0"/>
+   <stop stop-color="#38bdf8" offset=".22"/>
+   <stop stop-color="#64748b" offset=".48"/>
+   <stop stop-color="#818cf8" offset=".75"/>
+   <stop stop-color="#c084fc" offset="1"/>
+  </linearGradient>
+  <linearGradient id="bezelTopShelf" x1="2.3256" x2="43.605" y1="-61.919" y2="-61.919" gradientTransform="scale(3.44 .2907)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#a5f3fc" offset="0"/>
+   <stop stop-color="#f1f5f9" offset=".5"/>
+   <stop stop-color="#e879f9" offset="1"/>
+  </linearGradient>
+  <linearGradient id="innerRimHighlight" x1="-106.81" x2="84.161" y1="-105.23" y2="85.737" gradientTransform="scale(.97432 1.0264)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#38bdf8" offset="0"/>
+   <stop stop-color="#1e293b" offset=".5"/>
+   <stop stop-color="#a855f7" offset="1"/>
+  </linearGradient>
+  <linearGradient id="titaniumFace" x1="-96.034" x2="96.109" y1="-137.06" y2="137.43" gradientTransform="scale(.99989 1.0001)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#cbd5e1" offset="0"/>
+   <stop stop-color="#64748b" offset=".25"/>
+   <stop stop-color="#334155" offset=".65"/>
+   <stop stop-color="#1e1b4b" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient6" x1="-120" x2="120" y1="-150.08" y2="149.92" gradientUnits="userSpaceOnUse" xlink:href="#titaniumBezel"/>
+  <linearGradient id="linearGradient7" x1="-109.56" x2="109.63" y1="-136.81" y2="137.18" gradientTransform="scale(.99989 1.0001)" gradientUnits="userSpaceOnUse" xlink:href="#titaniumBezel"/>
+ </defs>
+ <g>
+  <g transform="translate(162.47 162.58)">
+   <g>
+    <path d="m125-83a150 150 0 1 0 25 83v-18h-142v72h58a86 86 0 1 1 6-101z" fill="#0d131f" stroke="#0d131f" stroke-miterlimit="10" stroke-width="24"/>
+    <path d="m125-83a150 150 0 1 0 25 83v-18h-142v72h58a86 86 0 1 1 6-101z" fill="url(#titaniumBezel)" style="fill:url(#linearGradient6)"/>
+    <polygon points="125 -83 114 -74 82 -53 72 -47" fill="#38bdf8" opacity=".75"/>
+    <polygon points="8 -18 150 -18 136 -6 20 -6" fill="url(#bezelTopShelf)" style="fill:url(#bezelTopShelf)"/>
+    <polygon points="8 -18 20 -6 20 42 8 54" fill="#94a3b8"/>
+    <polygon points="8 54 20 42 77 42 66 54" fill="#3b0764"/>
+    <path d="m72-47a86 86 0 1 0-6 101l11-12a98 98 0 1 1 5-95z" fill="url(#innerRimHighlight)" style="fill:url(#innerRimHighlight)"/>
+    <path d="m114-74a136 136 0 1 0 22 72v-4h-116v48h57a98 98 0 1 1 5-95z" fill="url(#titaniumFace)" stroke="#0f172a" stroke-width="2.5" style="fill:url(#titaniumFace)"/>
+    <path d="m121-80a145 145 0 0 0-236-8 136 136 0 0 1 229 14z" fill="#cffafe" opacity=".9"/>
+    <path d="m114-74a136 136 0 1 0 22 72v-4h-116v48" fill="none" opacity=".85" stroke="url(#titaniumBezel)" stroke-width="2" style="stroke:url(#linearGradient7)"/>
+   </g>
+  </g>
+ </g>
+</svg>

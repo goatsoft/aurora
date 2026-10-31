@@ -1,8 +1,10 @@
+import { gruffDocs } from '@goatsoft/gruff/vue'
 import { createSSRApp } from 'vue'
 import { createMemoryHistory, createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
 import App from './App.vue'
 import { createHead } from './head'
+import { docs } from './lib/docs'
 import { reveal } from './lib/reveal'
 import '@fontsource-variable/inter'
 import './main.css'
@@ -20,6 +22,7 @@ export function createSite(path: string) {
     },
   })
   app.use(router)
+  app.use(gruffDocs(docs))
   const head = createHead(app, path)
   return { app, router, head }
 }

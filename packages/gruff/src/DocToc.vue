@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { TocEntry } from '@goatsoft/gruff'
+import type { TocEntry } from './toc'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 /** "On this page", with the heading you're reading highlighted. */
 const props = defineProps<{ entries: TocEntry[] }>()
@@ -13,8 +14,11 @@ function update() {
   }
   active.value = current ?? props.entries[0]?.id
 }
-onMounted(update)
-useEventListener('scroll', update, { passive: true })
+onMounted(() => {
+  update()
+  window.addEventListener('scroll', update, { passive: true })
+})
+onBeforeUnmount(() => window.removeEventListener('scroll', update))
 watch(() => props.entries, () => nextTick(update))
 </script>
 
