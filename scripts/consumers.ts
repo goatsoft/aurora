@@ -7,7 +7,8 @@
  * 2. Checks each tarball: LICENSE and README present, no sources, tests or brand assets, every
  *    export and bin present, no root-absolute asset URLs; then publint and arethetypeswrong.
  * 3. Installs the tarballs with npm into a fresh copy of test/consumers and builds it with Vite
- *    (and Vue), Rollup, Rolldown, esbuild, webpack and Rspack, checking each output.
+ *    (and Vue), Rollup, Rolldown, esbuild, webpack and Rspack, checking each output. gruff, a
+ *    Vite plugin for docs sites, gets step 2 only.
  *
  * `--no-build` skips step 1's build. The working directory is kept when a check fails, or with
  * `--keep`.
@@ -27,7 +28,9 @@ interface Manifest {
 }
 
 const root = resolve(import.meta.dirname, '..')
-const PUBLISHED = ['color', 'format', 'core', 'vue', 'unplugin']
+const PUBLISHED = ['color', 'format', 'core', 'vue', 'unplugin', 'gruff']
+/** Published packages the bundler app doesn't use: gruff builds docs sites, not apps. */
+const NOT_IN_APP = new Set(['@goatsoft/gruff'])
 const BUNDLERS = ['vite', 'rollup', 'rolldown', 'esbuild', 'webpack', 'rspack']
 /** Bundlers that copy `new URL('…', import.meta.url)` assets, so core's worker ships with the app. */
 const COPIES_WORKER = new Set(['vite', 'webpack', 'rspack'])
@@ -130,10 +133,23 @@ for (const dir of PUBLISHED) {
     if (!text.includes(SOURCE_CONDITION)) fail(`${name}: publint ${message.type}: ${text}`)
   }
 
+  const attw = (format: string) => run(join(root, 'node_modules/.bin/attw'), [tarball, '--profile', 'esm-only', '--format', format, '--no-emoji'], root)
   try {
-    run(join(root, 'node_modules/.bin/attw'), [tarball, '--profile', 'esm-only', '--format', 'ascii', '--no-emoji'], root)
+    attw('json')
   } catch (error) {
-    fail(`${name}: arethetypeswrong found problems:\n${output(error)}`)
+    // The esm-only profile ignores node10 for entry points but still counts errors inside type
+    // files under node10, such as gruff's types-only client.d.ts importing its own package. Every
+    // supported resolution (bundler, node16 ESM) is still checked.
+    const { stdout = '' } = error as { stdout?: string }
+    const found = (JSON.parse(stdout || '{}') as { analysis?: { problems?: { resolutionKind?: string, resolutionOption?: string }[] } }).analysis?.problems
+    const ignored = (problem: { resolutionKind?: string, resolutionOption?: string }) => ['node10', 'node16-cjs'].includes(problem.resolutionKind ?? '') || problem.resolutionOption === 'node10'
+    if (!found?.every(ignored)) {
+      try {
+        attw('ascii')
+      } catch (ascii) {
+        fail(`${name}: arethetypeswrong found problems:\n${output(ascii)}`)
+      }
+    }
   }
 }
 
@@ -141,7 +157,7 @@ for (const dir of PUBLISHED) {
 const app = join(work, 'app')
 cpSync(join(root, 'test/consumers'), app, { recursive: true, filter: (path) => !/[\\/](node_modules|dist)$/.test(path) })
 const pkg = JSON.parse(readFileSync(join(app, 'package.json'), 'utf8')) as Record<string, unknown>
-const dependencies = Object.fromEntries(Object.entries(tarballs).map(([name, tarball]) => [name, `file:${tarball}`]))
+const dependencies = Object.fromEntries(Object.entries(tarballs).filter(([name]) => !NOT_IN_APP.has(name)).map(([name, tarball]) => [name, `file:${tarball}`]))
 // The packages depend on each other by version, which isn't on the registry yet: use the tarballs.
 writeFileSync(join(app, 'package.json'), JSON.stringify({ ...pkg, dependencies, overrides: dependencies }, null, 2))
 log('Installing the tarballs into a fresh project')
