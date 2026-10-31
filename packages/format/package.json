@@ -1,6 +1,6 @@
 {
   "name": "@goatsoft/aurora-format",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The .aurora file format: schema, validation and migrations.",
   "keywords": [
     "aurora",
