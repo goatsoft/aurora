@@ -268,6 +268,9 @@ describe('the Vite plugin', () => {
       plugins: [...gruff({ root: dir, route: (file) => (file.startsWith(dir) ? '/x' : undefined), repoUrl: 'https://example.com/', pages: list }), vue({ include: [/\.vue$/, /\.md$/] })],
       server: { middlewareMode: true, hmr: false },
     })
+    // The test fires the watcher's events itself: real ones for the files it writes would arrive
+    // late, at any point in the test.
+    server.watcher.unwatch(dir)
     try {
       const send = vi.spyOn(server.ws, 'send')
       const titles = async () => ((await server.ssrLoadModule('virtual:gruff')) as { pages: { title: string }[] }).pages.map(({ title }) => title)
@@ -280,6 +283,8 @@ describe('the Vite plugin', () => {
       writeFileSync(join(dir, 'a.md'), '# Renamed\n')
       server.watcher.emit('change', join(dir, 'a.md'))
       expect(await titles()).toEqual(['Renamed', 'B'])
+      // Long enough for any late file system event to arrive.
+      await new Promise((done) => setTimeout(done, 500))
       expect(send).not.toHaveBeenCalled()
       server.watcher.emit('change', join(fixtures, 'glossary.txt'))
       expect(send).not.toHaveBeenCalled()
