@@ -1,6 +1,6 @@
 {
   "name": "@goatsoft/gruff",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The rough and ready static site generator: Markdown pages as Vue components, prerendered, with docs components for Tailwind sites.",
   "keywords": [
     "vite",

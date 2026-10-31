@@ -1,6 +1,6 @@
 {
   "name": "@goatsoft/aurora-vue",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Vue 3 bindings for Aurora: <AuroraBackground>, useAurora() and <AuroraScene>, with SSR fallback.",
   "keywords": [
     "aurora",

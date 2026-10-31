@@ -1,5 +1,13 @@
 # @goatsoft/aurora-vue
 
+## 0.3.1
+
+### Patch Changes
+
+- b9d0d95: Leave the workspace-only `@goatsoft/source` export condition out of the published `package.json`. It pointed at `src/`, which isn't published, so a project that turned the condition on (for its own workspace packages) could not resolve these packages.
+- Updated dependencies [b9d0d95]
+  - @goatsoft/aurora@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
