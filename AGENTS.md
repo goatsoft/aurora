@@ -97,6 +97,8 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 - A change to a published package needs a changeset (`pnpm changeset`) in its PR.
 - Every push to `main` runs `release.yml`: CI, then it opens or updates a "Version Packages" PR from the pending changesets. **To release, merge that PR.** It runs `scripts/publish.ts`, which publishes the `@goatsoft/*` packages to npm through trusted publishing (no token, provenance included) and creates a tag and GitHub Release for each. There are no release branches and no back-merges.
+- The "Version Packages" PR is opened by the workflow's token, so CI never runs on it and its required checks never report: merge it with the admin override (its commit is checked again on `main` before anything publishes). Then approve the `npm` environment in the Release run; publishing waits for that approval.
+- If publishing fails with `ENEEDAUTH`, the package's trusted publisher on npm is missing or has expired (npm shows "Expired"). Delete it and add a new one naming `goatsoft/aurora`, `release.yml` and the `npm` environment, then approve the next Release run or re-run the failed one: `scripts/publish.ts` publishes any version not yet on npm.
 - `pages.yml` deploys the site on every push to `main`.
 - Never publish by hand: only the workflow publishes, so every version carries provenance. `node scripts/publish.ts --dry-run` checks what would be published.
 - The `@goatsoft/source` condition and `src/` are never published. Run `pnpm consumers` after changing a package's `exports`, `files`, `bin`, build config or dependencies: it checks the packed tarballs and builds a fresh project with each supported bundler.

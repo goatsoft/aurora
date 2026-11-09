@@ -24,4 +24,4 @@ Publish to **npm** (registry.npmjs.org) under the `@goatsoft` org, with **proven
 
 ## Consequences
 
-Installing Aurora needs nothing but `npm install`. Every published version is traceable to a commit and workflow run, and no long-lived credential can publish. Releases go through two PRs (the release branch into `main`, then "Version Packages"), and `main` is merged back into `develop` after each. The consumer check adds a CI job of about a minute.
+Installing Aurora needs nothing but `npm install`. Every published version is traceable to a commit and workflow run, and no long-lived credential can publish. Releases went through two PRs (the release branch into `main`, then "Version Packages"), with `main` merged back into `develop` after each, until ADR-0015 moved to trunk-based development: now a release is merging the "Version Packages" PR. The consumer check adds a CI job of about a minute.
