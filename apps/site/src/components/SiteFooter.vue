@@ -23,7 +23,7 @@ const year = new Date().getFullYear()
         </p>
         <p class="mt-3 max-w-xs text-xs/relaxed text-muted-foreground">
           Code, docs and presets: MIT. The Aurora name and mark have <a
-            :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+            :href="`${SITE.repo}/blob/main/LICENSE-ART.md`"
             target="_blank"
             rel="noopener"
             class="underline underline-offset-2 hover:text-foreground"
@@ -172,12 +172,12 @@ const year = new Date().getFullYear()
         rel="noopener"
         class="hover:text-foreground"
       >GOATsoft</a>. <a
-        :href="`${SITE.repo}/blob/develop/LICENSE`"
+        :href="`${SITE.repo}/blob/main/LICENSE`"
         target="_blank"
         rel="noopener"
         class="hover:text-foreground"
       >MIT licence</a> · <a
-        :href="`${SITE.repo}/blob/develop/LICENSE-ART.md`"
+        :href="`${SITE.repo}/blob/main/LICENSE-ART.md`"
         target="_blank"
         rel="noopener"
         class="hover:text-foreground"

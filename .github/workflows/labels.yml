@@ -2,7 +2,7 @@ name: Labels
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths: [.github/labels.yml, .github/workflows/labels.yml]
   pull_request_target:
     types: [opened, synchronize, reopened]
