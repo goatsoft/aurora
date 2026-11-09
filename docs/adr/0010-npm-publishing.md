@@ -1,6 +1,6 @@
 # ADR-0010: Publishing to npm with provenance
 
-Status: accepted
+Status: accepted · branching amended by ADR-0015 (trunk-based development)
 
 ## Context
 

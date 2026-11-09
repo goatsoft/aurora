@@ -1,6 +1,6 @@
 name: Pages
 
-# The site, docs and hosted Studio at aurora.goatsoft.io, published from each release on main.
+# The site, docs and hosted Studio at aurora.goatsoft.io, published from each push to main.
 on:
   push:
     branches: [main]

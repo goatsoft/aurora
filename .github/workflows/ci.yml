@@ -2,8 +2,6 @@ name: CI
 
 # main runs CI through release.yml, which publishes only after it passes.
 on:
-  push:
-    branches: [develop]
   pull_request:
   workflow_call:
 

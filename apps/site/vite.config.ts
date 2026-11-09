@@ -108,7 +108,7 @@ export default defineConfig({
       root,
       route,
       pages: () => pages(),
-      repoUrl: `${REPO}/blob/develop/`,
+      repoUrl: `${REPO}/blob/main/`,
       glossary: join(docs, 'glossary.md'),
       // An `aurora` fence is a live background: <AuroraDemo> renders the JSON next to its source, editable in place.
       highlight: {

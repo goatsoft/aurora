@@ -90,7 +90,7 @@ Use **Download SVG** above to save the chosen official badge into your site's pu
 
 This loads `/brand/badges/made-with-inline-light.svg`. Serve SVGs as `image/svg+xml`. Self-hosting avoids an external image request; otherwise your `img-src` policy must allow `https://aurora.goatsoft.io`.
 
-The helper and Vue component are MIT code. The artwork stays under the [Aurora artwork and brand licence](https://github.com/goatsoft/aurora/blob/develop/LICENSE-ART.md), which explicitly permits embedding and self-hosting these unmodified attribution badges. They are not a certification or an endorsement.
+The helper and Vue component are MIT code. The artwork stays under the [Aurora artwork and brand licence](https://github.com/goatsoft/aurora/blob/main/LICENSE-ART.md), which explicitly permits embedding and self-hosting these unmodified attribution badges. They are not a certification or an endorsement.
 
 The hosted URLs are deployed with the Aurora site. When developing this feature before that deployment, use a self-hosted badge directory or the local site's `/badges/v1/` route.
 

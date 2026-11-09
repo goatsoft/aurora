@@ -14,7 +14,7 @@
 Animated WebGPU backgrounds with a CSS fallback in the first paint. Design one in Aurora Studio, then drop it into any site.
 
 [![npm](https://img.shields.io/npm/v/%40goatsoft%2Faurora?label=npm&logo=npm&color=8c83ff)](https://www.npmjs.com/package/@goatsoft/aurora)
-[![CI](https://img.shields.io/github/actions/workflow/status/goatsoft/aurora/ci.yml?branch=develop&label=CI&logo=github)](https://github.com/goatsoft/aurora/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/goatsoft/aurora/release.yml?branch=main&label=CI&logo=github)](https://github.com/goatsoft/aurora/actions/workflows/release.yml)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-43f4dc)](LICENSE)
 
 [**Website**](https://aurora.goatsoft.io) · [**Docs**](https://aurora.goatsoft.io/docs) · [**Aurora Studio**](https://aurora.goatsoft.io/studio/) · [**npm**](https://www.npmjs.com/org/goatsoft) · [**GOATsoft**](https://goatsoft.io)

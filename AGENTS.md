@@ -87,16 +87,17 @@ Aurora must be very, very slick. It should blow people away visually and in its 
 
 ### Git
 
-- **Git flow.** `main` is releases, `develop` is integration. Work on `feature/<short-name>` (or `fix/…`, `release/…`, `hotfix/…`) branched from `develop`; PRs target `develop`.
+- **Trunk-based.** `main` is the only long-lived branch. Work on a short-lived `feature/<short-name>` (or `fix/…`) branch from `main`; PRs target `main` and are squash-merged.
 - **Never** create `claude/…` or other agent-named branches.
-- Never push directly to `main` or `develop`, and never force-push a shared branch.
+- Never push directly to `main`, and never force-push a shared branch.
 - Conventional commits: `feat(core): …`, `fix(format): …`, `chore: …`, `ci: …`, `docs: …`.
 - Don't put model names or identifiers in commits, PRs or code.
 
 ### Releasing
 
-- A release is a `release/<version>` branch from `develop`, merged into `main` by PR with a **merge commit** (not squash). `release.yml` runs CI on `main`, then opens a "Version Packages" PR from the pending changesets; merging that PR runs `scripts/publish.ts`, which publishes the `@goatsoft/*` packages to npm through trusted publishing (no token, provenance included) and creates a tag and GitHub Release for each. `pages.yml` deploys the site from the same pushes.
-- After each release, merge `main` back into `develop` with a merge commit (versions, changelogs, consumed changesets). Squashing either merge cuts `develop` off from `main`'s history, and the back-merge then conflicts on every released file.
+- A change to a published package needs a changeset (`pnpm changeset`) in its PR.
+- Every push to `main` runs `release.yml`: CI, then it opens or updates a "Version Packages" PR from the pending changesets. **To release, merge that PR.** It runs `scripts/publish.ts`, which publishes the `@goatsoft/*` packages to npm through trusted publishing (no token, provenance included) and creates a tag and GitHub Release for each. There are no release branches and no back-merges.
+- `pages.yml` deploys the site on every push to `main`.
 - Never publish by hand: only the workflow publishes, so every version carries provenance. `node scripts/publish.ts --dry-run` checks what would be published.
 - The `@goatsoft/source` condition and `src/` are never published. Run `pnpm consumers` after changing a package's `exports`, `files`, `bin`, build config or dependencies: it checks the packed tarballs and builds a fresh project with each supported bundler.
 - The site must be deployed before a release whose packages point at new hosted URLs (badges, schema).
