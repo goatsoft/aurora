@@ -92,3 +92,40 @@ export function breadcrumbTrail(pages: PageInfo[], route: string, options: { bas
   }
   return trail
 }
+
+let sidebarScroll = 0
+
+/** Remembers the docs sidebar scroll position across navigation, in history state and sessionStorage. */
+export function getSidebarScroll(): number {
+  if (typeof window !== 'undefined' && window.history.state) {
+    const historyScroll = (window.history.state as { sidebarScroll?: number }).sidebarScroll
+    if (typeof historyScroll === 'number') return historyScroll
+  }
+  if (sidebarScroll === 0 && typeof sessionStorage !== 'undefined') {
+    try {
+      const stored = sessionStorage.getItem('gruff:sidebar-scroll')
+      if (stored) sidebarScroll = Number(stored) || 0
+    } catch {
+      // Storage may be unavailable or disabled.
+    }
+  }
+  return sidebarScroll
+}
+
+export function setSidebarScroll(top: number): void {
+  sidebarScroll = top
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      sessionStorage.setItem('gruff:sidebar-scroll', String(top))
+    } catch {
+      // Storage may be unavailable or disabled.
+    }
+  }
+  if (typeof window !== 'undefined' && window.history.state) {
+    try {
+      window.history.replaceState({ ...window.history.state, sidebarScroll: top }, '')
+    } catch {
+      // History state may be restricted.
+    }
+  }
+}
