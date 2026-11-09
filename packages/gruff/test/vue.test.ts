@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createSSRApp, h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { renderToString } from 'vue/server-renderer'
-import { breadcrumbTrail, CopyButton, DocPage, gruffDocs, navGroups, Term } from '@/vue'
+import { breadcrumbTrail, CopyButton, DocPage, getSidebarScroll, gruffDocs, navGroups, setSidebarScroll, Term } from '@/vue'
 
 const page = (route: string, title: string, extra: Partial<PageInfo> = {}): PageInfo => ({ route, title, description: undefined, order: undefined, sidebarTitle: undefined, ...extra })
 const pages = [
@@ -95,5 +95,12 @@ describe('the docs components', () => {
     const app = createSSRApp({ render: () => h(CopyButton, { code: 'x' }) })
     app.config.warnHandler = () => undefined
     await expect(renderToString(app)).rejects.toThrow('gruff: the docs components need app.use(gruffDocs({ ... }))')
+  })
+
+  it('tracks and restores sidebar scroll across navigation', () => {
+    setSidebarScroll(250)
+    expect(getSidebarScroll()).toBe(250)
+    setSidebarScroll(0)
+    expect(getSidebarScroll()).toBe(0)
   })
 })

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { TocEntry } from './toc'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { useDocs } from './docs'
+import { getSidebarScroll, setSidebarScroll, useDocs } from './docs'
 import DocToc from './DocToc.vue'
 import SearchDialog from './SearchDialog.vue'
 
@@ -19,7 +19,54 @@ const prev = computed(() => docs.sequence[index.value - 1])
 const next = computed(() => (index.value >= 0 ? docs.sequence[index.value + 1] : undefined))
 const trail = computed(() => docs.breadcrumbs?.(here.value) ?? [])
 const menu = ref(false)
-watch(here, () => (menu.value = false))
+const aside = ref<HTMLElement>()
+
+function onSidebarScroll() {
+  if (aside.value && aside.value.scrollHeight > aside.value.clientHeight) {
+    setSidebarScroll(aside.value.scrollTop)
+  }
+}
+
+function restoreSidebar() {
+  const el = aside.value
+  if (!el || typeof window === 'undefined') return
+
+  let target = getSidebarScroll()
+  const active = el.querySelector<HTMLElement>('a[aria-current="page"], .router-link-exact-active')
+
+  if (target > 0) {
+    el.scrollTop = target
+    if (active && el.clientHeight > 0) {
+      const elRect = el.getBoundingClientRect()
+      const activeRect = active.getBoundingClientRect()
+      if (activeRect.top < elRect.top || activeRect.bottom > elRect.bottom) {
+        const offset = activeRect.top - elRect.top + el.scrollTop
+        el.scrollTop = Math.max(0, offset - 60)
+        target = el.scrollTop
+      }
+    }
+  } else if (active && el.clientHeight > 0) {
+    const elRect = el.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+    const offset = activeRect.top - elRect.top + el.scrollTop
+    el.scrollTop = Math.max(0, offset - 60)
+    target = el.scrollTop
+  }
+
+  if (el.scrollHeight > el.clientHeight) {
+    setSidebarScroll(target)
+  }
+}
+
+onMounted(() => {
+  restoreSidebar()
+  void nextTick(restoreSidebar)
+})
+
+watch(here, () => {
+  menu.value = false
+  void nextTick(restoreSidebar)
+})
 </script>
 
 <template>
@@ -27,7 +74,11 @@ watch(here, () => (menu.value = false))
        column's padding), so the sticky sidebar stays put until the footer actually arrives. -->
   <div class="mx-auto -mb-24 grid max-w-7xl gap-10 px-6 pt-28 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
     <!-- Sticks below the nav and runs to the bottom of the window, scrolling on its own. -->
-    <aside class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:mask-b-from-[calc(100%-2.5rem)] lg:mask-b-to-100% lg:pb-10">
+    <aside
+      ref="aside"
+      class="lg:sticky lg:top-28 lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:mask-b-from-[calc(100%-2.5rem)] lg:mask-b-to-100% lg:pb-10"
+      @scroll.passive="onSidebarScroll"
+    >
       <SearchDialog />
       <button
         class="mt-3 flex w-full items-center justify-between rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground lg:hidden"

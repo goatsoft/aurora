@@ -30,7 +30,7 @@ export function gruffDocs(options: DocsOptions): Plugin {
 export { default as CodeGroup } from './CodeGroup.vue'
 export { default as CopyButton } from './CopyButton.vue'
 export { default as DocPage } from './DocPage.vue'
-export { breadcrumbTrail, DOCS, navGroups, useDocs } from './docs'
+export { breadcrumbTrail, DOCS, getSidebarScroll, navGroups, setSidebarScroll, useDocs } from './docs'
 export type { Crumb, Docs, DocsIcon, DocsOptions, NavGroup } from './docs'
 export { default as DocToc } from './DocToc.vue'
 export { defaultIcons } from './icons'
