@@ -20,5 +20,5 @@ The docs components are the awkward part. Aurora's published Vue components may 
 ## Consequences
 
 - Lucy's site drops its copy (`libs/gruff` and the six components) and the Vite resolver workaround for the source condition once a version is on npm.
-- The first publish of a new package can't use trusted publishing (npm needs the package to exist to configure its trusted publisher), so `@goatsoft/gruff`'s first version goes out once with a short-lived token, as 0.1.0 of the other packages did (ADR-0010).
+- The first publish of a new package can't use trusted publishing (npm needs the package to exist to configure its trusted publisher), so `@goatsoft/gruff`'s first version goes out once with a short-lived token, as 0.1.0 of the other packages did (ADR-0010). 0.1.1 was its first trusted publish, after its trusted publisher had expired once and been recreated.
 - The docs components' look is now shared by two sites. Changes to it are changes to a published package, with a changeset.
