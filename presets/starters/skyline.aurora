@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Skyline starter",
+  "palette": [
+    "oklch(0.08 0.025 250)",
+    "oklch(0.32 0.065 232)",
+    "oklch(0.92 0.08 85)",
+    "oklch(0.75 0.11 218)"
+  ],
+  "layers": [
+    {
+      "type": "skyline"
+    }
+  ]
+}

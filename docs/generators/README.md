@@ -16,12 +16,17 @@ Each generator draws one kind of background. A layer's `type` names its generato
 | [Conic](conic.md) | `conic` | Colours turning around a point. |
 | [Mesh gradient](mesh-gradient.md) | `mesh-gradient` | Four colours that drift and blend into each other. |
 | [Clouds](clouds.md) | `clouds` | Air: cumulus clouds at two depths, lit from one side, drifting slowly. |
+| [Fog](fog.md) | `fog` | Air: drifting banks of low-lying fog and mist that weave across the horizon. |
 | [Wind](wind.md) | `wind` | Air in motion: thin streaks that flow across the canvas and bend in gusts. |
 | [Rain](rain.md) | `rain` | Air: falling rain in three depths, leaning with the wind. |
 | [Lightning](lightning.md) | `lightning` | Air: forked lightning and sky flashes, for storms. |
 | [Mountains](mountains.md) | `mountains` | Earth: layered mountain ridges that fade into haze, with mist in the valleys. |
 | [Treeline](treeline.md) | `treeline` | Earth: rows of spruce silhouettes along the horizon, with glow behind them. |
 | [Strata](strata.md) | `strata` | Earth: folded sandstone layers that drift slowly. |
+| [Skyline](skyline.md) | `skyline` | City: layered towers with lit window grids, spires and glass. |
+| [Bridge & transit](transit.md) | `transit` | City: a suspension bridge and elevated transit viaduct with glowing train cars and deck lamps. |
+| [City lights](city-lights.md) | `city-lights` | City: a sprawling grid of street lights, glowing boulevards and soft foreground bokeh below the horizon. |
+| [Harbor](harbor.md) | `harbor` | City: shoreline water below the horizon, with shimmering vertical light reflections and embankment lights. |
 | [Water](water.md) | `water` | Water: moving light patterns on the floor of clear water. |
 | [Fire](fire.md) | `fire` | Fire: flames rising from the bottom edge, with embers above them. |
 | [Grain](grain.md) | `grain` | Animated film grain, to lay over other layers. |

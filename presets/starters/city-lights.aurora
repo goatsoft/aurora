@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "City lights starter",
+  "palette": [
+    "oklch(0.07 0.02 255)",
+    "oklch(0.86 0.14 75)",
+    "oklch(0.88 0.11 215)"
+  ],
+  "layers": [
+    {
+      "type": "city-lights"
+    }
+  ]
+}

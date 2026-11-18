@@ -28,7 +28,7 @@ defineProps<{ embedded?: boolean }>()
         {{ embedded ? 'Effects applied to the whole scene. Drag the divider to compare.' : 'Keep your layers. Change the feeling. Modifiers transform the complete composition, from a broken signal to a softer focus. Drag each divider to compare.' }}
       </p>
     </div>
-    <div class="mt-10 grid gap-5 md:grid-cols-3">
+    <div class="mt-10 grid gap-5 md:grid-cols-2">
       <ModifierCard
         v-for="card in modifierCards"
         :key="card.id"

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { lagoon, northernLights } from '@/lib/scenes'
+import { harborLights, lagoon, metropolis, northernLights } from '@/lib/scenes'
 import deepScan from '~/presets/scenes/deep-scan.aurora'
 import ghostTerminal from '~/presets/scenes/ghost-terminal.aurora'
 
 const scenes = [
   { scene: northernLights, name: 'Northern lights', kind: 'Aurora', group: 'night-skies', body: 'Luminous green curtains rising into a violet sky.' },
+  { scene: metropolis, name: 'Metropolis', kind: 'City', group: 'cityscapes', body: 'Illuminated towers and a sprawling street grid with camera bokeh.' },
+  { scene: harborLights, name: 'Harbor lights', kind: 'City', group: 'cityscapes', body: 'Gold and cyan skyscrapers and a suspension bridge reflecting across the bay.' },
   { scene: lagoon, name: 'Lagoon', kind: 'Elements', group: 'landscapes', body: 'Sunlight dancing through clear, turquoise water.' },
   { scene: ghostTerminal, name: 'Ghost terminal', kind: 'Tech', group: 'tech-scenes', body: 'Falling glyphs and a whisper of electronic interference.' },
   { scene: deepScan, name: 'Deep scan', kind: 'Tech', group: 'tech-scenes', body: 'A cyan radar sweep and quiet echoes in the dark.' },

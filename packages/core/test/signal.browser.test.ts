@@ -98,7 +98,7 @@ describe('scene-wide signal distortion', () => {
   })
 })
 
-describe('Pixelate and Vignette', () => {
+describe('Pixelate, Vignette and Depth of Field', () => {
   it('makes uniform display blocks, with size one bit-exact to the original', async () => {
     const doc = assertAurora({ ...base, modifiers: { pixelate: { size: 8 } } })
     const pixels = await frame(doc)
@@ -116,12 +116,20 @@ describe('Pixelate and Vignette', () => {
     expect(Array.from(shaded).filter((_, i) => i % 4 === 3)).toEqual(Array.from(plain).filter((_, i) => i % 4 === 3))
     expect(diff(plain, await frame(assertAurora({ ...base, modifiers: { vignette: { amount: 0 } } }))).changed).toBe(0)
   })
+  it('blurs out-of-focus regions while keeping the focus plane sharp and bypassing at zero amount', async () => {
+    const plain = await frame(assertAurora(base))
+    const focused = await frame(assertAurora({ ...base, modifiers: { dof: { amount: 0.9, focus: 0.5, aperture: 0.8 } } }))
+    const focusRow = 54 * 192 * 4
+    expect([...focused.subarray(focusRow, focusRow + 192 * 4)]).toEqual([...plain.subarray(focusRow, focusRow + 192 * 4)])
+    expect(diff(plain, focused).changed).toBeGreaterThan(0.05)
+    expect(diff(plain, await frame(assertAurora({ ...base, modifiers: { dof: { amount: 0 } } }))).changed).toBe(0)
+  })
   it('composes every modifier at its maximum on a tiny canvas', async () => {
-    const doc = assertAurora({ ...base, modifiers: { signal: { amount: 1, shake: 1, tearSize: 0.5, separation: 1, tracking: 1, frequency: 2, seed: 100 }, pixelate: { size: 64 }, vignette: { amount: 1, radius: 0, softness: 0.01 } } })
+    const doc = assertAurora({ ...base, modifiers: { signal: { amount: 1, shake: 1, tearSize: 0.5, separation: 1, tracking: 1, frequency: 2, seed: 100 }, pixelate: { size: 64 }, vignette: { amount: 1, radius: 0, softness: 0.01 }, dof: { amount: 1, focus: 0.5, aperture: 1 } } })
     expect(await frame(doc, 0.25, 32, 18)).toHaveLength(32 * 18 * 4)
   })
-  it('keeps all three modifiers continuous across shared panels', async () => {
-    const doc = assertAurora({ ...base, modifiers: { signal: {}, pixelate: { size: 7 }, vignette: {} } })
+  it('keeps all modifiers continuous across shared panels', async () => {
+    const doc = assertAurora({ ...base, modifiers: { signal: {}, pixelate: { size: 7 }, vignette: {}, dof: {} } })
     const full = await frame(doc)
     const right = await frame(doc, 0.5, 96, 108, [0.5, 0, 0.5, 1])
     const crop = new Uint8Array(right.length)

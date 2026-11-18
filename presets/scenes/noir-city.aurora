@@ -1,0 +1,64 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Noir city",
+  "palette": [
+    "oklch(0.08 0 0)",
+    "oklch(0.22 0 0)",
+    "oklch(0.96 0 0)",
+    "oklch(0.05 0 0)",
+    "oklch(0.18 0 0)",
+    "oklch(0.94 0 0)",
+    "oklch(0.48 0 0)",
+    "oklch(0.55 0 0)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "density": 0.5,
+        "brightness": 0.9,
+        "milkyway": 0.45,
+        "meteors": 0.1,
+        "seed": 31
+      }
+    },
+    {
+      "type": "skyline",
+      "colors": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "params": {
+        "rows": 4,
+        "density": 5.5,
+        "height": 0.58,
+        "spires": 0.45,
+        "windows": 0.88,
+        "rim": 0.38,
+        "haze": 0.42,
+        "seed": 18
+      }
+    },
+    {
+      "type": "grain",
+      "blend": "overlay",
+      "opacity": 0.22,
+      "colors": [
+        7
+      ],
+      "params": {
+        "amount": 0.35,
+        "size": 1
+      }
+    }
+  ]
+}

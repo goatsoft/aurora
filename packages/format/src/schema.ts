@@ -1,7 +1,7 @@
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
 import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './interactions-schema'
-import { Pixelate, Signal, Vignette } from './modifiers-schema'
+import { Dof, Pixelate, Signal, Vignette } from './modifiers-schema'
 import { range } from './range'
 
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
@@ -65,7 +65,7 @@ const Motion = v.strictObject({
   ),
 })
 
-const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette), dof: v.optional(Dof) })
 
 const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'), v.maxValue(MAX_LAYERS - 1, `must be ${MAX_LAYERS - 1} or less`))
 
@@ -204,6 +204,7 @@ export type SignalModifier = v.InferOutput<typeof Signal>
 
 export type PixelateModifier = v.InferOutput<typeof Pixelate>
 export type VignetteModifier = v.InferOutput<typeof Vignette>
+export type DofModifier = v.InferOutput<typeof Dof>
 export type AuroraInteraction = v.InferOutput<typeof Interaction>
 export type InteractionInput = v.InferInput<typeof Interaction>
 export type InteractionBindingInput = v.InferInput<typeof InteractionBinding>

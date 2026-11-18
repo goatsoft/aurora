@@ -26,6 +26,17 @@ export const sceneGroups = [
     ],
   },
   {
+    id: 'cityscapes', name: 'City & waterfront', description: 'High-rise skylines, sprawling street grids and reflections across the bay, from dawn to storm.',
+    scenes: [
+      { id: 'metropolis', body: 'Illuminated towers and a sprawling grid of street lights beneath hazy mountain ridges.' },
+      { id: 'harbor-lights', body: 'Gold and cyan skyscrapers reflecting in shimmering columns across dark harbor water.' },
+      { id: 'skyline-dawn', body: 'Warm sunrise light catches glass facades and calm water in front of distant peaks.' },
+      { id: 'cyber-bay', body: 'A magenta and violet aurora rises behind a waterfront skyline at night.' },
+      { id: 'city-storm', body: 'Rain, lightning and low-hanging fog sweep through a dark skyline.' },
+      { id: 'noir-city', body: 'Stark monochrome high-rises and bright windows against a starry night sky.' },
+    ],
+  },
+  {
     id: 'tech-scenes', name: 'Tech & signals', description: 'Digital rain, radar echoes and the textures of a failing display.',
     scenes: [
       { id: 'signal-lost', body: 'Fractured cyan and magenta signals, electronic static, scan lines and a soft phosphor lattice.' },

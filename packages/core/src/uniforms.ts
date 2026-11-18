@@ -81,6 +81,10 @@ export function packUniforms(
     const v = doc.modifiers!.vignette!
     u.set([v.amount, v.radius, v.softness, 0], shader.vignette * 4)
   }
+  if (shader.dof !== undefined) {
+    const d = doc.modifiers!.dof!
+    u.set([d.amount, d.focus, d.aperture, 0], shader.dof * 4)
+  }
   shader.layers.forEach(({ generator, params, mask, transform, colors }, i) => {
     const layer = doc.layers[i]!
     const names = Object.keys(generator.params)

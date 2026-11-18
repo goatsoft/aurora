@@ -95,11 +95,12 @@ describe('signal effect uniforms', () => {
   })
 
   it('bypasses signal distortion for reduced motion and restores the authored amount', () => {
-    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7 }, pixelate: { size: 8 }, vignette: {} } })
+    const input = doc([{ type: 'aurora-fbm' }], { modifiers: { signal: { amount: 0.7 }, pixelate: { size: 8 }, vignette: {}, dof: { amount: 0.5, focus: 0.6, aperture: 0.4 } } })
     const shader = compose(input)
     const out = packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: true })
     expect(out[shader.signal! * 4]).toBe(0)
     expect(out[shader.pixelate! * 4]).toBe(8)
+    expect([...out.subarray(shader.dof! * 4, shader.dof! * 4 + 3)]).toEqual(f32([0.5, 0.6, 0.4]))
     packUniforms(input, shader, { width: 200, height: 100, time: 1, scroll: 0, reduced: false }, out)
     expect(out[shader.signal! * 4]).toBeCloseTo(0.7)
     expect(input.modifiers!.signal!.amount).toBe(0.7)

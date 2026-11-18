@@ -1,16 +1,20 @@
 import type { Component } from 'vue'
 import Binary from '~icons/hugeicons/binary-code'
 import Blend from '~icons/hugeicons/blend'
+import Bridge from '~icons/hugeicons/bridge'
 import Circle from '~icons/hugeicons/circle'
 import CircleDot from '~icons/hugeicons/circle-dot'
+import City from '~icons/hugeicons/city-01'
 import Cloud from '~icons/hugeicons/cloud'
 import CloudRain from '~icons/hugeicons/cloud-angled-rain'
 import CloudZap from '~icons/hugeicons/cloud-angled-zap'
+import CloudFog from '~icons/hugeicons/cloud-fog'
 import Curtains from '~icons/hugeicons/curtains'
 import Droplet from '~icons/hugeicons/droplet'
 import FastWind from '~icons/hugeicons/fast-wind'
 import Fire from '~icons/hugeicons/fire'
 import Grid from '~icons/hugeicons/grid'
+import Lamp from '~icons/hugeicons/lamp-01'
 import Layers from '~icons/hugeicons/layers-01'
 import Monitor from '~icons/hugeicons/monitor'
 import Mountain from '~icons/hugeicons/mountain'
@@ -23,6 +27,7 @@ import Pulse from '~icons/hugeicons/pulse-02'
 import Radar from '~icons/hugeicons/radar-02'
 import Sparkles from '~icons/hugeicons/sparkles'
 import Star from '~icons/hugeicons/star'
+import WaterWave from '~icons/hugeicons/water-energy'
 
 const ICONS: Record<string, Component> = {
   'aurora-fbm': Sparkles,
@@ -41,7 +46,12 @@ const ICONS: Record<string, Component> = {
   'strata': Mountain,
   'mountains': MountainSnow,
   'treeline': PineTree,
+  'skyline': City,
+  'transit': Bridge,
+  'city-lights': Lamp,
+  'harbor': WaterWave,
   'clouds': Cloud,
+  'fog': CloudFog,
   'wind': FastWind,
   'rain': CloudRain,
   'lightning': CloudZap,
@@ -57,7 +67,8 @@ export const generatorIcon = (id: string): Component => ICONS[id] ?? Layers
 /** How the generator picker groups the built-ins. */
 export const GENERATOR_GROUPS: { label: string, ids: string[] }[] = [
   { label: 'Aurora', ids: ['aurora-fbm', 'curtain', 'starfield'] },
-  { label: 'Elements', ids: ['strata', 'mountains', 'treeline', 'clouds', 'wind', 'rain', 'lightning', 'fire', 'water'] },
+  { label: 'Elements', ids: ['strata', 'mountains', 'treeline', 'clouds', 'fog', 'wind', 'rain', 'lightning', 'fire', 'water'] },
+  { label: 'City', ids: ['skyline', 'transit', 'city-lights', 'harbor'] },
   { label: 'Gradients', ids: ['mesh-gradient', 'linear-gradient', 'linear-sweep', 'conic', 'grain'] },
   { label: 'Tech', ids: ['digital-rain', 'glitch', 'static', 'radar', 'ping', 'scanlines', 'phosphor'] },
 ]

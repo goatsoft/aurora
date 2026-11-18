@@ -1,0 +1,92 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Harbor lights",
+  "palette": [
+    "oklch(0.1 0.03 265)",
+    "oklch(0.2 0.05 255)",
+    "oklch(0.94 0.02 240)",
+    "oklch(0.08 0.02 260)",
+    "oklch(0.22 0.045 250)",
+    "oklch(0.88 0.13 78)",
+    "oklch(0.76 0.13 210)",
+    "oklch(0.06 0.02 255)",
+    "oklch(0.2 0.055 240)",
+    "oklch(0.86 0.14 75)",
+    "oklch(0.07 0.02 255)",
+    "oklch(0.88 0.12 205)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "density": 0.28,
+        "brightness": 0.7,
+        "milkyway": 0.15,
+        "meteors": 0.05,
+        "seed": 19
+      }
+    },
+    {
+      "type": "skyline",
+      "colors": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "params": {
+        "rows": 4,
+        "density": 5.5,
+        "height": 0.62,
+        "spires": 0.6,
+        "windows": 0.88,
+        "rim": 0.45,
+        "haze": 0.48,
+        "seed": 12
+      }
+    },
+    {
+      "type": "transit",
+      "colors": [
+        10,
+        5,
+        11
+      ],
+      "params": {
+        "altitude": 0.28,
+        "towers": 2,
+        "span": 0.28,
+        "cables": 0.8,
+        "trains": 0.9,
+        "lights": 0.85,
+        "speed": 0.45,
+        "seed": 5
+      }
+    },
+    {
+      "type": "harbor",
+      "colors": [
+        7,
+        8,
+        9
+      ],
+      "params": {
+        "horizon": 0.26,
+        "reflections": 0.9,
+        "columns": 13,
+        "ripples": 1.1,
+        "chop": 0.45,
+        "shoreline": 0.75,
+        "speed": 0.38,
+        "seed": 12
+      }
+    }
+  ]
+}

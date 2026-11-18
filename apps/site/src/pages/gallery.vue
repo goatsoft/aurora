@@ -6,7 +6,7 @@ import { galleryGroups } from '@/lib/gallery'
 import { sceneGroups } from '@/lib/gallery-scenes'
 import { useSitePreferences } from '@/lib/preferences'
 
-useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes and animated generators: night skies, landscapes, weather and Tech. Make any background yours in Aurora Studio.' })
+useHead({ title: 'Gallery', description: 'Explore finished multi-layer scenes and animated generators: night skies, cityscapes, landscapes, weather and Tech. Make any background yours in Aurora Studio.' })
 
 const { paused: sitePaused } = useSitePreferences()
 </script>

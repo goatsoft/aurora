@@ -49,8 +49,11 @@ describe('serialize', () => {
   })
 })
 
-describe('Tech scenes in Studio', () => {
-  const names = ['ghost-terminal.aurora', 'signal-lost.aurora', 'night-protocol.aurora', 'deep-scan.aurora', 'echo-chamber.aurora']
+describe('Tech and City scenes in Studio', () => {
+  const names = [
+    'ghost-terminal.aurora', 'signal-lost.aurora', 'night-protocol.aurora', 'deep-scan.aurora', 'echo-chamber.aurora',
+    'metropolis.aurora', 'harbor-lights.aurora', 'skyline-dawn.aurora', 'cyber-bay.aurora', 'city-storm.aurora', 'noir-city.aurora',
+  ]
   it.each(read('scenes').filter(([name]) => names.includes(name)))('recreates and edits %s using the inspector operations', (_, text) => {
     const doc = recreate(JSON.parse(text) as Doc)
     expect(resolve(doc).ok).toBe(true)

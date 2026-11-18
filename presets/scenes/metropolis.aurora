@@ -1,0 +1,125 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Metropolis",
+  "modifiers": {
+    "dof": {
+      "amount": 0.48,
+      "focus": 0.66,
+      "aperture": 0.55
+    }
+  },
+  "palette": [
+    "oklch(0.11 0.035 250)",
+    "oklch(0.26 0.065 235)",
+    "oklch(0.95 0.02 230)",
+    "oklch(0.14 0.035 245)",
+    "oklch(0.32 0.06 232)",
+    "oklch(0.68 0.1 220)",
+    "oklch(0.28 0.055 235)",
+    "oklch(0.65 0.09 222)",
+    "oklch(0.08 0.025 250)",
+    "oklch(0.34 0.065 230)",
+    "oklch(0.92 0.08 82)",
+    "oklch(0.78 0.11 215)",
+    "oklch(0.05 0.015 250)",
+    "oklch(0.86 0.12 78)",
+    "oklch(0.88 0.1 215)"
+  ],
+  "layers": [
+    {
+      "type": "starfield",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "density": 0.35,
+        "brightness": 0.75,
+        "milkyway": 0.25,
+        "meteors": 0.05,
+        "seed": 14
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "ridges": 2,
+        "peaks": 1.8,
+        "height": 0.56,
+        "roughness": 0.35,
+        "haze": 0.75,
+        "mist": 0.5,
+        "rim": 0.35,
+        "seed": 8
+      }
+    },
+    {
+      "type": "fog",
+      "colors": [
+        6,
+        7
+      ],
+      "params": {
+        "density": 0.52,
+        "altitude": 0.62,
+        "spread": 0.26,
+        "billow": 0.45,
+        "speed": 0.18,
+        "seed": 5
+      }
+    },
+    {
+      "type": "skyline",
+      "colors": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "params": {
+        "rows": 5,
+        "density": 6,
+        "height": 0.58,
+        "spires": 0.6,
+        "windows": 0.9,
+        "rim": 0.5,
+        "haze": 0.72,
+        "seed": 7
+      }
+    },
+    {
+      "type": "city-lights",
+      "blend": "normal",
+      "opacity": 0.9,
+      "colors": [
+        12,
+        13,
+        14
+      ],
+      "params": {
+        "horizon": 0.2,
+        "density": 0.85,
+        "streets": 0.7,
+        "bokeh": 0.55,
+        "twinkle": 0.5,
+        "speed": 0.22,
+        "seed": 4
+      },
+      "mix": "oklab",
+      "mask": {
+        "type": "linear",
+        "angle": 0,
+        "start": 0.14,
+        "end": 0.28
+      }
+    }
+  ]
+}

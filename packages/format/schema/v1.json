@@ -178,6 +178,34 @@
           },
           "required": [],
           "additionalProperties": false
+        },
+        "dof": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Out-of-focus bokeh blur strength. Zero leaves the scene unchanged.",
+              "default": 0.4
+            },
+            "focus": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Vertical focus position in scene coordinates, from top (0) to bottom (1).",
+              "default": 0.55
+            },
+            "aperture": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 1,
+              "description": "Lens aperture: higher values narrow the sharp in-focus band for stronger tilt-shift depth.",
+              "default": 0.35
+            }
+          },
+          "required": [],
+          "additionalProperties": false
         }
       },
       "required": [],

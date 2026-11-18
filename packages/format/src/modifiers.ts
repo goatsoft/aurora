@@ -40,6 +40,14 @@ export const MODIFIERS = {
       softness: { default: 0.45, label: 'Softness', description: 'Width of the soft transition to the dark edges, relative to the shorter scene side.', min: 0.01, max: 1, step: 0.01 },
     },
   },
+  dof: {
+    label: 'Depth of field', hint: 'Camera focus band and bokeh blur across the scene.',
+    controls: {
+      amount: { default: 0.4, label: 'Blur amount', description: 'Out-of-focus bokeh blur strength. Zero leaves the scene unchanged.', min: 0, max: 1, step: 0.01 },
+      focus: { default: 0.55, label: 'Focus plane', description: 'Vertical focus position in scene coordinates, from top (0) to bottom (1).', min: 0, max: 1, step: 0.01 },
+      aperture: { default: 0.35, label: 'Aperture', description: 'Lens aperture: higher values narrow the sharp in-focus band for stronger tilt-shift depth.', min: 0.05, max: 1, step: 0.01 },
+    },
+  },
 } as const satisfies Record<string, ModifierSpec>
 
 export type ModifierId = keyof typeof MODIFIERS
