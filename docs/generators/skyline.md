@@ -4,7 +4,7 @@ order: 16
 
 # Skyline (`skyline`)
 
-City: layered towers with lit windows and spires.
+City: layered towers, lit windows and beacons.
 
 ```aurora
 {
@@ -46,14 +46,14 @@ Every parameter is optional; one you leave out uses its default.
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
 | `rows` | Rows | 5 | 1 to 5 | Tower rows. |
-| `density` | Density | 6 | 2.5 to 14 | Grid density. |
-| `height` | Height | 0.54 | 0.15 to 0.85 | Tower height. |
-| `spires` | Spires | 0.55 | 0 to 1 | Crowns and spires. |
-| `windows` | Windows | 0.82 | 0 to 1 | Window light. |
-| `rim` | Rim light | 0.45 | 0 to 1 | Edge light. |
-| `haze` | Haze | 0.65 | 0 to 1 | Distance haze. |
-| `speed` | Drift | 0 | 0 to 2 | Parallax drift. |
-| `seed` | Seed | 0 | 0 to 100 | Random seed. |
+| `density` | Density | 6 | 2.5 to 14 | Tower density. |
+| `height` | Height | 0.54 | 0.15 to 0.85 | Max height. |
+| `spires` | Spires | 0.55 | 0 to 1 | Spires. |
+| `windows` | Windows | 0.82 | 0 to 1 | Windows. |
+| `rim` | Rim light | 0.45 | 0 to 1 | Edge rim. |
+| `haze` | Haze | 0.65 | 0 to 1 | Haze. |
+| `speed` | Drift | 0 | 0 to 2 | Drift. |
+| `seed` | Seed | 0 | 0 to 100 | Seed. |
 
 ## Implementation note
 

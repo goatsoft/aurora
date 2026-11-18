@@ -10,19 +10,19 @@ import { defineGenerator } from './define'
 export const transit = defineGenerator({
   id: 'transit',
   label: 'Bridge & transit',
-  description: 'City: suspension bridge and elevated viaduct with moving transit trains.',
+  description: 'City: suspension bridge and transit viaduct with moving trains.',
   colors: 3,
   palette: ['oklch(0.08 0.02 255)', 'oklch(0.88 0.13 80)', 'oklch(0.84 0.12 215)'],
   requires: ['hash'],
   params: {
-    altitude: { default: 0.26, min: 0.08, max: 0.65, step: 0.01, label: 'Deck height', description: 'Bridge deck height.' },
-    towers: { default: 2, min: 0, max: 3, step: 1, label: 'Towers', description: 'Suspension towers; 0 for viaduct.' },
-    span: { default: 0.34, min: 0.15, max: 0.55, step: 0.01, label: 'Tower height', description: 'Tower height above deck.' },
+    altitude: { default: 0.26, min: 0.08, max: 0.65, step: 0.01, label: 'Deck height', description: 'Deck height.' },
+    towers: { default: 2, min: 0, max: 3, step: 1, label: 'Towers', description: 'Towers; 0 for viaduct.' },
+    span: { default: 0.34, min: 0.15, max: 0.55, step: 0.01, label: 'Tower height', description: 'Tower height.' },
     cables: { default: 0.75, min: 0, max: 1, step: 0.01, label: 'Cables', description: 'Cables and piers.' },
-    trains: { default: 0.85, min: 0, max: 1, step: 0.01, label: 'Trains', description: 'Train glow and density.' },
-    lights: { default: 0.75, min: 0, max: 1, step: 0.01, label: 'Lights', description: 'Deck and beacon lights.' },
-    speed: { default: 0.5, min: 0, max: 2, step: 0.01, label: 'Speed', description: 'Train speed.' },
-    seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'Random seed.', ui: 'seed' },
+    trains: { default: 0.85, min: 0, max: 1, step: 0.01, label: 'Trains', description: 'Trains.' },
+    lights: { default: 0.75, min: 0, max: 1, step: 0.01, label: 'Lights', description: 'Lights.' },
+    speed: { default: 0.5, min: 0, max: 2, step: 0.01, label: 'Speed', description: 'Speed.' },
+    seed: { default: 0, min: 0, max: 100, step: 1, label: 'Seed', description: 'Seed.', ui: 'seed' },
   },
   wgsl: /* wgsl */ `
 fn ss(a: f32, b: f32, x: f32) -> f32 { return 1.0 - smoothstep(a, b, x); }
@@ -36,7 +36,8 @@ let dy = 1.0 - ctx.uv.y - P.altitude;
 let dh = max(0.011, px * 2.5);
 var mask = ss(dh - px, dh + px, abs(dy)) * (0.65 + 0.35 * mix(0.5, sf(x * 38.0, 0.25, px * 42.0), ss(0.1, 0.28, px * 42.0)));
 if (dy < 0.0) {
-mask = max(mask, ss(0.012 - dy * 0.025 - px, 0.012 - dy * 0.025 + px, rp(x + 0.16, 3.125)) * P.cables);
+let w = 0.012 - dy * 0.025;
+mask = max(mask, ss(w - px, w + px, rp(x + 0.16, 3.125)) * P.cables);
 }
 let nt = i32(P.towers);
 var bc = 0.0;
@@ -51,8 +52,8 @@ let tw = max(0.014, px * 2.8);
 let leg = ss(tw - px, tw + px, abs(abs(tx) - tw * 1.1));
 let strut = ss(0.0, px * 2.2, rp(dy, 1.0 / (th * 0.28))) * step(abs(tx), tw * 2.1) * step(0.0, dy);
 mask = max(mask, max(leg, strut) * step(-P.altitude, dy) * step(dy, th));
-bc = exp(-length(vec2f(tx, dy - th)) / px * 0.35) * (0.55 + 0.45 * sin(ctx.time * 2.8 + tid * 2.1)) * P.lights;
-if (dy > 0.0 && dy < th * 1.05 && abs(tx) < sp * 0.52) {
+bc = exp(-length(vec2f(tx, dy - th)) / px * 0.4) * ss(0.04, 0.12, abs(fract(ctx.time * 0.5 + 0.85) - 0.12)) * P.lights;
+if (dy > 0.0 && dy < th * 1.1 && abs(tx) < sp * 0.52) {
 let sag = 1.0 - min(abs(tx) / (sp * 0.5), 1.0);
 let cy = th * (0.06 + 0.92 * sag * sag);
 let cd = abs(dy - cy);
@@ -82,9 +83,11 @@ mask = max(mask, tr);
 if (dir > 0) { warm += wa; } else { cool += wa; }
 }
 let yf = smoothstep(0.04, 0.12, ctx.uv.y);
-let lit = clamp(warm + cool + bc, 0.0, 1.3) * yf;
-let col = mix(c[0], mix(c[1], c[2], clamp((cool + bc * 0.4) / max(lit, 1e-4), 0.0, 1.0)), min(1.0, lit));
-return vec4f(col, min(1.0, max(mask * yf, lit * 0.85)));
+let lit = clamp(warm + cool, 0.0, 1.3) * yf;
+let b = min(1.0, bc * yf);
+let bcol = select(c[1], vec3f(0.65, 0.2, 0.12), abs(c[1].y) + abs(c[1].z) > 0.04);
+let col = mix(mix(c[0], mix(c[1], c[2], min(1.0, cool / max(lit, 1e-4))), min(1.0, lit)), bcol, b);
+return vec4f(col, min(1.0, max(mask * yf, max(lit * 0.85, b))));
 }
 `,
   css: ({ colors, params, opacity }) => {

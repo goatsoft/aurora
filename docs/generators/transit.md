@@ -4,7 +4,7 @@ order: 17
 
 # Bridge & transit (`transit`)
 
-City: suspension bridge and elevated viaduct with moving transit trains.
+City: suspension bridge and transit viaduct with moving trains.
 
 ```aurora
 {
@@ -43,14 +43,14 @@ Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
-| `altitude` | Deck height | 0.26 | 0.08 to 0.65 | Bridge deck height. |
-| `towers` | Towers | 2 | 0 to 3 | Suspension towers; 0 for viaduct. |
-| `span` | Tower height | 0.34 | 0.15 to 0.55 | Tower height above deck. |
+| `altitude` | Deck height | 0.26 | 0.08 to 0.65 | Deck height. |
+| `towers` | Towers | 2 | 0 to 3 | Towers; 0 for viaduct. |
+| `span` | Tower height | 0.34 | 0.15 to 0.55 | Tower height. |
 | `cables` | Cables | 0.75 | 0 to 1 | Cables and piers. |
-| `trains` | Trains | 0.85 | 0 to 1 | Train glow and density. |
-| `lights` | Lights | 0.75 | 0 to 1 | Deck and beacon lights. |
-| `speed` | Speed | 0.5 | 0 to 2 | Train speed. |
-| `seed` | Seed | 0 | 0 to 100 | Random seed. |
+| `trains` | Trains | 0.85 | 0 to 1 | Trains. |
+| `lights` | Lights | 0.75 | 0 to 1 | Lights. |
+| `speed` | Speed | 0.5 | 0 to 2 | Speed. |
+| `seed` | Seed | 0 | 0 to 100 | Seed. |
 
 ## Implementation note
 
