@@ -21,3 +21,9 @@ export const Vignette = v.strictObject({
   radius: v.optional(range(0, 1), VIGNETTE_DEFAULTS.radius),
   softness: v.optional(range(0.01, 1), VIGNETTE_DEFAULTS.softness),
 })
+export const DOF_DEFAULTS = { amount: 0.4, focus: 0.55, aperture: 0.35 }
+export const Dof = v.strictObject({
+  amount: v.optional(range(0, 1), DOF_DEFAULTS.amount),
+  focus: v.optional(range(0, 1), DOF_DEFAULTS.focus),
+  aperture: v.optional(range(0.05, 1), DOF_DEFAULTS.aperture),
+})

@@ -76,8 +76,10 @@ describe('gallery', () => {
   it('keeps the homepage selection small and leads into the full collection', () => {
     const wrapper = mount(ScenesSection, { global })
     try {
-      expect(wrapper.findAll('article')).toHaveLength(4)
+      expect(wrapper.findAll('article')).toHaveLength(6)
       expect(wrapper.text()).toContain('Northern lights')
+      expect(wrapper.text()).toContain('Metropolis')
+      expect(wrapper.text()).toContain('Harbor lights')
       expect(wrapper.text()).toContain('Deep scan')
       const destinations = wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to'))
       expect(destinations).toContain('/gallery')
@@ -94,7 +96,7 @@ describe('gallery', () => {
     try {
       const cards = wrapper.findAllComponents(ModifierCard)
       expect(modifierCards[0]!.scene.doc.layers.map((layer) => layer.type)).toEqual(['glitch', 'static', 'scanlines'])
-      expect(cards.map((card) => card.props('name'))).toEqual(['Signal distortion', 'Pixelate', 'Vignette'])
+      expect(cards.map((card) => card.props('name'))).toEqual(['Signal distortion', 'Pixelate', 'Vignette', 'Depth of field'])
       for (const [i, card] of cards.entries()) {
         const scene = modifierCards[i]!.scene
         const before = card.getComponent(LazyBackground)

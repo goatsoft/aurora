@@ -18,6 +18,7 @@ const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'mesh-gradient': () => import('./mesh-gradient').then((m) => m.meshGradient as Generator),
   // Weather.
   'clouds': () => import('./clouds').then((m) => m.clouds as Generator),
+  'fog': () => import('./fog').then((m) => m.fog as Generator),
   'wind': () => import('./wind').then((m) => m.wind as Generator),
   'rain': () => import('./rain').then((m) => m.rain as Generator),
   'lightning': () => import('./lightning').then((m) => m.lightning as Generator),
@@ -25,6 +26,11 @@ const BUILTIN: Readonly<Record<string, () => Promise<Generator>>> = {
   'mountains': () => import('./mountains').then((m) => m.mountains as Generator),
   'treeline': () => import('./treeline').then((m) => m.treeline as Generator),
   'strata': () => import('./strata').then((m) => m.strata as Generator),
+  // City.
+  'skyline': () => import('./skyline').then((m) => m.skyline as Generator),
+  'transit': () => import('./transit').then((m) => m.transit as Generator),
+  'city-lights': () => import('./city-lights').then((m) => m.cityLights as Generator),
+  'harbor': () => import('./harbor').then((m) => m.harbor as Generator),
   // Water and fire.
   'water': () => import('./water').then((m) => m.water as Generator),
   'fire': () => import('./fire').then((m) => m.fire as Generator),

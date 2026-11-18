@@ -1,0 +1,16 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Bridge & transit starter",
+  "palette": [
+    "oklch(0.08 0.02 255)",
+    "oklch(0.88 0.13 80)",
+    "oklch(0.84 0.12 215)"
+  ],
+  "layers": [
+    {
+      "type": "transit"
+    }
+  ]
+}

@@ -33,6 +33,16 @@ Phase 4 adds ten generators to the aurora: animated gradients, grain, a `starfie
 - Scan lines adds a pixel-filtered CRT raster and a slow exposure roll; phosphor adds a band-limited dot lattice with broad drifting illumination. Signal Lost layers these over quieter static and restrained glitch bursts. Both are independent signal generators, not post-processing filters.
 - Each generator has a default golden and a contact sheet at three times across desktop, portrait and ultrawide canvases. Ghost Terminal, Signal Lost, Night Protocol, Deep Scan and Echo Chamber are composed scenes with their own goldens.
 
+## City and fog generators, November 2026
+
+- Studio's **City** group adds `skyline`, `transit`, `city-lights` and `harbor`, and **Elements** adds `fog`.
+- `skyline` builds a 9-plane receding procedural cityscape using 1D domain repetition and composite 2D box SDFs (`bx`) for five architectural crown archetypes (flat International slabs with penthouse bands, single-setback towers, multi-tier stepped ziggurats, symmetrical gable peaks and directional slanted roofs) and rooftop spires, composited back-to-front with perspective frequency scaling, horizon elevation and height-stratified Beer-Lambert atmospheric attenuation (`1 - exp(-sigma * df)`). Inside each silhouette, buildings switch deterministically between discrete office window grids, horizontal curtain-wall bands and vertical glass strips, with directional SDF rim lighting and fourth-power pulsing aviation beacons.
+- `transit` draws a suspension bridge and elevated transit viaduct with twin towers, catenary main cables, vertical suspenders, pier columns, necklace deck lamps and luminous express trains gliding in both directions.
+- `city-lights` draws a perspective-foreshortened basin of urban lights below the horizon, combining neighbourhood clusters, arterial boulevards with moving traffic pulses, and soft foreground bokeh halos.
+- `harbor` draws a shoreline water plane below the horizon, where perspective-foreshortened simplex ripples break vertical columns of reflected skyline light into shimmering streaks below a lit embankment.
+- `fog` draws two depths of drifting, billowy fbm mist around a configurable altitude and vertical spread, transparent outside the banks so it weaves between mountains, towers and water.
+- Each generator has a default golden and a three-time contact sheet across desktop, portrait and ultrawide canvases. Metropolis, Harbor lights, Skyline dawn, Cyber bay, City storm and Noir city are composed multi-layer scenes with their own goldens.
+
 ## Consequences
 
 - A generator's first use costs one small request; the CSS fallback covers the gap.

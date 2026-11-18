@@ -1,0 +1,132 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "City storm",
+  "palette": [
+    "oklch(0.15 0.025 250)",
+    "oklch(0.24 0.03 245)",
+    "oklch(0.34 0.035 240)",
+    "oklch(0.18 0.02 250)",
+    "oklch(0.28 0.025 245)",
+    "oklch(0.48 0.03 238)",
+    "oklch(0.78 0.06 245)",
+    "oklch(0.97 0.03 240)",
+    "oklch(0.12 0.02 250)",
+    "oklch(0.24 0.03 245)",
+    "oklch(0.5 0.04 238)",
+    "oklch(0.08 0.015 250)",
+    "oklch(0.18 0.025 245)",
+    "oklch(0.86 0.09 80)",
+    "oklch(0.55 0.05 235)",
+    "oklch(0.8 0.03 240)"
+  ],
+  "layers": [
+    {
+      "type": "linear-gradient",
+      "colors": [
+        0,
+        1,
+        2
+      ],
+      "params": {
+        "angle": 180,
+        "stops": 3
+      }
+    },
+    {
+      "type": "clouds",
+      "colors": [
+        3,
+        4,
+        5
+      ],
+      "params": {
+        "sky": 0,
+        "coverage": 0.78,
+        "scale": 1.25,
+        "speed": 1.1,
+        "light": 0.32,
+        "softness": 0.6,
+        "seed": 11
+      }
+    },
+    {
+      "type": "lightning",
+      "blend": "screen",
+      "colors": [
+        6,
+        7
+      ],
+      "params": {
+        "frequency": 0.65,
+        "flash": 0.55,
+        "seed": 8
+      }
+    },
+    {
+      "type": "mountains",
+      "colors": [
+        8,
+        9,
+        10
+      ],
+      "params": {
+        "height": 0.46,
+        "ridges": 2,
+        "peaks": 1.8,
+        "roughness": 0.45,
+        "haze": 0.75,
+        "mist": 0.5,
+        "rim": 0.25,
+        "seed": 14
+      }
+    },
+    {
+      "type": "skyline",
+      "colors": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "params": {
+        "rows": 4,
+        "density": 5.5,
+        "height": 0.54,
+        "spires": 0.5,
+        "windows": 0.72,
+        "rim": 0.35,
+        "haze": 0.6,
+        "seed": 9
+      }
+    },
+    {
+      "type": "fog",
+      "colors": [
+        9,
+        14
+      ],
+      "params": {
+        "density": 0.52,
+        "altitude": 0.76,
+        "spread": 0.28,
+        "billow": 0.55,
+        "speed": 0.45,
+        "seed": 3
+      }
+    },
+    {
+      "type": "rain",
+      "colors": [
+        15
+      ],
+      "params": {
+        "amount": 0.6,
+        "wind": 0.28,
+        "haze": 0.35,
+        "seed": 5
+      }
+    }
+  ]
+}

@@ -96,4 +96,8 @@ Colour separation samples the full composition three times during visible bursts
 
 `"modifiers": { "vignette": { "amount": 0.45, "radius": 0.45, "softness": 0.45 } }` darkens the edges without changing transparency. Radius and softness are relative to the shorter scene side. Zero amount leaves the scene unchanged.
 
-Combine these keys in one `modifiers` object. Aurora applies signal distortion first, pixelate sampling next, and vignette last. The CSS fallback keeps the original composition.
+### Depth of field
+
+`"modifiers": { "dof": { "amount": 0.4, "focus": 0.55, "aperture": 0.35 } }` blurs out-of-focus regions with a golden-angle bokeh disc while keeping the vertical `focus` plane sharp. Higher `aperture` narrows the sharp band for a tilt-shift lens effect; zero `amount` leaves the scene unchanged.
+
+Combine these keys in one `modifiers` object. Aurora applies signal distortion first, depth of field and pixelate sampling next, and vignette last. The CSS fallback keeps the original composition.

@@ -24,3 +24,10 @@ export const Vignette = v.strictObject({
   radius: v.optional(range(0, 1, 'Size of the clear centre, relative to the scene\'s shorter side.'), VIGNETTE_DEFAULTS.radius),
   softness: v.optional(range(0.01, 1, 'Width of the soft transition to the dark edges, relative to the shorter scene side.'), VIGNETTE_DEFAULTS.softness),
 })
+
+export const DOF_DEFAULTS = { amount: 0.4, focus: 0.55, aperture: 0.35 }
+export const Dof = v.strictObject({
+  amount: v.optional(range(0, 1, 'Out-of-focus bokeh blur strength. Zero leaves the scene unchanged.'), DOF_DEFAULTS.amount),
+  focus: v.optional(range(0, 1, 'Vertical focus position in scene coordinates, from top (0) to bottom (1).'), DOF_DEFAULTS.focus),
+  aperture: v.optional(range(0.05, 1, 'Lens aperture: higher values narrow the sharp in-focus band for stronger tilt-shift depth.'), DOF_DEFAULTS.aperture),
+})

@@ -37,3 +37,13 @@ Darken the edges to draw attention into the scene.
 | `amount` | Darkness | 0.45 | 0 to 1 | 0.01 | Edge darkness. Zero leaves the scene unchanged. |
 | `radius` | Clear radius | 0.45 | 0 to 1 | 0.01 | Size of the clear centre, relative to the scene's shorter side. |
 | `softness` | Softness | 0.45 | 0.01 to 1 | 0.01 | Width of the soft transition to the dark edges, relative to the shorter scene side. |
+
+## Depth of field (`dof`)
+
+Camera focus band and bokeh blur across the scene.
+
+| Field | Label | Default | Range | Step | Meaning |
+|---|---|---|---|---|---|
+| `amount` | Blur amount | 0.4 | 0 to 1 | 0.01 | Out-of-focus bokeh blur strength. Zero leaves the scene unchanged. |
+| `focus` | Focus plane | 0.55 | 0 to 1 | 0.01 | Vertical focus position in scene coordinates, from top (0) to bottom (1). |
+| `aperture` | Aperture | 0.35 | 0.05 to 1 | 0.01 | Lens aperture: higher values narrow the sharp in-focus band for stronger tilt-shift depth. |

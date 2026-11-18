@@ -2,7 +2,7 @@
 import { parseColor } from '@goatsoft/color'
 import * as v from 'valibot'
 import { InteractionBindingControls, InteractionControls, MAX_INTERACTION_BINDINGS, MAX_INTERACTIONS } from './runtime-interactions'
-import { Pixelate, Signal, Vignette } from './runtime-modifiers'
+import { Dof, Pixelate, Signal, Vignette } from './runtime-modifiers'
 import { range } from './runtime-range'
 /** Current `.aurora` format version. Files with a lower version are migrated forward. */
 export const FORMAT_VERSION = 1
@@ -33,7 +33,7 @@ const Motion = v.strictObject({
   speed: v.optional(v.pipe(v.number(), v.minValue(0, 'must be 0 or more'), v.maxValue(10, 'must be 10 or less')), 1),
   reduced: v.optional(v.picklist(REDUCED_MOTION), 'still'),
 })
-const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette) })
+const Modifiers = v.strictObject({ signal: v.optional(Signal), pixelate: v.optional(Pixelate), vignette: v.optional(Vignette), dof: v.optional(Dof) })
 const LayerIndex = v.pipe(v.number(), v.integer('must be a whole number'), v.minValue(0, 'must be 0 or more'), v.maxValue(MAX_LAYERS - 1, `must be ${MAX_LAYERS - 1} or less`))
 /** Bind a module's normalized input to a layer control or a signal modifier control. */
 const InteractionBinding = v.strictObject({
@@ -102,6 +102,7 @@ export type MixSpace = (typeof MIX_SPACES)[number]
 export type SignalModifier = v.InferOutput<typeof Signal>
 export type PixelateModifier = v.InferOutput<typeof Pixelate>
 export type VignetteModifier = v.InferOutput<typeof Vignette>
+export type DofModifier = v.InferOutput<typeof Dof>
 export type AuroraInteraction = v.InferOutput<typeof Interaction>
 export type InteractionInput = v.InferInput<typeof Interaction>
 export type InteractionBindingInput = v.InferInput<typeof InteractionBinding>

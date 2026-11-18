@@ -13,11 +13,10 @@ export const NOISE = {
 fn noise_pcg2(v0: vec2u) -> vec2u {
   var v = v0 * 1664525u + 1013904223u;
   v.x += v.y * 1664525u; v.y += v.x * 1664525u;
-  v = v ^ (v >> vec2u(16u));
+  v ^= v >> vec2u(16u);
   v.x += v.y * 1664525u; v.y += v.x * 1664525u;
   return v ^ (v >> vec2u(16u));
 }
-// The top 24 bits convert to f32 exactly, so the result is uniform in [0, 1) and never rounds up to 1.
 fn noise_hash22(p: vec2f) -> vec2f { return vec2f(noise_pcg2(bitcast<vec2u>(vec2i(floor(p)))) >> vec2u(8u)) * (1.0 / 16777216.0); }
 fn noise_hash21(p: vec2f) -> f32 { return noise_hash22(p).x; }
 `,
@@ -54,19 +53,19 @@ fn noise_perlin(p: vec2f) -> f32 {
     requires: ['hash'],
     wgsl: /* wgsl */ `
 fn noise_simplex(v: vec2f) -> f32 {
-  let C = vec4f(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-  let i = floor(v + dot(v, C.yy));
-  let x0 = v - i + dot(i, C.xx);
-  let o = select(vec2f(0.0, 1.0), vec2f(1.0, 0.0), x0.x > x0.y);
-  let x1 = x0 + C.xx - o;
-  let x2 = x0 + C.zz;
-  let g0 = noise_hash21(i) * 6.2831853;
-  let g1 = noise_hash21(i + o) * 6.2831853;
-  let g2 = noise_hash21(i + 1.0) * 6.2831853;
-  var m = max(vec3f(0.5) - vec3f(dot(x0, x0), dot(x1, x1), dot(x2, x2)), vec3f(0.0));
-  m = m * m; m = m * m;
-  let g = vec3f(dot(vec2f(cos(g0), sin(g0)), x0), dot(vec2f(cos(g1), sin(g1)), x1), dot(vec2f(cos(g2), sin(g2)), x2));
-  return 99.0 * dot(m, g);
+let C = vec4f(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+let i = floor(v + dot(v, C.yy));
+let x0 = v - i + dot(i, C.xx);
+let o = select(vec2f(0.0, 1.0), vec2f(1.0, 0.0), x0.x > x0.y);
+let x1 = x0 + C.xx - o;
+let x2 = x0 + C.zz;
+let g0 = noise_hash21(i) * 6.2831853;
+let g1 = noise_hash21(i + o) * 6.2831853;
+let g2 = noise_hash21(i + 1.0) * 6.2831853;
+var m = max(vec3f(0.5) - vec3f(dot(x0, x0), dot(x1, x1), dot(x2, x2)), vec3f(0.0));
+m *= m; m *= m;
+let g = vec3f(dot(vec2f(cos(g0), sin(g0)), x0), dot(vec2f(cos(g1), sin(g1)), x1), dot(vec2f(cos(g2), sin(g2)), x2));
+return 99.0 * dot(m, g);
 }
 `,
   },

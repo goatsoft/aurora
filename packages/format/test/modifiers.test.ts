@@ -34,11 +34,12 @@ describe('signal distortion', () => {
   })
 })
 
-describe('pixelate and vignette modifiers', () => {
+describe('pixelate, vignette and dof modifiers', () => {
   it('validates and preserves a combined modifier stack', () => {
-    const doc = assertAurora({ ...base, modifiers: { signal: {}, pixelate: {}, vignette: {} } })
+    const doc = assertAurora({ ...base, modifiers: { signal: {}, pixelate: {}, vignette: {}, dof: {} } })
     expect(doc.modifiers?.pixelate).toEqual({ size: 8 })
     expect(doc.modifiers?.vignette).toEqual({ amount: 0.45, radius: 0.45, softness: 0.45 })
+    expect(doc.modifiers?.dof).toEqual({ amount: 0.4, focus: 0.55, aperture: 0.35 })
     expect(assertAurora(stringifyAurora(doc)).modifiers).toEqual(doc.modifiers)
   })
   it.each([
@@ -47,6 +48,9 @@ describe('pixelate and vignette modifiers', () => {
     ['vignette', { amount: 2 }, '$.modifiers.vignette.amount', 'must be between 0 and 1.'],
     ['vignette', { radius: -1 }, '$.modifiers.vignette.radius', 'must be between 0 and 1.'],
     ['vignette', { softness: 0 }, '$.modifiers.vignette.softness', 'must be between 0.01 and 1.'],
+    ['dof', { amount: 2 }, '$.modifiers.dof.amount', 'must be between 0 and 1.'],
+    ['dof', { focus: -0.5 }, '$.modifiers.dof.focus', 'must be between 0 and 1.'],
+    ['dof', { aperture: 0 }, '$.modifiers.dof.aperture', 'must be between 0.05 and 1.'],
   ])('rejects invalid %s controls', (name, params, path, message) => {
     expect(parseAurora({ ...base, modifiers: { [name]: params } })).toMatchObject({ ok: false, issues: [{ path, message }] })
   })

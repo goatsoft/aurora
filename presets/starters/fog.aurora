@@ -1,0 +1,15 @@
+{
+  "$schema": "https://aurora.goatsoft.io/schema/v1.json",
+  "format": "aurora",
+  "version": 1,
+  "name": "Fog starter",
+  "palette": [
+    "oklch(0.32 0.04 245)",
+    "oklch(0.78 0.04 225)"
+  ],
+  "layers": [
+    {
+      "type": "fog"
+    }
+  ]
+}

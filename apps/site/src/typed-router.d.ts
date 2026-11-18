@@ -66,6 +66,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/city-lights': RouteRecordInfo<
+      '/docs/generators/city-lights',
+      '/docs/generators/city-lights',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/clouds': RouteRecordInfo<
       '/docs/generators/clouds',
       '/docs/generators/clouds',
@@ -101,6 +108,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/fog': RouteRecordInfo<
+      '/docs/generators/fog',
+      '/docs/generators/fog',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/glitch': RouteRecordInfo<
       '/docs/generators/glitch',
       '/docs/generators/glitch',
@@ -111,6 +125,13 @@ declare module 'vue-router/auto-routes' {
     '/docs/generators/grain': RouteRecordInfo<
       '/docs/generators/grain',
       '/docs/generators/grain',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/harbor': RouteRecordInfo<
+      '/docs/generators/harbor',
+      '/docs/generators/harbor',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -185,6 +206,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/docs/generators/skyline': RouteRecordInfo<
+      '/docs/generators/skyline',
+      '/docs/generators/skyline',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/docs/generators/starfield': RouteRecordInfo<
       '/docs/generators/starfield',
       '/docs/generators/starfield',
@@ -202,6 +230,13 @@ declare module 'vue-router/auto-routes' {
     '/docs/generators/strata': RouteRecordInfo<
       '/docs/generators/strata',
       '/docs/generators/strata',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/docs/generators/transit': RouteRecordInfo<
+      '/docs/generators/transit',
+      '/docs/generators/transit',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -406,6 +441,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/city-lights.md': {
+      routes:
+        | '/docs/generators/city-lights'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/clouds.md': {
       routes:
         | '/docs/generators/clouds'
@@ -446,6 +489,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/fog.md': {
+      routes:
+        | '/docs/generators/fog'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/glitch.md': {
       routes:
         | '/docs/generators/glitch'
@@ -457,6 +508,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/generators/grain.md': {
       routes:
         | '/docs/generators/grain'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/harbor.md': {
+      routes:
+        | '/docs/generators/harbor'
       views:
         | never
       pathParamNames:
@@ -542,6 +601,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    '../../docs/generators/skyline.md': {
+      routes:
+        | '/docs/generators/skyline'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     '../../docs/generators/starfield.md': {
       routes:
         | '/docs/generators/starfield'
@@ -561,6 +628,14 @@ declare module 'vue-router/auto-routes' {
     '../../docs/generators/strata.md': {
       routes:
         | '/docs/generators/strata'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    '../../docs/generators/transit.md': {
+      routes:
+        | '/docs/generators/transit'
       views:
         | never
       pathParamNames:
