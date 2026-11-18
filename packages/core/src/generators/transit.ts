@@ -10,7 +10,7 @@ import { defineGenerator } from './define'
 export const transit = defineGenerator({
   id: 'transit',
   label: 'Bridge & transit',
-  description: 'City: a suspension bridge and elevated transit viaduct with glowing train cars and deck lamps.',
+  description: 'City: suspension bridge and elevated viaduct with moving transit trains.',
   colors: 3,
   palette: ['oklch(0.08 0.02 255)', 'oklch(0.88 0.13 80)', 'oklch(0.84 0.12 215)'],
   requires: ['hash'],
@@ -68,13 +68,14 @@ let pw = px * 11.0;
 let wvis = ss(0.14, 0.32, wfw);
 for (var dir = -1; dir <= 1; dir += 2) {
 let fd = f32(dir);
-let ly = dh * select(1.15, 1.75, dir > 0);
-let tx = x * fd - ctx.time * P.speed * (0.38 + 0.09 * fd) + P.seed * 1.7 + fd * 0.4;
-let h = noise_hash21(vec2f(floor(tx / 1.4), fd * 13.0 + P.seed));
-let loc = (fract(tx / 1.4) - 0.5) * 1.4;
-let len = 0.16 + 0.14 * h;
-let on = step(h, P.trains * 0.85);
-let tr = ss(len - px * 2.0, len, abs(loc)) * ss(dh * 0.2, dh * 0.75, abs(dy - ly)) * on;
+let ly = dh * (1.4 + 0.45 * fd);
+let tc = (x * fd - ctx.time * P.speed * (0.35 + 0.03 * fd) + P.seed * 1.7 + 0.8 + fd * 2.0) / 3.8;
+let cell = floor(tc);
+let h = noise_hash21(vec2f(cell, fd * 13.0 + P.seed));
+let loc = (fract(tc) - 0.5) * 3.8;
+let len = 0.16 + 0.12 * h;
+let on = step(fract(cell * 0.62 + fd * 0.2 + P.seed * 0.25), P.trains * 0.75);
+let tr = ss(len - px * 2.0, len, abs(loc)) * ss(dh * 0.15, dh * 0.55, abs(dy - ly)) * on;
 let win = mix(0.64, sf(loc * 52.0, 0.18, wfw), wvis) * sf(loc * 18.0, 0.03 + pw, pw);
 let wa = tr * (0.25 + 0.75 * win) + exp(-length(vec2f(loc - len, dy - ly)) / (px * 5.0)) * on;
 mask = max(mask, tr);

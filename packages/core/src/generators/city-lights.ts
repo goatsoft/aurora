@@ -38,7 +38,7 @@ fn render(ctx: Ctx, P: Params, c: array<vec3f, 3>) -> vec4f {
   let zone = smoothstep(1.0 - P.density * 0.88, 0.95, noise_fbm(w * 0.35, 2) * 0.5 + 0.5);
   let gp = w * min(18.0, ctx.res.y * 0.075 / max(z * 0.12, 0.25));
   let gh = noise_hash22(floor(gp) + P.seed * 13.0);
-  let shim = 1.0 - P.twinkle * 0.4 * (0.5 + 0.5 * sin(t * (3.5 + gh.x * 5.0) + gh.y * 40.0));
+  let shim = 1.0 - P.twinkle * 0.18 * (0.5 + 0.5 * sin(t * (1.4 + gh.x * 1.8) + gh.y * 40.0));
   let r = 0.18 + 0.22 * gh.x;
   let dotL = smoothstep(r, r * 0.2, length(fract(gp) - 0.5 + (gh - 0.5) * 0.38)) * step(1.0 - P.density * 0.78, gh.y) * shim * zone;
   let df = exp(-max(z - 1.0, 0.0) * 0.32);

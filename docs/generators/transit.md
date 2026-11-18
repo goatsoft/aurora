@@ -4,7 +4,7 @@ order: 17
 
 # Bridge & transit (`transit`)
 
-City: a suspension bridge and elevated transit viaduct with glowing train cars and deck lamps.
+City: suspension bridge and elevated viaduct with moving transit trains.
 
 ```aurora
 {
