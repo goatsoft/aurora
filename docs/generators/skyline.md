@@ -4,7 +4,7 @@ order: 16
 
 # Skyline (`skyline`)
 
-City: layered towers, lit windows and beacons.
+City: layered towers, windows and beacons.
 
 ```aurora
 {

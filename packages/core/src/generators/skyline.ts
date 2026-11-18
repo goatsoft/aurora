@@ -13,7 +13,7 @@ import { defineGenerator } from './define'
 export const skyline = defineGenerator({
   id: 'skyline',
   label: 'Skyline',
-  description: 'City: layered towers, lit windows and beacons.',
+  description: 'City: layered towers, windows and beacons.',
   colors: 4,
   palette: ['oklch(0.08 0.025 250)', 'oklch(0.32 0.065 232)', 'oklch(0.92 0.08 85)', 'oklch(0.75 0.11 218)'],
   requires: ['hash'],
@@ -46,7 +46,7 @@ if (fi < 0.0) { break; }
 let df = fi / max(1.0, n - 1.0);
 let f = P.density * (0.8 + df * 1.45);
 let u = uv.x + (ctx.time * P.speed * 0.08 / (1.0 + fi * 0.35)) % 64.0;
-let xs = u * f + fi * 1.7 + P.seed * 3.1;
+let xs = u * f + fi * 1.7 + P.seed * 2.5;
 let id = floor(xs);
 let hx = (fract(xs) - 0.5) / f;
 let ly = max(0.0, uv.y - df * tall * 0.35);
@@ -56,13 +56,13 @@ let r = noise_hash22(vec2f(id + 29.1, sd));
 let hw = (0.35 + 0.12 * h.y - df * 0.04) / f;
 let rx = hx / hw;
 let cx = u - hx;
-let h1 = tall * mix(0.28 + 0.35 * h.x, 0.7 + 0.3 * r.x, step(0.8, h.x)) * (0.55 + 0.45 * sin(df * 2.0 + 0.35)) * (0.68 + 0.32 * exp(-cx * cx));
-let sl = step(0.85, r.x) * select(abs(rx), (rx * sign(r.y - 0.5) + 1.0) * 0.5, r.x > 0.92) * h1 * 0.1;
+let h1 = tall * mix(0.25 + 0.35 * h.x, 0.7 + 0.3 * r.x, step(0.8, h.x)) * (0.55 + 0.45 * sin(df * 2.0 + 0.35)) * (0.7 + 0.3 * exp(-cx * cx));
+let sl = step(0.85, r.x) * select(abs(rx), (rx * sign(r.y - 0.5) + 1.0) * 0.5, r.x > 0.95) * h1 * 0.1;
 let nr = step(r.x, 0.85);
 let z1 = step(0.5, r.x) * nr;
 let z2 = step(0.7, r.x) * z1;
-let sp = step(1.0 - P.spires * 0.6, r.y) * nr * step(0.65, h.x);
-let hsx = abs(hx) - select(0.0, hw * 0.25, z2 * h.x > 0.7);
+let sp = step(1.0 - P.spires * 0.6, r.y) * nr * step(tall * 0.5, h1);
+let hsx = abs(hx) - select(0.0, hw * 0.25, z2 * sp > 0.5);
 let t0 = h1 - sl;
 let t1 = t0 + h1 * 0.1 * z1;
 let top = t1 + h1 * 0.08 * z2;
@@ -70,11 +70,11 @@ let h3 = top + h1 * 0.2 * sp;
 let d1 = min(bx(hx, ly, hw, t0), min(bx(hx, ly, hw * 0.65, t1), bx(hx, ly, hw * 0.4, top)));
 let d = min(d1, bx(hsx, ly, max(0.012 / f, px * 0.7), h3));
 let m = 1.0 - smoothstep(0.0, px * 1.2, d);
-let tip = exp(-length(vec2f(hsx, ly - h3)) / px * 0.4) * (1.0 - smoothstep(0.04, 0.12, abs(fract(ctx.time * 0.5 + id * 0.35) - 0.12))) * sp * step(0.7, h.x);
+let tip = exp(-length(vec2f(hsx, ly - h3)) / px * 0.4) * (1.0 - smoothstep(0.04, 0.12, abs(fract(ctx.time * 0.5 + id * 0.35) - 0.12))) * sp * step(tall * 0.65, h1);
 let wf = vec2f(round(6.0 + 6.0 * h.y), 56.0);
 let wuv = vec2f(rx * 0.5 + 0.5, ly) * wf;
 let wi = floor(wuv);
-let pw = vec2f(select(0.32, 0.45, r.y > 0.7), select(0.28, 0.45, r.y < 0.2));
+let pw = vec2f(select(0.3, 0.45, r.y > 0.7), select(0.25, 0.45, r.y < 0.2));
 let pf = 0.85 * wf * px / vec2f(2.0 * hw, 1.0);
 let pn = 1.0 - smoothstep(pw - pf, pw + pf, abs(fract(wuv) - 0.5));
 let wh = noise_hash22(wi + vec2f(id * 17.0, sd));
