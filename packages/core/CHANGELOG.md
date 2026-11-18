@@ -1,5 +1,16 @@
 # @goatsoft/aurora
 
+## 0.4.0
+
+### Minor Changes
+
+- 03e2c77: Add the City generator family (`skyline`, `transit`, `city-lights` and `harbor`), the `fog` weather generator, and the `dof` (Depth of field) scene modifier.
+
+### Patch Changes
+
+- Updated dependencies [03e2c77]
+  - @goatsoft/aurora-format@0.4.0
+
 ## 0.3.1
 
 ### Patch Changes
