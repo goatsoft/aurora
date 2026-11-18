@@ -23,7 +23,7 @@ Each generator draws one kind of background. A layer's `type` names its generato
 | [Mountains](mountains.md) | `mountains` | Earth: layered mountain ridges that fade into haze, with mist in the valleys. |
 | [Treeline](treeline.md) | `treeline` | Earth: rows of spruce silhouettes along the horizon, with glow behind them. |
 | [Strata](strata.md) | `strata` | Earth: folded sandstone layers that drift slowly. |
-| [Skyline](skyline.md) | `skyline` | City: layered towers with lit window grids, spires and glass. |
+| [Skyline](skyline.md) | `skyline` | City: layered towers with lit windows and spires. |
 | [Bridge & transit](transit.md) | `transit` | City: a suspension bridge and elevated transit viaduct with glowing train cars and deck lamps. |
 | [City lights](city-lights.md) | `city-lights` | City: a sprawling grid of street lights, glowing boulevards and soft foreground bokeh below the horizon. |
 | [Harbor](harbor.md) | `harbor` | City: shoreline water below the horizon, with shimmering vertical light reflections and embankment lights. |

@@ -43,14 +43,14 @@ Every parameter is optional; one you leave out uses its default.
 
 | Name | Label | Default | Range | What it does |
 |---|---|---|---|---|
-| `altitude` | Deck height | 0.26 | 0.08 to 0.65 | Height of the bridge deck from the bottom of the canvas. |
-| `towers` | Towers | 2 | 0 to 3 | Suspension towers and cable spans; 0 for a plain elevated viaduct. |
-| `span` | Tower height | 0.34 | 0.15 to 0.55 | Height of the suspension towers above the deck. |
-| `cables` | Cables | 0.75 | 0 to 1 | Visibility of catenary cables, suspenders and piers. |
-| `trains` | Trains | 0.85 | 0 to 1 | Frequency and brightness of glowing transit trains. |
-| `lights` | Lights | 0.75 | 0 to 1 | Brightness of deck lamps and tower beacons. |
-| `speed` | Speed | 0.5 | 0 to 2 | How fast trains cross the span. |
-| `seed` | Seed | 0 | 0 to 100 | A different span and train schedule. |
+| `altitude` | Deck height | 0.26 | 0.08 to 0.65 | Bridge deck height. |
+| `towers` | Towers | 2 | 0 to 3 | Suspension towers; 0 for viaduct. |
+| `span` | Tower height | 0.34 | 0.15 to 0.55 | Tower height above deck. |
+| `cables` | Cables | 0.75 | 0 to 1 | Cables and piers. |
+| `trains` | Trains | 0.85 | 0 to 1 | Train glow and density. |
+| `lights` | Lights | 0.75 | 0 to 1 | Deck and beacon lights. |
+| `speed` | Speed | 0.5 | 0 to 2 | Train speed. |
+| `seed` | Seed | 0 | 0 to 100 | Random seed. |
 
 ## Implementation note
 
