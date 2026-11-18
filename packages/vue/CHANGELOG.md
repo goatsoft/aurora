@@ -1,5 +1,12 @@
 # @goatsoft/aurora-vue
 
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies [03e2c77]
+  - @goatsoft/aurora@0.4.0
+
 ## 0.3.1
 
 ### Patch Changes
